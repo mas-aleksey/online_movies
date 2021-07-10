@@ -1,0 +1,15 @@
+.idea/
+
+.env
+/venv/
+docker-compose.override.yml
+**/__pycache__
+.DS_Store
+Dockerfile
+
+# ignore .git and .cache folders
+.git
+.cache
+
+# ignore all markdown files (md) beside all README*.md other than README-secret.md
+**/*.md

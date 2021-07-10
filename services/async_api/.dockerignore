@@ -1,0 +1,11 @@
+.idea
+*.iml
+.DS_Store
+.venv
+.git
+.local*
+.cache*
+.dockerignore
+Dockerfile
+*.md
+*.env

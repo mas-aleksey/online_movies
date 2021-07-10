@@ -1,0 +1,61 @@
+version: '3.4'
+
+services:
+
+  movies-admin:
+    build: services/movies-admin
+    container_name: movies-admin
+    restart: on-failure
+    env_file: docker-compose-env/movies-admin.env
+    volumes:
+      - movies-admin-static:/opt/app/static/movies
+
+  nginx:
+    build: services/nginx
+    container_name: nginx
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - movies-admin-static:/src/static/movies-admin
+
+  movies_etl:
+    build: services/etl
+    container_name: movies_etl
+    restart: on-failure
+    environment:
+      - MODE_ETL=FILMWORK_ETL
+    env_file: docker-compose-env/movies-etl.env
+
+  movies_async_api:
+    build: services/async_api
+    container_name: movies_async_api
+    restart: on-failure
+    ports:
+      - "8000:8000"
+    env_file: docker-compose-env/async-api.env
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.2
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - movies-elastic-data:/usr/share/elasticsearch/data
+
+  redis:
+    image: "redis:alpine"
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+volumes:
+  movies-admin-static:
+  movies-elastic-data:
+  redis-data:
