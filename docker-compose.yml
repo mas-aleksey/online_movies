@@ -2,9 +2,9 @@ version: '3.4'
 
 services:
 
-  movies-admin:
-    build: services/movies-admin
-    container_name: movies-admin
+  movies_admin:
+    build: services/movies_admin
+    container_name: movies_admin
     restart: on-failure
     env_file: docker-compose-env/movies-admin.env
     ports:
