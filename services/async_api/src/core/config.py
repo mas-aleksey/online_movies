@@ -25,7 +25,7 @@ ELASTIC_PORT = int(os.getenv('ELASTIC_PORT', '9200'))
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 ELASTIC_MOVIES_INDEX = 'movies'
-ELASTIC_GENRE_INDEX = 'genre'
-ELASTIC_PERSON_INDEX = 'person'
+ELASTIC_GENRE_INDEX = 'genres'
+ELASTIC_PERSON_INDEX = 'persons'
 
 CACHE_EXPIRE_TIME_IN_SECONDS = 60 * 5
