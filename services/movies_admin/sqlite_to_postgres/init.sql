@@ -1,5 +1,4 @@
 CREATE SCHEMA IF NOT EXISTS content;
-SET search_path TO content,public;
 
 CREATE TYPE profession AS ENUM ('actor', 'director', 'writer');
 
