@@ -7,8 +7,6 @@ services:
     container_name: movies_admin
     restart: on-failure
     env_file: docker-compose-env/movies-admin.env
-    ports:
-      - "8000:8000"
     volumes:
       - movies-admin-static:/opt/app/static/movies
 
@@ -23,7 +21,6 @@ services:
 
   movies_films_etl:
     build: services/etl
-    container_name: movies_etl
     restart: on-failure
     environment:
       - MODE_ETL=FILMWORK_ETL
@@ -31,7 +28,6 @@ services:
 
   movies_persons_etl:
     build: services/etl
-    container_name: movies_etl
     restart: on-failure
     environment:
       - MODE_ETL=PERSON_ETL
@@ -39,7 +35,6 @@ services:
 
   movies_genres_etl:
     build: services/etl
-    container_name: movies_etl
     restart: on-failure
     environment:
       - MODE_ETL=GENRE_ETL
@@ -57,8 +52,6 @@ services:
     environment:
       - discovery.type=single-node
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    ports:
-      - "9200:9200"
     volumes:
       - movies-elastic-data:/usr/share/elasticsearch/data
 
@@ -66,8 +59,6 @@ services:
     image: "redis:alpine"
     container_name: redis
     restart: always
-    ports:
-      - "6379:6379"
     volumes:
       - redis-data:/data
 
