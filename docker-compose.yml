@@ -7,6 +7,8 @@ services:
     container_name: movies-admin
     restart: on-failure
     env_file: docker-compose-env/movies-admin.env
+    ports:
+      - "8000:8000"
     volumes:
       - movies-admin-static:/opt/app/static/movies
 
@@ -19,7 +21,7 @@ services:
     volumes:
       - movies-admin-static:/src/static/movies-admin
 
-  movies_etl:
+  movies_films_etl:
     build: services/etl
     container_name: movies_etl
     restart: on-failure
@@ -27,12 +29,26 @@ services:
       - MODE_ETL=FILMWORK_ETL
     env_file: docker-compose-env/movies-etl.env
 
+  movies_persons_etl:
+    build: services/etl
+    container_name: movies_etl
+    restart: on-failure
+    environment:
+      - MODE_ETL=PERSON_ETL
+    env_file: docker-compose-env/movies-etl.env
+
+  movies_genres_etl:
+    build: services/etl
+    container_name: movies_etl
+    restart: on-failure
+    environment:
+      - MODE_ETL=GENRE_ETL
+    env_file: docker-compose-env/movies-etl.env
+
   movies_async_api:
     build: services/async_api
     container_name: movies_async_api
     restart: on-failure
-    ports:
-      - "8000:8000"
     env_file: docker-compose-env/async-api.env
 
   elasticsearch:
