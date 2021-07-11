@@ -52,6 +52,8 @@ services:
     environment:
       - discovery.type=single-node
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
     volumes:
       - movies-elastic-data:/usr/share/elasticsearch/data
 
@@ -59,6 +61,8 @@ services:
     image: "redis:alpine"
     container_name: redis
     restart: always
+    ports:
+      - "6379:6379"
     volumes:
       - redis-data:/data
 

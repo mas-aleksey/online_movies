@@ -14,7 +14,6 @@ DSN = {
     'password': environ.get('DATABASE_PASSWORD'),
     'host': environ.get('DATABASE_HOST'),
     'port': environ.get('DATABASE_PORT'),
-    'options': '-c search_path=content'
 }
 
 MODE_ETL = ModeEtl(environ.get('MODE_ETL')) or ModeEtl.FILMWORK_ETL
