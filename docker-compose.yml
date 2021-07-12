@@ -20,7 +20,7 @@ services:
     volumes:
       - movies-admin-static:/src/static/movies-admin
       - notify-admin-static:/src/static/notify-admin
-      - /etc/letsencrypt/live/yandexmovies.online:/etc/ssl/certs/
+      - ~/graduate_work/crt/:/etc/ssl/certs
     depends_on:
       - movies_admin
       - movies_async_api
