@@ -68,6 +68,9 @@
           "imdb_rating": {
             "type": "float"
           },
+          "access_type": {
+            "type": "keyword"
+          },
           "title": {
             "type": "text",
             "analyzer": "ru_en"
