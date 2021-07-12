@@ -25,8 +25,8 @@ class PersonPipeline(BasePipeline):
                     ShortFilm(
                         row['fw_id'],
                         row['fw_title'],
-                        row['fw_rating'],
                         row['fw_access_type'],
+                        row['fw_rating'],
                     )
                 )
             target.send([person.as_dict for person in people.values()])
