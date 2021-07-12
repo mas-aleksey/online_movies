@@ -11,8 +11,8 @@ from fastapi.responses import ORJSONResponse
 app = FastAPI(
     title='Notify API',
     description="API сервиса уведомлений",
-    docs_url='/api/openapi',
-    openapi_url='/api/openapi.json',
+    docs_url='/notify-api/api/openapi',
+    openapi_url='/notify-api/api/openapi.json',
     default_response_class=ORJSONResponse,
 )
 
@@ -27,7 +27,7 @@ async def startup():
 async def shutdown():
     """Отключаемся от брокеров при выключении сервера"""
 
-app.include_router(notify_events.router, prefix='/api/v1', tags=['Уведомления'])
+app.include_router(notify_events.router, prefix='/notify-api/api/v1', tags=['Уведомления'])
 
 
 if __name__ == '__main__':
