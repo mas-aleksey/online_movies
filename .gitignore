@@ -86,7 +86,7 @@ target/
 *.pyc
 __pycache__/
 local_settings.py
-
+http-client.private.env.json
 *.env
 db.sqlite3
 
