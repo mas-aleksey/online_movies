@@ -7,7 +7,7 @@ from typing import List
 class ShortFilm:
     id: str
     title: str
-    access_type: str
+    access_type: str = ''
     imdb_rating: float = None
 
 

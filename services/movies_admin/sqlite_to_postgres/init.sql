@@ -1,5 +1,3 @@
-CREATE SCHEMA IF NOT EXISTS content;
-
 CREATE TYPE profession AS ENUM ('actor', 'director', 'writer');
 
 -- Таблица сотрудников
