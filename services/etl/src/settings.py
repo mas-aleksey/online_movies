@@ -75,7 +75,8 @@ SELECT
     pfw.role as person_role,
     fw.id as fw_id,
     fw.title as fw_title,
-    fw.rating as fw_rating
+    fw.rating as fw_rating,
+    fw.access_type as fw_access_type
 FROM person p
 LEFT JOIN filmwork_persons pfw ON pfw.person_id = p.id
 LEFT JOIN filmwork fw ON fw.id = pfw.filmwork_id
