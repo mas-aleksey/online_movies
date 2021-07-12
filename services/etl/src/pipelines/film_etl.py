@@ -21,10 +21,10 @@ class FilmWorkPipeline(BasePipeline):
                     movies[row['fw_id']] = Film(
                         row['fw_id'],
                         row['title'],
+                        row['access_type'],
                         row['rating'],
                         row['description'],
                         row['type'],
-                        row['access_type'],
                         row['creation_date'],
                         row['end_date'],
                         row['age_limit'],
