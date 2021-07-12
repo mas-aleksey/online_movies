@@ -1,0 +1,140 @@
+### Регистрация пользователя
+POST {{auth_url}}/api/v1/user/registration
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}",
+  "recaptcha": "{{recaptcha}}"
+}
+
+
+### Смена пароля
+POST {{auth_url}}/api/v1/user/password
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "new_password": "{{email}}",
+  "password": "{{password}}"
+}
+
+
+### Логин пользователя
+POST {{auth_url}}/api/v1/login
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}",
+  "recaptcha": "{{recaptcha}}"
+}
+
+
+### обновление токена
+POST {{auth_url}}/api/v1/token/refresh
+Authorization: Bearer {{refresh_token}}
+
+{
+  "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTYxODA0NzEwNiwianRpIjoiZTczOGEzNDctZTkyMS00Nzk0LTlmZDktOGMyNmJjYTgzZmQyIiwibmJmIjoxNjE4MDQ3MTA2LCJ0eXBlIjoiYWNjZXNzIiwic3ViIjoiYWxla3NAbWFpbC5jb20iLCJleHAiOjE2MTgwNTA3MDZ9.4yrbXXI2ED43A10W5Pp0PRBB4Nf5Wsy9BaLbD2cW390",
+  "refresh_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTYxODA0NzEwNiwianRpIjoiOWI1OGNmZTctYzllMS00MmFlLTg4YjItMTNhYTU2MWMxN2QwIiwibmJmIjoxNjE4MDQ3MTA2LCJ0eXBlIjoicmVmcmVzaCIsInN1YiI6ImFsZWtzQG1haWwuY29tIiwiZXhwIjoxNjIwNjM5MTA2fQ.haIfrR0YOy3EWdCCg2Svum5xZaR70VeQMFqxREogo6g"
+}
+
+
+### просмотр историй входа
+GET {{auth_url}}/api/v1/user/journal/login
+Authorization: Bearer {{access_token}}
+
+
+### logout
+GET {{auth_url}}/api/v1/logout
+Authorization: Bearer {{access_token}}
+
+
+### верификация токена
+GET {{auth_url}}/api/v1/token/verify
+Authorization: Bearer {{access_token}}
+
+
+### просмотр списка пользователей
+GET {{auth_url}}/api/v1/admin/users
+Authorization: Bearer {{access_token}}
+
+### создание пользоваетля
+POST {{auth_url}}/api/v1/admin/users
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "email": "4al-fa-y@yandex.ru",
+  "password": "al-fa-y@yandex.ru1",
+  "is_superuser": true
+}
+
+### просмотр пользователя
+GET {{auth_url}}/api/v1/admin/users/62249915-170d-4d03-837d-f32674e8e5f8
+Authorization: Bearer {{access_token}}
+
+### обновить пользователя
+PUT {{auth_url}}/api/v1/admin/users/62249915-170d-4d03-837d-f32674e8e5f8
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "email": "al-fa-y@yandex.ru21",
+  "password": "al-fa-y@yandex.ru1",
+  "is_superuser": true,
+  "fake_field": 123
+}
+
+### Удалить пользователя
+DELETE {{auth_url}}/api/v1/admin/users/62249915-170d-4d03-837d-f32674e8e5f8
+Authorization: Bearer {{access_token}}
+
+### просмотр списка ролей
+GET {{auth_url}}/api/v1/admin/roles
+Authorization: Bearer {{access_token}}
+
+### создание роли
+POST {{auth_url}}/api/v1/admin/roles
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "name": "6+",
+  "description": "test"
+}
+
+### просмотр роли
+GET {{auth_url}}/api/v1/admin/roles/2
+Authorization: Bearer {{access_token}}
+
+### обновить роль
+PUT {{auth_url}}/api/v1/admin/roles/2
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "name": "18+",
+  "description": "test"
+}
+
+### Удалить роль
+DELETE {{auth_url}}/api/v1/admin/roles/2
+Authorization: Bearer {{access_token}}
+
+
+
+### просмотр списка ролей пользователя
+GET {{auth_url}}/api/v1/admin/users/63b9fc8f-6b83-46f1-9412-c74be24f28b1/roles
+Authorization: Bearer {{access_token}}
+
+### добавление ролей пользователю
+POST {{auth_url}}/api/v1/admin/users/63b9fc8f-6b83-46f1-9412-c74be24f28b1/roles
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "user_id": "63b9fc8f-6b83-46f1-9412-c74be24f28b1",
+  "role_id": 3
+}

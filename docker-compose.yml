@@ -26,6 +26,7 @@ services:
       - movies_async_api
       - notify_admin
       - notify_api
+      - auth_api
 
   movies_films_etl:
     build: services/etl
@@ -164,8 +165,18 @@ services:
     deploy:
       replicas: 2
 
+  auth_api:
+    build: services/auth_api
+    depends_on:
+      - redis
+    env_file: docker-compose-env/auth_api.env
+
 volumes:
   movies-admin-static:
+    driver: local
   notify-admin-static:
+    driver: local
   movies-elastic-data:
+    driver: local
   redis-data:
+    driver: local
