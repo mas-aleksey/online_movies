@@ -1,0 +1,70 @@
+{
+  "users": [
+    {
+      "name": "guest",
+      "password_hash": "kI3GCqW5JLMJa4iX1lo7X4D6XbYqlLgxIs30+P6tENUV2POR",
+      "tags": "administrator"
+    }
+  ],
+  "vhosts": [
+    {
+      "name": "/"
+    }
+  ],
+  "permissions": [
+    {
+      "user": "guest",
+      "vhost": "/",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    }
+  ],
+  "parameters": [],
+  "policies": [],
+  "exchanges": [
+    {
+      "name": "movies.e.notify",
+      "vhost": "/",
+      "type": "direct",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    }
+  ],
+  "queues": [
+    {
+      "name": "movies.q.notify_fast",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {}
+    },
+    {
+      "name": "movies.q.notify_slow",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {}
+    }
+  ],
+  "bindings": [
+    {
+      "source": "movies.e.notify",
+      "vhost": "/",
+      "destination": "movies.q.notify_fast",
+      "destination_type": "queue",
+      "routing_key": "fast",
+      "arguments": {}
+    },
+    {
+      "source": "movies.e.notify",
+      "vhost": "/",
+      "destination": "movies.q.notify_slow",
+      "destination_type": "queue",
+      "routing_key": "slow",
+      "arguments": {}
+    }
+  ]
+}

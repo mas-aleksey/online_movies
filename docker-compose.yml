@@ -18,6 +18,7 @@ services:
       - "80:80"
     volumes:
       - movies-admin-static:/src/static/movies-admin
+      - notify-admin-static:/src/static/notify-admin
 
   movies_films_etl:
     build: services/etl
@@ -62,7 +63,93 @@ services:
     volumes:
       - redis-data:/data
 
+  notify_admin:
+    build: services/notify_admin
+    image: notify_admin
+    container_name: notify_admin
+    restart: on-failure
+    volumes:
+      - notify-admin-static:/var/app/static
+    env_file: docker-compose-env/notify_admin.env
+
+  notify_api:
+    build: services/notify_api
+    container_name: notify_api
+    restart: on-failure
+    env_file: docker-compose-env/notify_admin.env
+    depends_on:
+      - rabbitmq
+
+  rabbitmq:
+    build: services/rabbit_docker
+    restart: "always"
+
+  notify_admin_celery_worker:
+    image: notify_admin
+    hostname: celery_worker
+    restart: "always"
+    command:
+      - celery
+      - -A
+      - config
+      - worker
+      - -P
+      - prefork
+      - -c
+      - "1"
+      - -l
+      - INFO
+    entrypoint: ""
+    environment:
+      PYTHONPATH: "."
+    env_file: docker-compose-env/notify_admin.env
+    depends_on:
+      - rabbitmq
+      - notify_api
+
+  notify_admin_celery_beat:
+    image: notify_admin
+    hostname: celery_beat
+    restart: "always"
+    command:
+      - celery
+      - -A
+      - config
+      - beat
+      - -l
+      - INFO
+    entrypoint: ""
+    environment:
+      PYTHONPATH: "."
+    env_file: docker-compose-env/notify_admin.env
+    depends_on:
+      - rabbitmq
+      - notify_api
+
+  notify_worker_fast:
+    build: services/notify_worker
+    environment:
+      MQ_QUEUE: "movies.q.notify_fast"
+    restart: on-failure
+    env_file: docker-compose-env/notify_admin.env
+    depends_on:
+      - rabbitmq
+    deploy:
+      replicas: 1
+
+  notify_worker_slow:
+    build: services/notify_worker
+    environment:
+      MQ_QUEUE: "movies.q.notify_slow"
+    restart: on-failure
+    env_file: docker-compose-env/notify_admin.env
+    depends_on:
+      - rabbitmq
+    deploy:
+      replicas: 2
+
 volumes:
   movies-admin-static:
+  notify-admin-static:
   movies-elastic-data:
   redis-data:
