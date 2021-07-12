@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "auth_sprint_1"
+version = "0.1.0"
+description = ""
+authors = ["Aleksandr Falichev <6064233@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+Flask = "^1.1.2"
+Flask-Admin = "^1.5.7"
+Flask-SQLAlchemy = "^2.5.1"
+Flask-Migrate = "^2.7.0"
+Flask-Login = "^0.5.0"
+psycopg2-binary = "^2.8.6"
+Flask-BasicAuth = "^0.2.0"
+Flask-RESTful = "^0.3.8"
+flask-marshmallow = "^0.14.0"
+marshmallow-sqlalchemy = "^0.24.2"
+passlib = "^1.7.4"
+Flask-JWT-Extended = "^4.1.0"
+flask-redis = "^0.4.0"
+gevent = "^21.1.2"
+gunicorn = "^20.1.0"
+requests = "^2.25.1"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
