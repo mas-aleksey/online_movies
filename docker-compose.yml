@@ -80,6 +80,15 @@ services:
     depends_on:
       - rabbitmq
 
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.10.2
+    container_name: test_kibana
+    restart: always
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+
   rabbitmq:
     build: services/rabbit_docker
     restart: "always"
