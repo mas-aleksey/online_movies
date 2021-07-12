@@ -1,0 +1,74 @@
+### Отправка fast уведомления
+POST {{base_url}}/api/v1/event
+content-type: application/json
+
+{
+  "name": "new_movies",
+  "type": "immediately",
+  "payload": {
+    "subject": "Добро пожаловать!",
+    "additionalProp2": "string",
+    "additionalProp3": "string",
+    "films": [
+      {
+        "name": "Операция Ы",
+        "description": "Пересмотрите обязательно!"
+      },
+      {
+        "name": "Миссия невыполнима",
+        "description": "Увлекательный боевик!"
+      }
+    ]
+  },
+  "channels": [
+    "email",
+    "sms"
+  ],
+  "users": [
+    {
+      "user_id": "string",
+      "username": "aleks",
+      "email": "6064233@gmail.com",
+      "timezone": "string",
+      "allowed_channels": {
+        "new_movies": [
+          "email",
+          "sms"
+        ]
+      }
+    }
+  ],
+  "timestamp": "2021-06-19 02:53:58.937874"
+}
+
+### Отправка slow уведомления
+POST {{base_url}}/api/v1/event
+content-type: application/json
+
+{
+  "name": "hello_message",
+  "type": "scheduled",
+  "payload": {
+    "additionalProp1": "string",
+    "additionalProp2": "string",
+    "additionalProp3": "string"
+  },
+  "channels": [
+    "email"
+  ],
+  "users": [
+    {
+      "user_id": "string",
+      "username": "string",
+      "email": "string",
+      "timezone": "string",
+      "allowed_channels": {
+        "hello_message": [
+          "email",
+          "sms"
+        ]
+      }
+    }
+  ],
+  "timestamp": "2021-06-19 02:53:58.937874"
+}

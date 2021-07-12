@@ -19,6 +19,11 @@ services:
     volumes:
       - movies-admin-static:/src/static/movies-admin
       - notify-admin-static:/src/static/notify-admin
+    depends_on:
+      - movies_admin
+      - movies_async_api
+      - notify_admin
+      - notify_api
 
   movies_films_etl:
     build: services/etl

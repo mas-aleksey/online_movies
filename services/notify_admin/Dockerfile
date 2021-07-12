@@ -17,11 +17,13 @@ RUN apt update && \
     apt install -y --no-install-recommends ${BUILD_PACKAGES} ${PACKAGES} && \
     rm -rf /var/lib/apt/lists/*
 
-ADD . /var/app
+COPY Pipfile Pipfile.lock ./
 
 RUN pip install --upgrade pip && \
     pip install --no-cache-dir -U pipenv && \
     pipenv install --dev --deploy --system
+
+ADD . /var/app
 
 VOLUME static
 ENTRYPOINT ["scripts/entrypoint.sh"]

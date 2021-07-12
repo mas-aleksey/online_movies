@@ -8,7 +8,7 @@ settings: dict = {
     'worker_class': 'sync',
     'project_path': os.environ.get('PROJECT_PATH', '.'),
     'host': os.environ.get('APP_HOST', '0.0.0.0'),
-    'port': os.environ.get('APP_PORT', '8080'),
+    'port': os.environ.get('APP_PORT', '8000'),
     'log_level': os.environ.get('LOG_LEVEL', 'INFO'),
     'worker_numbers': os.environ.get('WORKER_NUMBERS'),
     'pythonpath': os.environ.get('PYTHONPATH'),
