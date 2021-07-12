@@ -25,6 +25,7 @@ RUN pip install --upgrade pip && \
 
 ADD . /var/app
 
-VOLUME static
-ENTRYPOINT ["scripts/entrypoint.sh"]
+VOLUME /var/app/static
+RUN ["chmod", "+x", "./scripts/entrypoint.sh"]
+ENTRYPOINT ["/var/app/scripts/entrypoint.sh"]
 CMD ["/usr/local/bin/gunicorn", "-c", "gunicorn.py", "config.wsgi:application"]

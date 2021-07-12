@@ -74,7 +74,7 @@ services:
     container_name: notify_admin
     restart: on-failure
     volumes:
-      - notify-admin-static:/var/app/static
+      - notify-admin-static:/var/app/static/notify-admin
     env_file: docker-compose-env/notify_admin.env
 
   notify_api:
