@@ -16,10 +16,11 @@ services:
     restart: always
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - movies-admin-static:/src/static/movies-admin
       - notify-admin-static:/src/static/notify-admin
-      - /etc/letsencrypt/live/yandexmovies.online:/etc/ssl/certs
+      - /etc/letsencrypt/live/yandexmovies.online:/etc/ssl/certs/
     depends_on:
       - movies_admin
       - movies_async_api
