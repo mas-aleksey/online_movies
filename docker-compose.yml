@@ -87,8 +87,6 @@ services:
     restart: on-failure
     environment:
       - FIRST_START=1
-    ports:
-     - "5000:5000"
     env_file: docker-compose-env/movies-auth.env
 
   notify_admin:
@@ -109,7 +107,7 @@ services:
 
   kibana:
     image: docker.elastic.co/kibana/kibana:7.10.2
-    container_name: test_kibana
+    container_name: kibana
     restart: always
     ports:
       - "5601:5601"
