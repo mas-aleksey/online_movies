@@ -182,12 +182,6 @@ services:
     deploy:
       replicas: 2
 
-  auth_api:
-    build: services/auth_api
-    depends_on:
-      - redis
-    env_file: docker-compose-env/auth_api.env
-
 volumes:
   movies-admin-static:
     driver: local
