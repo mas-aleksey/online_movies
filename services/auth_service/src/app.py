@@ -6,10 +6,10 @@ from src.app_extensions import init_jwt, init_oauth, init_swagger
 
 app = Flask(__name__)
 
-app.register_blueprint(auth_api, url_prefix='/movie_auth/api/v1/auth')
-app.register_blueprint(account_api, url_prefix='/movie_auth/api/v1/account')
-app.register_blueprint(roles_api, url_prefix='/movie_auth/api/v1/roles')
-app.register_blueprint(users_api, url_prefix='/movie_auth/api/v1/users')
+app.register_blueprint(auth_api, url_prefix='/auth2/api/v1/auth')
+app.register_blueprint(account_api, url_prefix='/auth2/api/v1/account')
+app.register_blueprint(roles_api, url_prefix='/auth2/api/v1/roles')
+app.register_blueprint(users_api, url_prefix='/auth2/api/v1/users')
 
 
 def init_app():
