@@ -25,13 +25,18 @@ class ElasticStorage(BaseStorage):
     async def get_genres(self) -> Optional[List[dict]]:
         return await self._search(self.genre_index)
 
-    async def film_search(self, limit: int, page: int, query: str) -> Optional[List[dict]]:
+    async def film_search(self, limit: int, page: int, query: str, roles: list) -> Optional[List[dict]]:
         body = {
             "size": limit,
-            "from": (page - 1) * limit
+            "from": (page - 1) * limit,
+            "query": {
+                "bool": {
+                    "filter": {"terms": {"access_type": roles}}
+                }
+            }
         }
         if query:
-            body['query'] = {
+            body['query']['bool']['must'] = {
                 "multi_match": {
                     "query":  query,
                     "fuzziness": "auto",
@@ -50,6 +55,7 @@ class ElasticStorage(BaseStorage):
             self,
             limit: int,
             page: int,
+            roles: list,
             sort: Sort = None,
             sort_order: SortOrder = None,
             filter_field: FilterField = None,
@@ -57,7 +63,10 @@ class ElasticStorage(BaseStorage):
     ) -> Optional[List[dict]]:
         body = {
             "size": limit,
-            "from": (page - 1) * limit
+            "from": (page - 1) * limit,
+            "query": {
+                "bool": {"filter": {"terms": {"access_type": roles}}}
+            }
         }
         if sort and sort_order:
             sort = 'title.raw' if sort.value == 'title' else sort.value
@@ -65,7 +74,7 @@ class ElasticStorage(BaseStorage):
                 sort: sort_order.value
             }
         if filter_field and filter_query:
-            body['query'] = {
+            body['query']['bool']['must'] = {
                 "nested": {
                     "path": filter_field.value,
                     "query": {

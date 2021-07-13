@@ -1,12 +1,16 @@
+import logging
 import uvicorn
 from api.v1 import film, genre, person
 from core import config, utils
 from storage.elastic import ElasticStorage
 import storage.base as base_storage
 from cache import redis
-from fastapi import FastAPI
+import requests
+from fastapi import FastAPI, Request
 from fastapi.responses import ORJSONResponse
 
+
+LOGGER = logging.getLogger(__file__)
 app = FastAPI(
     # Конфигурируем название проекта. Оно будет отображаться в документации
     title=config.PROJECT_NAME,
@@ -17,6 +21,25 @@ app = FastAPI(
     openapi_url='/async/openapi.json',
     default_response_class=ORJSONResponse,
 )
+
+
+@app.middleware('http')
+async def check_access_user_role(request: Request, call_next):
+    is_superuser = False
+    roles = []
+    try:
+        resp = requests.get(config.AUTH_ENDPOINT, headers=request.headers)
+        if resp.status_code == 200:
+            data = resp.json()
+            is_superuser = data.get('is_super') or False
+            user_roles = data.get('roles') or ['free']
+            roles.extend(user_roles)
+    except Exception as exc:
+        LOGGER.error(exc)
+    request.scope["is_superuser"] = is_superuser
+    request.scope["roles"] = roles
+    response = await call_next(request)
+    return response
 
 
 @app.on_event('startup')

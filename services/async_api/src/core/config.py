@@ -29,3 +29,7 @@ ELASTIC_GENRE_INDEX = 'genres'
 ELASTIC_PERSON_INDEX = 'persons'
 
 CACHE_EXPIRE_TIME_IN_SECONDS = 60 * 5
+
+# Проверка доступа
+AUTH_SERVER = os.getenv('AUTH_SERVER') or 'http://movies_auth:5000'
+AUTH_ENDPOINT = os.getenv('AUTH_ENDPOINT') or f'{AUTH_SERVER}/auth2/api/v1/auth/access_check'

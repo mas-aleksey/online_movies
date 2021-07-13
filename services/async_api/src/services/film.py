@@ -21,21 +21,23 @@ class FilmService:
         entity = await self.storage.get_film_by_id(film_id)
         return Film.parse_obj(entity) if entity else None
 
-    async def film_search(self, limit: int, page: int, query: str) -> Optional[List[ShortFilm]]:
+    async def film_search(self, limit: int, page: int, query: str, roles: list) -> Optional[List[ShortFilm]]:
         """Поиск по запросу
         Args:
             query: строка для поиска
             page: номер страницы
             limit: количество записей на страницу
+            roles: список ролей пользователя
         Returns: список фильмов
         """
-        entities = await self.storage.film_search(limit, page, query)
+        entities = await self.storage.film_search(limit, page, query, roles)
         return [ShortFilm.parse_obj(entity) for entity in entities] if entities else None
 
     async def get_films_by_filter(
             self,
             limit: int,
             page: int,
+            roles: list,
             sort: Sort = None,
             sort_order: SortOrder = None,
             filter_field: FilterField = None,
@@ -43,15 +45,16 @@ class FilmService:
     ) -> Optional[List[ShortFilm]]:
         """Поиск по фильтру
         Args:
-            page: номер страницы
             limit: количество записей на страницу
+            page: номер страницы
+            roles: список ролей пользователя
             filter_query: uuid для поиска фильтру
             filter_field: поле, по которому необходимо фильтровать
             sort_order: порядок сортировки
             sort: поле, по которому необходимо сортировать
         Returns: список фильмов
         """
-        entities = await self.storage.get_films_by_filter(limit, page, sort, sort_order, filter_field, filter_query)
+        entities = await self.storage.get_films_by_filter(limit, page, roles, sort, sort_order, filter_field, filter_query)
         return [ShortFilm.parse_obj(entity) for entity in entities] if entities else None
 
 

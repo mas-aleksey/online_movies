@@ -27,7 +27,8 @@ async def get_films_by_filter(
     if filter_field and not filter_query:
         raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail='filter_query must be set')
     films = await service.get_films_by_filter(
-        limit=limit, page=page, sort=sort, sort_order=sort_order, filter_field=filter_field, filter_query=filter_query
+        limit=limit, page=page, roles=request.scope["roles"], sort=sort, sort_order=sort_order,
+        filter_field=filter_field, filter_query=filter_query
     )
     if not films:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='films not found')
@@ -48,7 +49,7 @@ async def get_films_by_search(
         ),
         service: FilmService = Depends(get_film_service)
 ) -> List[ShortFilm]:
-    films = await service.film_search(limit=limit, page=page, query=query)
+    films = await service.film_search(limit=limit, page=page, query=query, roles=request.scope["roles"])
     if not films:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='films not found')
     return films
