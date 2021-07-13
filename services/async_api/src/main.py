@@ -26,18 +26,18 @@ app = FastAPI(
 @app.middleware('http')
 async def check_access_user_role(request: Request, call_next):
     is_superuser = False
-    roles = []
+    roles = {'free'}
     try:
         resp = requests.get(config.AUTH_ENDPOINT, headers=request.headers)
         if resp.status_code == 200:
             data = resp.json()
             is_superuser = data.get('is_super') or False
-            user_roles = data.get('roles') or ['free']
-            roles.extend(user_roles)
+            user_roles = data.get('roles') or []
+            roles.update(user_roles)
     except Exception as exc:
         LOGGER.error(exc)
     request.scope["is_superuser"] = is_superuser
-    request.scope["roles"] = roles
+    request.scope["roles"] = list(roles)
     response = await call_next(request)
     return response
 
