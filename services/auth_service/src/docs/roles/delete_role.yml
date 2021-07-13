@@ -10,7 +10,7 @@ parameters:
     $ref: "#/definitions/JWT"
 - in: "body"
   name: "body"
-  description: "Role object that needs to be added"
+  description: "Role object that needs to be deleted"
   schema:
     $ref: "#/definitions/Role"
 responses:

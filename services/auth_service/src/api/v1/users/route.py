@@ -5,6 +5,7 @@ from src.api.utils import super_jwt_required
 from src.models.db_models import User, Role
 from src.models.schemas import RoleSchema
 from src.storage.postgres import db
+from src.storage.redis import revoke_access_tokens
 from src.settings import DOCS_DIR
 
 
@@ -46,7 +47,7 @@ def add_role_to_user(user_id):
     return jsonify(msg='success added')
 
 
-@users_api.route('<user_id>/roles', methods=['POST', 'DELETE'])
+@users_api.route('<user_id>/roles', methods=['DELETE'])
 @super_jwt_required
 @swag_from(DOCS_DIR.joinpath('users').joinpath('delete_user_role.yml'))
 def delete_user_role(user_id):
@@ -84,3 +85,11 @@ def super_user(user_id):
     user.superuser = True
     db.session.commit()
     return jsonify(msg='succeed superuser granted')
+
+
+@users_api.route('<user_id>/revoke_access_keys', methods=['GET'])
+@super_jwt_required
+@swag_from(DOCS_DIR.joinpath('users').joinpath('revoke_access_keys.yml'))
+def revoke_access_keys(user_id):
+    count = revoke_access_tokens(user_id)
+    return jsonify(msg=f'{count} token(s) has revoked')

@@ -12,6 +12,11 @@ parameters:
   required: true
   schema:
     $ref: "#/definitions/JWT"
+- in: "body"
+  name: "body"
+  description: "Role object that needs to be added"
+  schema:
+    $ref: "#/definitions/Role"
 responses:
   200:
     description: "Success added"

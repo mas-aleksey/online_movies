@@ -2,10 +2,6 @@ tags:
 - "auth"
 summary: "Check user has role"
 parameters:
-- in: "path"
-  name: "role"
-  description: "Role for check"
-  required: true
 - in: "header"
   name: "Authorization"
   description: "Access token"
