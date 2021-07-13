@@ -30,6 +30,7 @@ services:
 
   movies_films_etl:
     build: services/etl
+    container_name: movies_films_etl
     restart: on-failure
     environment:
       - MODE_ETL=FILMWORK_ETL
@@ -37,6 +38,7 @@ services:
 
   movies_persons_etl:
     build: services/etl
+    container_name: movies_persons_etl
     restart: on-failure
     environment:
       - MODE_ETL=PERSON_ETL
@@ -44,6 +46,7 @@ services:
 
   movies_genres_etl:
     build: services/etl
+    container_name: movies_genres_etl
     restart: on-failure
     environment:
       - MODE_ETL=GENRE_ETL
@@ -71,9 +74,25 @@ services:
     volumes:
       - redis-data:/data
 
+  redis-auth:
+    image: "redis:alpine"
+    container_name: redis-auth
+    restart: always
+    volumes:
+      - redis-auth:/data
+
+  movies_auth:
+    build: services/auth_service
+    container_name: movies_auth
+    restart: on-failure
+    environment:
+      - FIRST_START=1
+    ports:
+     - "5000:5000"
+    env_file: docker-compose-env/movies-auth.env
+
   notify_admin:
     build: services/notify_admin
-    image: notify_admin
     container_name: notify_admin
     restart: on-failure
     volumes:
@@ -179,4 +198,6 @@ volumes:
   movies-elastic-data:
     driver: local
   redis-data:
+    driver: local
+  redis-auth:
     driver: local
