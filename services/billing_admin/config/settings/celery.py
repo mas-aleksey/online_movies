@@ -1,19 +1,14 @@
-import datetime
 import os
-from functools import partial
 
-import pytz
-from celery.schedules import crontab
 from kombu import Queue, Exchange
 
 from .base import TIME_ZONE
 
-RABBIT_HOST = os.getenv('RABBIT_HOST') or 'localhost'
-RABBIT_PORT = int(os.getenv('RABBIT_PORT', '5672'))
-RABBIT_LOGIN = os.getenv('RABBIT_LOGIN') or 'guest'
-RABBIT_PASSWORD = os.getenv('RABBIT_PASSWORD') or 'test12'
-
-CELERY_BROKER_URL = f'amqp://{RABBIT_LOGIN}:{RABBIT_PASSWORD}@{RABBIT_HOST}:{RABBIT_PORT}/'
+ENDPOINT = os.getenv('YMQ_ENDPOINT', '')
+CELERY_BROKER_URL = 'sqs://{}'.format(ENDPOINT)
+broker_transport_options = {
+    'is_secure': True,
+}
 
 CELERY_ACCEPT_CONTENT = {"json"}
 CELERY_TASK_SERIALIZER = 'json'
@@ -29,5 +24,8 @@ CELERY_QUEUES = (
 )
 
 CELERY_BEAT_SCHEDULE = {
-
+    'debug_task': {
+        "task": 'config.celery.debug_task',
+        "schedule": 10.0
+    }
 }

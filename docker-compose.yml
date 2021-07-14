@@ -203,6 +203,8 @@ services:
       - prefork
       - -c
       - "1"
+      - -Q
+      - low,default,high
       - -l
       - INFO
     entrypoint: ""
@@ -210,7 +212,6 @@ services:
       PYTHONPATH: "."
     env_file: docker-compose-env/billing_admin.env
     depends_on:
-      - rabbitmq
       - billing_admin
 
   billing_admin_celery_beat:
@@ -228,7 +229,6 @@ services:
       PYTHONPATH: "."
     env_file: docker-compose-env/billing_admin.env
     depends_on:
-      - rabbitmq
       - billing_admin
 
 volumes:
