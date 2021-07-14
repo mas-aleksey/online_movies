@@ -7,3 +7,4 @@ django-celery-results ==2.1.0
 django-model-utils ==4.0.0
 requests
 boto3
+pycurl

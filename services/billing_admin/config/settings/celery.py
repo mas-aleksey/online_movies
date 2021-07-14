@@ -6,7 +6,7 @@ from .base import TIME_ZONE
 
 ENDPOINT = os.getenv('YMQ_ENDPOINT', '')
 CELERY_BROKER_URL = 'sqs://{}'.format(ENDPOINT)
-broker_transport_options = {
+CELERY_BROKER_TRANSPORT_OPTIONS = {
     'is_secure': True,
 }
 
