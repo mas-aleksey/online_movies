@@ -20,6 +20,7 @@ services:
     volumes:
       - movies-admin-static:/src/static/movies-admin
       - notify-admin-static:/src/static/notify-admin
+      - billing-admin-static:/src/static/billing-admin
       - ~/graduate_work/crt/:/etc/ssl/certs
 
   movies_films_etl:
