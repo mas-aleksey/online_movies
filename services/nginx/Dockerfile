@@ -5,4 +5,5 @@ RUN rm -rf /etc/nginx/conf.d/default.conf
 
 COPY conf.d/movies.conf /etc/nginx/conf.d/movies.conf
 COPY favicon_movie.ico /src/media/images/favicon_movie.ico
+COPY main.html /data/main.html
 WORKDIR /src
