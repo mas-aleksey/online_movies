@@ -20,6 +20,7 @@ services:
     volumes:
       - movies-admin-static:/src/static/movies-admin
       - notify-admin-static:/src/static/notify-admin
+      - billing-admin-static:/src/static/billing-admin
       - ~/graduate_work/crt/:/etc/ssl/certs
 
   movies_films_etl:
@@ -52,7 +53,7 @@ services:
     restart: on-failure
     env_file: docker-compose-env/async-api.env
     ports:
-    - "8000:8000"
+      - "8000:8000"
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.10.2
@@ -84,7 +85,7 @@ services:
     environment:
       - FIRST_START=1
     ports:
-    - "5000:5000"
+      - "5000:5000"
     env_file: docker-compose-env/movies-auth.env
 
   notify_admin:
@@ -181,10 +182,61 @@ services:
     deploy:
       replicas: 2
 
+  billing_admin:
+    build: services/billing_admin
+    image: billing_admin
+    container_name: billing_admin
+    restart: on-failure
+    volumes:
+      - billing-admin-static:/var/app/static/billing-admin
+    env_file: docker-compose-env/billing_admin.env
+
+  billing_admin_celery_worker:
+    image: billing_admin
+    restart: "always"
+    command:
+      - celery
+      - -A
+      - config
+      - worker
+      - -P
+      - prefork
+      - -c
+      - "1"
+      - -Q
+      - low,default,high
+      - -l
+      - INFO
+    entrypoint: ""
+    environment:
+      PYTHONPATH: "."
+    env_file: docker-compose-env/billing_admin.env
+    depends_on:
+      - billing_admin
+
+  billing_admin_celery_beat:
+    image: billing_admin
+    restart: "always"
+    command:
+      - celery
+      - -A
+      - config
+      - beat
+      - -l
+      - INFO
+    entrypoint: ""
+    environment:
+      PYTHONPATH: "."
+    env_file: docker-compose-env/billing_admin.env
+    depends_on:
+      - billing_admin
+
 volumes:
   movies-admin-static:
     driver: local
   notify-admin-static:
+    driver: local
+  billing-admin-static:
     driver: local
   movies-elastic-data:
     driver: local
