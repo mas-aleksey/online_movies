@@ -52,8 +52,6 @@ services:
     container_name: movies_async_api
     restart: on-failure
     env_file: docker-compose-env/async-api.env
-    ports:
-      - "8000:8000"
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.10.2
@@ -84,8 +82,6 @@ services:
     restart: on-failure
     environment:
       - FIRST_START=1
-    ports:
-      - "5000:5000"
     env_file: docker-compose-env/movies-auth.env
 
   notify_admin:
