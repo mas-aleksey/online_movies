@@ -1,9 +1,10 @@
-FROM python:3.9-slim
+FROM python:3.9
 
 WORKDIR /var/app
 
 ENV FETCH_PACKAGES="wget gnupg2" \
-    BUILD_PACKAGES="build-essential gcc linux-headers-amd64 libffi-dev libgeos-c1v5 libpq-dev libssl-dev" \
+    BUILD_PACKAGES="build-essential autoconf libtool pkg-config \
+    gcc linux-headers-amd64 libffi-dev libgeos-c1v5 libpq-dev libssl-dev python3-dev libgnutls28-dev" \
     PACKAGES="postgresql-client"
 
 RUN apt update && \

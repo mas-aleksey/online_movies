@@ -147,4 +147,5 @@ def logout_all_accounts():
 def access_check():
     user_roles = get_jwt()["roles"]
     is_super = get_jwt()["superuser"]
-    return jsonify(is_super=is_super, roles=user_roles)
+    user_id = get_jwt()["sub"]
+    return jsonify(is_super=is_super, roles=user_roles, user_id=user_id)

@@ -29,6 +29,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'config.middleware.AuthenticationMiddleware'
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -117,6 +118,10 @@ USE_TZ = True
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/billing-admin/'
+
+# Проверка доступа
+AUTH_SERVER = os.getenv('AUTH_SERVER') or 'http://movies_auth:5000'
+AUTH_ENDPOINT = os.getenv('AUTH_ENDPOINT') or f'{AUTH_SERVER}/auth2/api/v1/auth/access_check'
 
 from .celery import *  # noqa
 from .config import *  # noqa

@@ -1,0 +1,24 @@
+### signup
+POST {{auth_url}}/api/v1/auth/signup
+content-type: application/json
+
+{
+  "email": "{{auth_email}}",
+  "password": "{{auth_password}}"
+}
+
+
+### login
+POST {{auth_url}}/api/v1/auth/login
+content-type: application/json
+
+{
+  "email": "{{auth_email}}",
+  "password": "{{auth_password}}"
+}
+
+
+### access check
+GET {{auth_url}}/api/v1/auth/access_check
+content-type: application/json
+authorization: Bearer {{access_token}}

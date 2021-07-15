@@ -1,0 +1,4 @@
+### debug
+GET {{billing_url}}/api/v1/debug
+content-type: application/json
+authorization: Bearer {{access_token}}
