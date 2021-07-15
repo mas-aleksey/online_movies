@@ -17,6 +17,5 @@ python manage.py migrate movies --fake-initial --noinput
 python manage.py migrate --noinput
 python manage.py createsuperuser --noinput
 python manage.py collectstatic --noinput
-gunicorn config.wsgi -w 2 -b :8000
 
 exec "$@"

@@ -17,7 +17,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'django_celery_results',
-    'django_celery_beat'
+    'django_celery_beat',
+    'subscriptions',
 ]
 
 MIDDLEWARE = [
@@ -53,11 +54,11 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.getenv('DB_NAME', 'postgres'),
-        'USER': os.getenv('DB_USERNAME', 'postgres'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'postgres'),
-        'HOST': os.getenv('DB_HOST', 'localhost'),
-        'PORT': os.getenv('DB_PORT', '5432'),
+        'NAME': os.getenv('DB_NAME') or 'billing',
+        'USER': os.getenv('DB_USERNAME') or 'postgres',
+        'PASSWORD': os.getenv('DB_PASSWORD') or 'QWEasd123',
+        'HOST': os.getenv('DB_HOST') or 'localhost',
+        'PORT': os.getenv('DB_PORT') or 5432,
         'CHARSET': 'utf-8',
     }
 }
@@ -118,3 +119,4 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/billing-admin/'
 
 from .celery import *  # noqa
+from .config import *  # noqa
