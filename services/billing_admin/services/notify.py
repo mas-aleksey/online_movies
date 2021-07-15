@@ -5,7 +5,7 @@ from django.conf import settings
 
 
 def send_notify(data):
-    requests.post(settings.NOTIFY_ENDPOINT, data=data)
+    requests.post(settings.NOTIFY_ENDPOINT, json=data, headers={'content-type': 'application/json'})
 
 
 def send_payment_notify(user_id, email, amount, description):
