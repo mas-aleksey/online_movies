@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from enum import Enum
 from pydantic import BaseModel
 import core.settings as settings
@@ -16,22 +16,16 @@ class NotifyType(str, Enum):
     scheduled = 'scheduled'
 
 
-class Notification(str, Enum):
-    hello_message = 'hello_message'
-    new_movies = 'new_movies'
-    scheduled_message = 'scheduled_message'
-
-
 class User(BaseModel):
     user_id: str
     username: str
     email: str
     timezone: str
-    allowed_channels: Dict[Notification, List[Channel]]
+    allowed_channels: Optional[Dict[str, List[Channel]]]
 
 
 class EventMessage(BaseModel):
-    name: Notification
+    name: str
     type: NotifyType
     payload: Dict[str, Any]
     channels: List[Channel]
