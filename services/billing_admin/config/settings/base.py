@@ -67,30 +67,75 @@ DATABASES = {
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
-    'filters': {
-        'require_debug_true': {
-            '()': 'django.utils.log.RequireDebugTrue',
-        }
-    },
     'formatters': {
-        'default': {
-            'format': '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]',
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(process)d %(thread)d %(name)s:%(lineno)s %(funcName)s() %(message)s'
+        },
+        'verbose_sql': {
+            'format': '%(levelname)s %(asctime)s %(process)d %(thread)d %(name)s:%(lineno)s %(funcName)s() %(sql)s\n%(params)s\n%(duration)ss'
         },
     },
     'handlers': {
-        'debug-console': {
+        'real_console': {
+            'level': 'DEBUG',
             'class': 'logging.StreamHandler',
-            'formatter': 'default',
-            'filters': ['require_debug_true'],
+            'formatter': 'verbose',
+        },
+        'real_console_sql': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose_sql',
+        },
+        'console': {
+            'class': 'logging.handlers.MemoryHandler',
+            'target': 'real_console',
+            'capacity': 8192,
+        },
+        'console_sql': {
+            'class': 'logging.handlers.MemoryHandler',
+            'target': 'real_console_sql',
+            'capacity': 8192,
         },
     },
     'loggers': {
-        'django.db.backends': {
-            'level': LOG_LEVEL,
-            'handlers': ['debug-console'],
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
             'propagate': False,
-        }
+        },
+        'django.db.backends': {
+            'handlers': ['console_sql'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        'boto': {
+            'level': 'WARNING',
+        },
+        'requests': {
+            'level': 'WARNING',
+        },
+        'meridian': {
+            'level': 'DEBUG',
+        },
+        'celery': {
+            'level': 'WARNING',
+        },
+        'south': {
+            'level': 'INFO',
+        },
+        'py.warnings': {
+            'level': 'ERROR',# change to WARNING to show DeprecationWarnings, etc.
+        },
     },
+    'root': {
+        'handlers': ['console'],
+        'level': LOG_LEVEL,
+    }
 }
 
 AUTH_PASSWORD_VALIDATORS = [
