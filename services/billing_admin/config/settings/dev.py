@@ -1,5 +1,6 @@
 from .base import *  # noqa
 
+SECRET_KEY = 'asdadasd'
 DEBUG = True  # type: ignore
 MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
 INSTALLED_APPS += [
@@ -22,3 +23,6 @@ DATABASES = {
         'CHARSET': 'utf-8',
     }
 }
+
+AUTH_SERVER = os.getenv('AUTH_SERVER') or 'https://yandexmovies.online'
+AUTH_ENDPOINT = os.getenv('AUTH_ENDPOINT') or f'{AUTH_SERVER}/auth2/api/v1/auth/access_check'
