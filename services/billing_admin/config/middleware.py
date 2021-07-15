@@ -14,11 +14,14 @@ class AuthenticationMiddleware(MiddlewareMixin):
         is_superuser = False
         roles = {'free'}
         user_id = None
+        token = request.COOKIES.get('authorization') or request.headers.get("authorization")
         headers = {
-            'authorization': request.headers["authorization"],
+            'authorization': token,
             'user-agent': request.headers["user-agent"]
         }
         try:
+            if not token:
+                raise ValueError('TOKEN is empty')
             resp = requests.get(settings.AUTH_ENDPOINT, headers=headers)
             if resp.status_code == 200:
                 data = resp.json()
@@ -28,6 +31,8 @@ class AuthenticationMiddleware(MiddlewareMixin):
                 roles.update(user_roles)
         except Exception as exc:
             LOGGER.error(exc)
+        else:
+            LOGGER.info('response %s %s', resp.status_code, resp.text)
 
         request.scope = {
             "is_superuser": is_superuser,

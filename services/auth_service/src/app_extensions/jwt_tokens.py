@@ -27,7 +27,8 @@ def genetare_tokens(user: User, user_agent: str) -> Tuple[str, str]:
     user_id = str(user.id)
     user_extra = {
         'superuser': user.superuser,
-        'roles': [role.name for role in user.roles]
+        'roles': [role.name for role in user.roles],
+        'user_id': user_id
     }
     access_token = create_access_token(identity=user_id, expires_delta=ACCESS_EXPIRES, additional_claims=user_extra)
     refresh_token = create_refresh_token(identity=user_id, expires_delta=REFRESH_EXPIRES)

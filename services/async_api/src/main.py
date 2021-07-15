@@ -28,12 +28,22 @@ async def check_access_user_role(request: Request, call_next):
     is_superuser = False
     roles = {'free'}
     try:
-        resp = requests.get(config.AUTH_ENDPOINT, headers=request.headers)
+        token = request.cookies.get('authorization') or request.headers.get("authorization")
+        if not token:
+            raise ValueError('TOKEN is empty')
+        headers = {
+            'authorization': token,
+            'user-agent': request.headers["user-agent"]
+        }
+        resp = requests.get(config.AUTH_ENDPOINT, headers=headers)
         if resp.status_code == 200:
             data = resp.json()
             is_superuser = data.get('is_super') or False
             user_roles = data.get('roles') or []
             roles.update(user_roles)
+            LOGGER.info('good response %s', data)
+        else:
+            LOGGER.info('bad response %s', resp.text)
     except Exception as exc:
         LOGGER.error(exc)
     request.scope["is_superuser"] = is_superuser
