@@ -21,21 +21,11 @@ content-type: application/json
     ]
   },
   "channels": [
-    "email",
-    "sms"
+    "email"
   ],
   "users": [
     {
-      "user_id": "string",
-      "username": "aleks",
-      "email": "tchoker_m@mail.ru",
-      "timezone": "string",
-      "allowed_channels": {
-        "new_movies": [
-          "email",
-          "sms"
-        ]
-      }
+      "user_id": "e0b863ff-22ee-46b6-bee6-39814d8b06c8"
     }
   ],
   "timestamp": "2021-06-19 02:53:58.937874"

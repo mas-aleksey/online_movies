@@ -18,9 +18,9 @@ class NotifyType(str, Enum):
 
 class User(BaseModel):
     user_id: str
-    username: str
-    email: str
-    timezone: str
+    username: Optional[str]
+    email: Optional[str]
+    timezone: Optional[str]
     allowed_channels: Optional[Dict[str, List[Channel]]]
 
 

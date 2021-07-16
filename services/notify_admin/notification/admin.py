@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import NotifyTemplate, Channel, AllowChannel, Client
+from .models import NotifyTemplate, Channel, AllowChannel, Client, Notify
 
 
 @admin.register(NotifyTemplate)
@@ -19,3 +19,8 @@ class AllowChannelInlineAdmin(admin.TabularInline):
 @admin.register(Client)
 class ClientAdmin(admin.ModelAdmin):
     inlines = [AllowChannelInlineAdmin]
+
+
+@admin.register(Notify)
+class NotifyAdmin(admin.ModelAdmin):
+    pass
