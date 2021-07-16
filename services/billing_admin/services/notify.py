@@ -5,7 +5,8 @@ from django.conf import settings
 
 
 def send_notify(data):
-    requests.post(settings.NOTIFY_ENDPOINT, json=data, headers={'content-type': 'application/json'})
+    r = requests.post(settings.NOTIFY_ENDPOINT, json=data, headers={'content-type': 'application/json'})
+    return r.json()
 
 
 def send_payment_notify(user_id, amount, description):
@@ -28,4 +29,4 @@ def send_payment_notify(user_id, amount, description):
         ],
         "timestamp": str(datetime.datetime.now())
     }
-    send_notify(data)
+    return send_notify(data)
