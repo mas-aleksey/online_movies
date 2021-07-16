@@ -26,6 +26,6 @@ def send_payment_notify(user_id, amount, description):
                 "user_id": user_id
             }
         ],
-        "timestamp": datetime.datetime.now()
+        "timestamp": str(datetime.datetime.now())
     }
     send_notify(data)
