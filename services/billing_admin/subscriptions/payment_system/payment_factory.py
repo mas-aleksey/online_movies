@@ -1,29 +1,20 @@
-import abc
-from typing import Optional
-from .yoomoney import YooMoney
+from typing import Dict, Type
+from subscriptions.models import PaymentSystem, PaymentHistory
+from subscriptions.payment_system.payment_system import AbstractPaymentSystem
+from subscriptions.payment_system.handlers import (
+    YoomoneyPaymentSystem, DummyPaymentSystem
+)
 
 
-class BillingService(abc.ABC):
+class PaymentSystemFactory:
 
-    name: str
+    payment_systems: Dict[str, Type[AbstractPaymentSystem]] = {
+        PaymentSystem.DUMMY.value: DummyPaymentSystem,
+        PaymentSystem.YOOMONEY.value: YoomoneyPaymentSystem,
+    }
 
-    def __init__(self, config: dict):
-        self._config = config
-
-    @abc.abstractmethod
-    def callback(self):
-        pass
-
-    @abc.abstractmethod
-    def create_payment(self):
-        pass
-
-
-class PaymentFactory:
-    def __init__(self, config: dict):
-        self._payment_systems = {
-            YooMoney.name: YooMoney(config[YooMoney.name])
-        }
-
-    def get_billing_system(self, name) -> BillingService:
-        return self._payment_systems[name]
+    @classmethod
+    def get_payment_system(cls, payment: PaymentHistory) -> AbstractPaymentSystem:
+        system = payment.subscription.payment_system
+        payment_system_class = cls.payment_systems[system]
+        return payment_system_class(payment)
