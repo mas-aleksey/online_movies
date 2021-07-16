@@ -17,6 +17,13 @@ DSN = {
         'user': os.getenv('DB_USERNAME') or 'postgres',
         'password': os.getenv('DB_PASSWORD') or 'test12',
     },
+    'auth_db': {
+        'host': os.getenv('AUTH_DB_HOST') or 'localhost',
+        'port': os.getenv('AUTH_DB_PORT') or 5432,
+        'dbname': os.getenv('AUTH_DB_NAME') or 'postgres',
+        'user': os.getenv('AUTH_DB_USERNAME') or 'postgres',
+        'password': os.getenv('AUTH_DB_PASSWORD') or 'test12',
+    },
 }
 
 EMAIL_SENDER = os.getenv('EMAIL_SENDER') or 'user@yandex.ru'

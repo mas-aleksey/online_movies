@@ -18,7 +18,24 @@ content-type: application/json
 }
 
 
+### logout
+DELETE {{auth_url}}/api/v1/auth/logout
+content-type: application/json
+authorization: Bearer {{access_token}}
+
+
 ### access check
 GET {{auth_url}}/api/v1/auth/access_check
+content-type: application/json
+authorization: Bearer {{access_token}}
+
+### refresh
+POST {{auth_url}}/api/v1/auth/refresh
+content-type: application/json
+authorization: Bearer {{refresh_token}}
+
+
+### revoked
+POST {{auth_url}}/api/v1/users/{{user_id}}/revoke_access_keys
 content-type: application/json
 authorization: Bearer {{access_token}}

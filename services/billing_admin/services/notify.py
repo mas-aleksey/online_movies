@@ -5,10 +5,13 @@ from django.conf import settings
 
 
 def send_notify(data):
-    requests.post(settings.NOTIFY_ENDPOINT, json=data, headers={'content-type': 'application/json'})
+    print(settings.NOTIFY_ENDPOINT)
+    print(data)
+    r = requests.post(settings.NOTIFY_ENDPOINT, json=data, headers={'content-type': 'application/json'})
+    return r.text
 
 
-def send_payment_notify(user_id, email, amount, description):
+def send_payment_notify(user_id, amount, description):
     """Отправка уведомления об оплате"""
     data = {
         "name": "success_payment",
@@ -23,12 +26,9 @@ def send_payment_notify(user_id, email, amount, description):
         ],
         "users": [
             {
-                "user_id": user_id,
-                "email": email,
-                "username": "aleks",
-                "timezone": "string"
+                "user_id": user_id
             }
         ],
-        "timestamp": datetime.datetime.now()
+        "timestamp": str(datetime.datetime.now())
     }
-    send_notify(data)
+    return send_notify(data)

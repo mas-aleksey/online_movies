@@ -8,8 +8,9 @@ LOGGER = logging.getLogger(__file__)
 
 
 def debug(request):
-    send_payment_notify(request.scope['user_id'], request.scope['email'], '100 руб.', 'Оплата произведена успешно')
-    return JsonResponse(request.scope)
+    print('debug')
+    r = send_payment_notify(request.scope['user_id'], '100 руб.', 'Оплата произведена успешно')
+    return JsonResponse({'response': r})
 
 
 def status(request):

@@ -170,7 +170,7 @@ AUTH_ENDPOINT = os.getenv('AUTH_ENDPOINT') or f'{AUTH_SERVER}/auth2/api/v1/auth/
 
 # Нотификации
 NOTIFY_SERVER = os.getenv('NOTIFY_SERVER') or 'http://notify_api:8000'
-NOTIFY_ENDPOINT = os.getenv('NOTIFY_ENDPOINT') or f'{AUTH_SERVER}/notify/api/v1/event'
+NOTIFY_ENDPOINT = os.getenv('NOTIFY_ENDPOINT') or f'{NOTIFY_SERVER}/notify/api/v1/event'
 
 from .celery import *  # noqa
 from .config import *  # noqa

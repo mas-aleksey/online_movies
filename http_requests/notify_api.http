@@ -3,7 +3,7 @@ POST {{base_url}}/api/v1/event
 content-type: application/json
 
 {
-  "name": "new_movies",
+  "name": "success_payment",
   "type": "immediately",
   "payload": {
     "subject": "Добро пожаловать!",
@@ -21,21 +21,11 @@ content-type: application/json
     ]
   },
   "channels": [
-    "email",
-    "sms"
+    "email"
   ],
   "users": [
     {
-      "user_id": "string",
-      "username": "aleks",
-      "email": "tchoker_m@mail.ru",
-      "timezone": "string",
-      "allowed_channels": {
-        "new_movies": [
-          "email",
-          "sms"
-        ]
-      }
+      "user_id": "a456a1d2-17e7-499d-9aea-86781e6100ca"
     }
   ],
   "timestamp": "2021-06-19 02:53:58.937874"

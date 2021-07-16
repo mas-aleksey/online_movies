@@ -1,7 +1,7 @@
 import os
 from typing import Dict, Union
 
-PAYMENT_RETURN_URL = "https://yandexmovies.online/billing/api/callback"
+PAYMENT_RETURN_URL = "https://yandexmovies.online/billing/api/v1/callback"
 YOOMONEY = "yoomoney"
 
 PAYMENT_SYSTEMS: Dict[str, Dict[str, Union[str, bool, None]]] = {
