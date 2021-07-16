@@ -5,6 +5,8 @@ from django.conf import settings
 
 
 def send_notify(data):
+    print(settings.NOTIFY_ENDPOINT)
+    print(data)
     r = requests.post(settings.NOTIFY_ENDPOINT, json=data, headers={'content-type': 'application/json'})
     return r.text
 
