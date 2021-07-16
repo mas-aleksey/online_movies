@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 import logging
 import json
 from services.notify import send_payment_notify
@@ -22,8 +22,7 @@ def payment(request, payment_id):
     pay: PaymentHistory = PaymentHistory.objects.filter(pk=payment_id).first()
     ps = PaymentSystemFactory.get_payment_system(pay)
     resp = ps.process_payment()
-    LOGGER.error(resp)
-    return JsonResponse({'msg': 'create payment'})
+    return HttpResponseRedirect(resp.confirmation.confirmation_url)
 
 
 def callback(request):
