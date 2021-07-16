@@ -3,7 +3,6 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from model_utils.models import TimeStampedModel
-from subscriptions.payment_system.payment_factory import PaymentSystemFactory
 
 
 class AccessType(models.TextChoices):
@@ -159,6 +158,3 @@ class PaymentHistory(TimeStampedModel):
 
     def __str__(self):
         return f'{self.subscription} {self.amount} {self.status}'
-
-    def payment_system_instance(self):
-        return PaymentSystemFactory.get_payment_system(self)

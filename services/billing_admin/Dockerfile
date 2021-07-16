@@ -29,4 +29,5 @@ ADD . /var/app
 VOLUME /var/app/static
 RUN ["chmod", "+x", "./scripts/entrypoint.sh"]
 ENTRYPOINT ["/var/app/scripts/entrypoint.sh"]
+ENV PYTHONPATH "/opt/app"
 CMD ["gunicorn", "config.wsgi", "-w", "2", "-b", ":8000"]

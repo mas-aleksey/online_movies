@@ -3,6 +3,7 @@ import logging
 import json
 from services.notify import send_payment_notify
 from subscriptions.models import PaymentHistory
+from subscriptions.payment_system.payment_factory import PaymentSystemFactory
 
 LOGGER = logging.getLogger(__file__)
 
@@ -19,7 +20,7 @@ def status(request):
 
 def payment(request, payment_id):
     pay: PaymentHistory = PaymentHistory.objects.filter(pk=payment_id).first()
-    ps = pay.payment_system_instance()
+    ps = PaymentSystemFactory.get_payment_system(pay)
     ps.process_payment()
 
 
