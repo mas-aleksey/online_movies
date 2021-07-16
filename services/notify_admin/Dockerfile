@@ -28,4 +28,4 @@ ADD . /var/app
 VOLUME /var/app/static
 RUN ["chmod", "+x", "./scripts/entrypoint.sh"]
 ENTRYPOINT ["/var/app/scripts/entrypoint.sh"]
-CMD ["/usr/local/bin/gunicorn", "-c", "gunicorn.py", "config.wsgi:application"]
+CMD ["gunicorn", "config.wsgi", "-w", "2", "-b", ":8000"]
