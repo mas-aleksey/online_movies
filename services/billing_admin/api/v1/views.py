@@ -21,7 +21,9 @@ def status(request):
 def payment(request, payment_id):
     pay: PaymentHistory = PaymentHistory.objects.filter(pk=payment_id).first()
     ps = PaymentSystemFactory.get_payment_system(pay)
-    ps.process_payment()
+    resp = ps.process_payment()
+    LOGGER.error(resp)
+    return JsonResponse({'msg': 'create payment'})
 
 
 def callback(request):

@@ -60,6 +60,7 @@ class YoomoneyPaymentSystem(AbstractPaymentSystem):
             }
         )
         self.logger.info(res)
+        return res
 
     def callback(self, *args, **kwargs):
         self.logger.info(args)
