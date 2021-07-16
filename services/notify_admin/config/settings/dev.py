@@ -1,5 +1,6 @@
 from .base import *  # noqa
 
+SECRET_KEY = 'asdasd'
 DEBUG = True  # type: ignore
 MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
 INSTALLED_APPS += [

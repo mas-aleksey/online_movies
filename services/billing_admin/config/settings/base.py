@@ -168,5 +168,9 @@ STATIC_URL = '/static/billing-admin/'
 AUTH_SERVER = os.getenv('AUTH_SERVER') or 'http://movies_auth:5000'
 AUTH_ENDPOINT = os.getenv('AUTH_ENDPOINT') or f'{AUTH_SERVER}/auth2/api/v1/auth/access_check'
 
+# Нотификации
+NOTIFY_SERVER = os.getenv('NOTIFY_SERVER') or 'http://notify_api:8000'
+NOTIFY_ENDPOINT = os.getenv('NOTIFY_ENDPOINT') or f'{AUTH_SERVER}/notify/api/v1/event'
+
 from .celery import *  # noqa
 from .config import *  # noqa
