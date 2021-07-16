@@ -3,7 +3,7 @@ POST {{base_url}}/api/v1/event
 content-type: application/json
 
 {
-  "name": "new_movies",
+  "name": "success_payment",
   "type": "immediately",
   "payload": {
     "subject": "Добро пожаловать!",
