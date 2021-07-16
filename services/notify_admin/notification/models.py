@@ -17,8 +17,15 @@ class Notify(TimeStampedModel):
 
 class NotifyTemplate(TimeStampedModel):
     title = models.CharField(max_length=512, unique=True)
+    notify = models.OneToOneField(Notify, verbose_name=_('нотификация'),
+                                  on_delete=models.CASCADE, null=True, default=None, unique=True)
     short_text = models.CharField(max_length=512)
     message = models.TextField()
+
+    def save(self, *args, **kwargs):
+        if self.notify:
+            self.title = self.notify.code
+        super().save(*args, **kwargs)
 
     class Meta:
         db_table = 'notify_template'
@@ -26,7 +33,7 @@ class NotifyTemplate(TimeStampedModel):
         verbose_name_plural = _('шаблоны нотификаций')
 
     def __str__(self):
-        return self.title
+        return str(self.notify)
 
 
 class Channel(TimeStampedModel):

@@ -4,7 +4,7 @@ from .models import NotifyTemplate, Channel, AllowChannel, Client, Notify
 
 @admin.register(NotifyTemplate)
 class EmailNotificationAdmin(admin.ModelAdmin):
-    pass
+    exclude = ['title']
 
 
 @admin.register(Channel)
