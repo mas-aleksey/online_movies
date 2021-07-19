@@ -33,7 +33,7 @@ def make_order(request):
     :param tariff_id:
     :return:
     """
-    if request.POST:
+    if request.method == 'POST':
         data = (json.loads(request.body))
         ctx = create_subscription(data, request.scope)
         return JsonResponse(ctx)
