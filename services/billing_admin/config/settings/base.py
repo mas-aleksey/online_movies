@@ -19,6 +19,7 @@ INSTALLED_APPS = [
     'django_celery_results',
     'django_celery_beat',
     'subscriptions',
+    'demo'
 ]
 
 MIDDLEWARE = [
@@ -129,7 +130,7 @@ LOGGING = {
             'level': 'INFO',
         },
         'py.warnings': {
-            'level': 'ERROR',# change to WARNING to show DeprecationWarnings, etc.
+            'level': 'ERROR',  # change to WARNING to show DeprecationWarnings, etc.
         },
     },
     'root': {
@@ -165,12 +166,15 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/billing-admin/'
 
 # Проверка доступа
-AUTH_SERVER = os.getenv('AUTH_SERVER') or 'http://movies_auth:5000'
-AUTH_ENDPOINT = os.getenv('AUTH_ENDPOINT') or f'{AUTH_SERVER}/auth2/api/v1/auth/access_check'
+ASYNC_SERVER = os.getenv('ASYNC_SERVER') or 'https://yandexmovies.online/async'
+AUTH_SERVER = os.getenv('AUTH_SERVER') or 'http://movies_auth:5000/auth2'
+AUTH_ENDPOINT = os.getenv('AUTH_ENDPOINT') or f'{AUTH_SERVER}/api/v1/auth/access_check'
+AUTH_ADMIN = os.getenv('AUTH_ADMIN') or f'admin'
+AUTH_PASSWORD = os.getenv('AUTH_PASSWORD') or f'pwd'
 
 # Нотификации
-NOTIFY_SERVER = os.getenv('NOTIFY_SERVER') or 'http://notify_api:8000'
-NOTIFY_ENDPOINT = os.getenv('NOTIFY_ENDPOINT') or f'{NOTIFY_SERVER}/notify/api/v1/event'
+NOTIFY_SERVER = os.getenv('NOTIFY_SERVER') or 'http://notify_api:8000/notify'
+NOTIFY_ENDPOINT = os.getenv('NOTIFY_ENDPOINT') or f'{NOTIFY_SERVER}/api/v1/event'
 
 from .celery import *  # noqa
 from .config import *  # noqa

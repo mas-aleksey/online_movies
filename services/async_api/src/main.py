@@ -8,7 +8,7 @@ from cache import redis
 import requests
 from fastapi import FastAPI, Request
 from fastapi.responses import ORJSONResponse
-
+from fastapi.middleware.cors import CORSMiddleware
 
 LOGGER = logging.getLogger(__file__)
 app = FastAPI(
@@ -21,6 +21,7 @@ app = FastAPI(
     openapi_url='/async/openapi.json',
     default_response_class=ORJSONResponse,
 )
+app.add_middleware(CORSMiddleware, allow_origins=['*'], allow_methods=['GET'], allow_headers=['*'])
 
 
 @app.middleware('http')
@@ -72,7 +73,6 @@ async def shutdown():
 app.include_router(film.router, prefix='/async/api/v1', tags=['Фильмы'])
 app.include_router(genre.router, prefix='/async/api/v1', tags=['Жанры'])
 app.include_router(person.router, prefix='/async/api/v1', tags=['Персоны'])
-
 
 if __name__ == '__main__':
     uvicorn.run(
