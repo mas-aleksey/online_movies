@@ -33,6 +33,7 @@ def make_order(request):
     :param tariff_id:
     :return:
     """
+    LOGGER.error(request.method)
     if request.method == 'POST':
         data = (json.loads(request.body))
         ctx = create_subscription(data, request.scope)
@@ -111,7 +112,7 @@ class UserSubscriptionsApi(BaseListView):
 
     def get_queryset(self):
         return self.model.objects.values(
-            'expiration_date', 'status',
+            'expiration_date', 'status', 'client__id',
             'tariff__price', 'tariff__period',
             'discount__name', 'discount__description', 'discount__value',
             'tariff__product__name', 'tariff__product__description', 'tariff__product__access_type'
@@ -120,7 +121,10 @@ class UserSubscriptionsApi(BaseListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         paginator, page, object_list, _ = self.paginate_queryset(self.object_list, self.paginate_by)
         if self.kwargs['user_id']:
-            object_list = [subscr for subscr in self.object_list if subscr.client.id]
+            object_list = [
+                subscr for subscr in self.object_list
+                if subscr['client__id'] == self.kwargs['user_id']
+            ]
         else:
             # TODO: object_list = []
             object_list = self.object_list
