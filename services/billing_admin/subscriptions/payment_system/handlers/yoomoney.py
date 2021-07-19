@@ -34,10 +34,11 @@ class YoomoneyPaymentSystem(AbstractPaymentSystem):
                 }
             }
         )
-        self.logger.info(response)
-        self.payment.payment_info = json.loads(response.json())
+        data = json.loads(response.json())
+        self.logger.info(data)
+        self.payment.payment_info = data
         self.payment.save()
-        return response
+        return data
 
     def callback(self, *args, **kwargs):
         self.logger.info(args)

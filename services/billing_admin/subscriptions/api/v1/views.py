@@ -6,6 +6,7 @@ from django.views.generic.list import BaseListView
 from django.views.generic.detail import BaseDetailView
 from subscriptions.models import Tariff, Subscription
 from subscriptions.payment_system.payment_factory import PaymentSystemFactory
+import subscriptions.utils as utils
 
 
 LOGGER = logging.getLogger(__file__)
@@ -18,9 +19,18 @@ def status(request):
 def create_subscription(data, scope):
     LOGGER.error(data)
     LOGGER.error(scope)
-    return {
-        **data, **scope
-    }
+    user_id = scope['user_id']
+    user_email = scope['email']
+    payment_system = data['payment_system']
+    tariff_id = data['tariff_id']
+    amount = data['amount']
+
+    subscr = utils.create_subscription(user_id, tariff_id)
+    payment = utils.create_payment(subscr, payment_system, amount)
+    ps = PaymentSystemFactory.get_payment_system(payment)
+    resp = ps.process_payment()
+    return JsonResponse(resp)
+    # return HttpResponseRedirect(resp.confirmation.confirmation_url)
 
 
 def make_order(request):
