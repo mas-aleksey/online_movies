@@ -15,11 +15,11 @@ INTERNAL_IPS = ['127.0.0.1']
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.getenv('DB_NAME', 'billing_admin'),
-        'USER': os.getenv('DB_USERNAME', 'django'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'django'),
-        'HOST': os.getenv('DB_HOST', 'localhost'),
-        'PORT': os.getenv('DB_PORT', '5432'),
+        'NAME': os.getenv('DB_NAME') or 'billing',
+        'USER': os.getenv('DB_USERNAME') or 'postgres',
+        'PASSWORD': os.getenv('DB_PASSWORD') or 'QWEasd123',
+        'HOST': os.getenv('DB_HOST') or 'localhost',
+        'PORT': os.getenv('DB_PORT') or 5432,
         'CHARSET': 'utf-8',
     }
 }
