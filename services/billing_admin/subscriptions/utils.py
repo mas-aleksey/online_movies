@@ -1,4 +1,4 @@
-from uuid import uuid4
+from uuid import uuid4, UUID
 from subscriptions.models import (
     Client, Tariff, Subscription, SubscriptionStatus, PaymentInvoice,
     PaymentSystem, PaymentStatus
@@ -7,7 +7,7 @@ from subscriptions.models import (
 def get_or_create_client(user_id: str) -> Client:
     client = Client.objects.filter(user_id=user_id).first()
     if not client:
-        client = Client(id=uuid4(), user_id=user_id)
+        client = Client(id=uuid4(), user_id=UUID(user_id))
         client.save()
 
     return client
