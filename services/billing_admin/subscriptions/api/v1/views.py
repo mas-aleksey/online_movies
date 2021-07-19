@@ -18,6 +18,9 @@ def status(request):
 def create_subscription(data, scope):
     LOGGER.error(data)
     LOGGER.error(scope)
+    return {
+        **data, **scope
+    }
 
 
 def make_order(request):
@@ -32,7 +35,8 @@ def make_order(request):
     """
     if request.POST:
         data = (json.loads(request.body))
-        create_subscription(data, request.scope)
+        ctx = create_subscription(data, request.scope)
+        return JsonResponse(ctx)
 
     # redirect to payment_system
     return JsonResponse({'status': 'ok'})
