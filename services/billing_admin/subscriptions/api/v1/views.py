@@ -15,16 +15,17 @@ def status(request):
     return JsonResponse({'status': 'ok'})
 
 
-def create_subscription(tariff_id, request, data):
-    print(tariff_id)
-    print(request)
-    print(data)
+def create_subscription(tariff_id, data, scope):
+    LOGGER.error(tariff_id)
+    LOGGER.error(data)
+    LOGGER.error(scope)
 
 
 def make_order(request, tariff_id):
     """
     {
-        'tariff', 'amount', 'payment_system'
+        'tariff_id',
+        'payment_system'
     }
     :param request:
     :param tariff_id:
@@ -32,7 +33,7 @@ def make_order(request, tariff_id):
     """
     if request.POST:
         data = (json.loads(request.body))
-        return create_subscription(tariff_id, request, data)
+        create_subscription(tariff_id, data, request.scope)
 
     # redirect to payment_system
     return JsonResponse({'status': 'ok'})
