@@ -1,10 +1,10 @@
 import logging
-from subscriptions.models import PaymentHistory
+from subscriptions.models import PaymentInvoice
 
 
 class AbstractPaymentSystem:
 
-    def __init__(self, payment: PaymentHistory):
+    def __init__(self, payment: PaymentInvoice):
         self.logger = logging.getLogger(self.__class__.__name__)
         self.payment = payment
 

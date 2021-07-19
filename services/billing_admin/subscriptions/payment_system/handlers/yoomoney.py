@@ -1,3 +1,4 @@
+import json
 from subscriptions.payment_system.payment_factory import AbstractPaymentSystem
 from django.conf import settings
 from yookassa import Configuration, Payment
@@ -12,11 +13,14 @@ Configuration.configure(CONFIG["shop_id"], CONFIG["key"])
 class YoomoneyPaymentSystem(AbstractPaymentSystem):
 
     def process_payment(self):
-        res = Payment.create(
+        response = Payment.create(
             {
                 "amount": {
                     "value": self.payment.amount,
                     "currency": "RUB"
+                },
+                "payment_method_data": {
+                    "type": "bank_card"
                 },
                 "confirmation": {
                     "type": "redirect",
@@ -24,13 +28,16 @@ class YoomoneyPaymentSystem(AbstractPaymentSystem):
                 },
                 "capture": self.payment.amount,
                 "description": f"Заказ {self.payment.amount}",
+                "save_payment_method": True,
                 "metadata": {
                   "order_id": "lalala"
                 }
             }
         )
-        self.logger.info(res)
-        return res
+        self.logger.info(response)
+        self.payment.payment_info = json.loads(response.json())
+        self.payment.save()
+        return response
 
     def callback(self, *args, **kwargs):
         self.logger.info(args)

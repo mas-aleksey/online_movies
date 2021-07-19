@@ -2,7 +2,7 @@ from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from model_utils.models import TimeStampedModel
+from model_utils.models import TimeStampedModel, SoftDeletableModel
 
 
 class AccessType(models.TextChoices):
@@ -13,8 +13,8 @@ class AccessType(models.TextChoices):
 
 class PaymentSystem(models.TextChoices):
     """ Платежные системы, например YooKassa, robokassa, и т.д. """
-    DUMMY = "dummy", _("Псевдо платежная система")
-    YOOMONEY = settings.YOOMONEY, _("Юмани платежная система")
+    YOOMONEY = settings.YOOMONEY, _("Платежная система Юмани")
+    STRIPE = settings.STRIPE, _("Платежная система Stripe")
 
 
 class SubscriptionPeriods(models.TextChoices):
@@ -25,6 +25,7 @@ class SubscriptionPeriods(models.TextChoices):
 
 class SubscriptionStatus(models.TextChoices):
     """ Статусы подписок """
+    DRAFT = "draft", _("На оформлении")
     INACTIVE = "inactive", _("Не активная")
     ACTIVE = "active", _("Активная")
     EXPIRED = "expired", _("Истек срок действия")
@@ -104,6 +105,7 @@ class Tariff(TimeStampedModel):
     )
 
     class Meta:
+        ordering = ['-id']
         verbose_name = _('тариф')
         verbose_name_plural = _('тарифы')
 
@@ -111,11 +113,11 @@ class Tariff(TimeStampedModel):
         return f'{self.product} {self.price} {self.period}'
 
 
-class Subscription(TimeStampedModel):
+class Subscription(TimeStampedModel, SoftDeletableModel):
     """ Подписка """
     id = models.UUIDField(primary_key=True)
     client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name="клиент")
-    expiration_date = models.DateField(_("дата окончания"))
+    expiration_date = models.DateField(_("дата окончания"), blank=True, null=True)
     tariff = models.ForeignKey(Tariff, on_delete=models.DO_NOTHING, verbose_name="тариф")
     discount = models.ForeignKey(Discount, on_delete=models.DO_NOTHING, verbose_name="скидка", blank=True, null=True)
     status = models.CharField(
@@ -124,14 +126,9 @@ class Subscription(TimeStampedModel):
         choices=SubscriptionStatus.choices,
         default=SubscriptionStatus.INACTIVE,
     )
-    payment_system = models.CharField(
-        _("Тип платежной системы"),
-        max_length=64,
-        choices=PaymentSystem.choices,
-        default=PaymentSystem.YOOMONEY
-    )
 
     class Meta:
+        ordering = ['-id']
         verbose_name = _('подписка')
         verbose_name_plural = _('подписки')
 
@@ -139,17 +136,23 @@ class Subscription(TimeStampedModel):
         return f'{self.client} {self.tariff} {self.status}'
 
 
-class PaymentHistory(TimeStampedModel):
+class PaymentInvoice(TimeStampedModel):
     """ История оплат """
     id = models.UUIDField(primary_key=True)
     subscription = models.ForeignKey(Subscription, on_delete=models.CASCADE, verbose_name="подписка")
     amount = models.FloatField(_('конечная цена'), validators=[MinValueValidator(0)])
-    payment_info = models.TextField(_('информация о платеже'), blank=True, null=True)
+    info = models.JSONField(_('информация о платеже'), blank=True, null=True)
     status = models.CharField(
         _("Статус платежа"),
         max_length=64,
         choices=PaymentStatus.choices,
         default=PaymentStatus.NOT_PAYED
+    )
+    payment_system = models.CharField(
+        _("Тип платежной системы"),
+        max_length=64,
+        choices=PaymentSystem.choices,
+        default=PaymentSystem.YOOMONEY
     )
 
     class Meta:

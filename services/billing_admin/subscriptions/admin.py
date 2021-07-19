@@ -1,7 +1,7 @@
 import uuid
 from django.contrib import admin
 from .models import (
-    Client, Product, Tariff, Discount, Subscription, PaymentHistory
+    Client, Product, Tariff, Discount, Subscription, PaymentInvoice
 )
 
 
@@ -38,12 +38,9 @@ class DiscountAdmin(BaseAdmin):
 
 @admin.register(Subscription)
 class SubscriptionAdmin(BaseAdmin):
-    list_display = (
-        'client', 'tariff',
-        'status', 'payment_system'
-    )
+    list_display = ('client', 'tariff', 'status')
 
 
-@admin.register(PaymentHistory)
+@admin.register(PaymentInvoice)
 class PaymentHistoryAdmin(BaseAdmin):
-    list_display = ('subscription', 'amount', 'status')
+    list_display = ('subscription', 'amount', 'status', 'payment_system')
