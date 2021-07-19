@@ -29,6 +29,7 @@ def create_subscription(data, scope):
     payment = utils.create_payment(subscr, payment_system, amount)
     ps = PaymentSystemFactory.get_payment_system(payment)
     resp = ps.process_payment()
+    LOGGER.error('resp %s %s', type(resp), resp)
     return JsonResponse(resp, safe=False)
     # return HttpResponseRedirect(resp.confirmation.confirmation_url)
 
