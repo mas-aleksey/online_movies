@@ -23,3 +23,15 @@ DATABASES = {
         'CHARSET': 'utf-8',
     }
 }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.getenv('DB_NAME', 'notify'),
+        'USER': os.getenv('DB_USERNAME', 'user'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'useruser'),
+        'HOST': os.getenv('DB_HOST', 'rc1a-7irj22qworosif2n.mdb.yandexcloud.net'),
+        'PORT': os.getenv('DB_PORT', '6432'),
+        'CHARSET': 'utf-8',
+    }
+}

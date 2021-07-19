@@ -1,0 +1,5 @@
+### поиск фильма
+GET https://yandexmovies.online/async/api/v1/film/search?limit=50&page=1&query=Star
+content-type: application/json
+authorization: Bearer {{access_token}}
+user-agent: 1123123
