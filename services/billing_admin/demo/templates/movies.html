@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style type="text/css">
+        .moviesPart {
+            width: 95%;
+            display: inline-table;
+            margin-right: 15px;
+        }
+
+        #autocompleteMovies {
+            width: 100%;
+        }
+
+        .autocomplete-suggestions {
+            border: 1px solid #999;
+            background: #FFF;
+            overflow: auto;
+        }
+
+        .autocomplete-suggestion {
+            padding: 2px 5px;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .autocomplete-selected {
+            background: #F0F0F0;
+        }
+
+        .autocomplete-suggestions strong, b, em {
+            font-weight: normal;
+            color: #3399FF;
+        }
+
+        .autocomplete-group {
+            padding: 2px 5px;
+        }
+
+        .autocomplete-group strong {
+            display: block;
+            border-bottom: 1px solid #000;
+        }
+
+    </style>
+</head>
+<body>
+<div>
+    <button onclick="reset()">Reset</button>
+</div>
+
+<form method="post" action="">
+    <div class="moviesPart" id="movies">
+        <input type="text" placeholder="название фильма" id="autocompleteMovies"/>
+        <h3>Selected item</h3>
+        <p>Name: <span id="selectedMoviesName"></span></p>
+        <p>Data: <span id="selectedMoviesData"></span></p>
+    </div>
+</form>
+</body>
+
+{# Use inline static to prevent problems with scheme (http/https). It's ok for debug page #}
+{% include 'inline_static/jquery.html' %}
+{% include 'inline_static/jquery_autocomplete.html' %}
+
+<script type="text/javascript">
+    let autocompleteElementMovies = $('#autocompleteMovies');
+
+    function updateMoviesDebugData(newItem) {
+        $('#selectedMoviesName').html(newItem.value);
+        $('#selectedMoviesData').html(JSON.stringify(newItem.data));
+        autocompleteElementMovies.val('');
+        autocompleteElementMovies.focus();
+    }
+
+    function reset() {
+        $('#selectedMoviesName').html('');
+        $('#selectedMoviesData').html('');
+        autocompleteElementMovies.autocomplete().setOptions({
+            params: {},
+            minChars: 3,
+        });
+        autocompleteElementMovies.autocomplete().clear();
+        autocompleteElementMovies.val('');
+    }
+
+    autocompleteElementMovies.autocomplete({
+        serviceUrl: '{{ autocomplete_url }}',
+        ajaxSettings: {
+            headers: {'authorization': 'Bearer {{access_token}}'}
+        },
+        minChars: 3,
+        noCache: true,
+        tabDisabled: true,
+        onSelect: function (suggestion) {
+            console.log(suggestion);
+            updateMoviesDebugData(suggestion);
+        },
+        formatResult: function (suggestion) {
+            return `${suggestion.value} - ${suggestion.data.access_type}`;
+        },
+        transformResult: function (response, originalQuery) {
+            let data = JSON.parse(response)
+            return {
+                suggestions: $.map(data, function (dataItem) {
+                    return {
+                        value: dataItem.title,
+                        data: dataItem
+                    };
+                })
+            };
+        }
+
+    })
+
+</script>
+</html>
