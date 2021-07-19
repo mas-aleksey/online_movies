@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
     <style type="text/css">
         .moviesPart {
             width: 95%;
@@ -9,7 +13,7 @@
         }
 
         #autocompleteMovies {
-            width: 100%;
+            width: 400px;
         }
 
         .autocomplete-suggestions {
@@ -45,18 +49,27 @@
     </style>
 </head>
 <body>
-<div>
-    <button onclick="reset()">Reset</button>
-</div>
+{% include 'header.html' %}
+<main class="flex-shrink-0">
+    <div class="container">
+        <div>
 
-<form method="post" action="">
-    <div class="moviesPart" id="movies">
-        <input type="text" placeholder="название фильма" id="autocompleteMovies"/>
-        <h3>Selected item</h3>
-        <p>Name: <span id="selectedMoviesName"></span></p>
-        <p>Data: <span id="selectedMoviesData"></span></p>
+        </div>
+
+        <form method="post" action="">
+            <div class="moviesPart" id="movies">
+                <label for="autocompleteMovies">Поиск</label>
+                <input type="text" placeholder="Введите название фильма..." id="autocompleteMovies"/>
+                <button onclick="reset()">Reset</button>
+                <h4>Информация о фильме:</h4>
+                <p>Название: <span id="selectedMoviesName"></span></p>
+                <p>Информация: <span id="selectedMoviesData"></span></p>
+            </div>
+        </form>
     </div>
-</form>
+</main>
+
+
 </body>
 
 {# Use inline static to prevent problems with scheme (http/https). It's ok for debug page #}
@@ -114,4 +127,8 @@
     })
 
 </script>
+<!-- JavaScript Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
 </html>
