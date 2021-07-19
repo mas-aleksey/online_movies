@@ -36,7 +36,7 @@ class YoomoneyPaymentSystem(AbstractPaymentSystem):
         )
         data = json.loads(response.json())
         self.logger.info(data)
-        self.payment.payment_info = data
+        self.payment.info = data
         self.payment.save()
         return data
 
