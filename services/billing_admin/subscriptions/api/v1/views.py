@@ -148,7 +148,7 @@ class UserSubscriptionDetailApi(BaseDetailView):
         qs = super().get_queryset()
         return qs.filter(
             pk=self.kwargs['subscription_id'],
-            client__id=self.kwargs['user_id']
+            client__user_id=self.kwargs['user_id']
         ).first()
 
     def get_context_data(self, **kwargs):
