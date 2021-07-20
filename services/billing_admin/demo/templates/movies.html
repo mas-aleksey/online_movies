@@ -1,134 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <!-- CSS only -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-
-    <style type="text/css">
-        .moviesPart {
-            width: 95%;
-            display: inline-table;
-            margin-right: 15px;
-        }
-
-        #autocompleteMovies {
-            width: 400px;
-        }
-
-        .autocomplete-suggestions {
-            border: 1px solid #999;
-            background: #FFF;
-            overflow: auto;
-        }
-
-        .autocomplete-suggestion {
-            padding: 2px 5px;
-            white-space: nowrap;
-            overflow: hidden;
-        }
-
-        .autocomplete-selected {
-            background: #F0F0F0;
-        }
-
-        .autocomplete-suggestions strong, b, em {
-            font-weight: normal;
-            color: #3399FF;
-        }
-
-        .autocomplete-group {
-            padding: 2px 5px;
-        }
-
-        .autocomplete-group strong {
-            display: block;
-            border-bottom: 1px solid #000;
-        }
-
-    </style>
-</head>
-<body>
-{% include 'header.html' %}
-<main class="flex-shrink-0">
-    <div class="container">
-        <div>
+{% extends 'base.html' %}
+{% block title %} Поиск фильмов {% endblock %}
+{% block body %}
+    <form method="post" action="">
+        {% csrf_token %}
+        <div class="moviesPart" id="movies">
+            <div class="mb-3 input-group">
+                <input class="form-control" type="text" placeholder="Введите название фильма..." id="id_query"
+                       name="query"
+                       value="{{ query }}"/>
+                <button type="submit" class="btn btn-primary">Поиск</button>
+            </div>
 
         </div>
+    </form>
+    {% if data %}
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Title</th>
+                <th scope="col">Rating</th>
+                <th scope="col">Access</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for movie in data %}
+                <tr>
+                    <th scope="row"><a href="{% url 'demo:movies_detail' movie.id %}"> {{ movie.id }}</a></th>
+                    <td>{{ movie.title }}</td>
+                    <td>{{ movie.imdb_rating }}</td>
+                    <td>{{ movie.access_type }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    {% if errors %}
+        {{ errors }}
+    {% endif %}
+{% endblock %}
 
-        <form method="post" action="">
-            <div class="moviesPart" id="movies">
-                <label for="autocompleteMovies">Поиск</label>
-                <input type="text" placeholder="Введите название фильма..." id="autocompleteMovies"/>
-                <button onclick="reset()">Reset</button>
-                <h4>Информация о фильме:</h4>
-                <p>Название: <span id="selectedMoviesName"></span></p>
-                <p>Информация: <span id="selectedMoviesData"></span></p>
-            </div>
-        </form>
-    </div>
-</main>
-
-
-</body>
-
-{# Use inline static to prevent problems with scheme (http/https). It's ok for debug page #}
-{% include 'inline_static/jquery.html' %}
-{% include 'inline_static/jquery_autocomplete.html' %}
-
-<script type="text/javascript">
-    let autocompleteElementMovies = $('#autocompleteMovies');
-
-    function updateMoviesDebugData(newItem) {
-        $('#selectedMoviesName').html(newItem.value);
-        $('#selectedMoviesData').html(JSON.stringify(newItem.data));
-        autocompleteElementMovies.val('');
-        autocompleteElementMovies.focus();
-    }
-
-    function reset() {
-        $('#selectedMoviesName').html('');
-        $('#selectedMoviesData').html('');
-        autocompleteElementMovies.autocomplete().setOptions({
-            params: {},
-            minChars: 3,
-        });
-        autocompleteElementMovies.autocomplete().clear();
-        autocompleteElementMovies.val('');
-    }
-
-    autocompleteElementMovies.autocomplete({
-        serviceUrl: '{{ autocomplete_url }}',
-        ajaxSettings: {
-            headers: {'authorization': 'Bearer {{access_token}}'}
-        },
-        minChars: 3,
-        noCache: true,
-        tabDisabled: true,
-        onSelect: function (suggestion) {
-            console.log(suggestion);
-            updateMoviesDebugData(suggestion);
-        },
-        formatResult: function (suggestion) {
-            return `${suggestion.value} - ${suggestion.data.access_type}`;
-        },
-        transformResult: function (response, originalQuery) {
-            let data = JSON.parse(response)
-            return {
-                suggestions: $.map(data, function (dataItem) {
-                    return {
-                        value: dataItem.title,
-                        data: dataItem
-                    };
-                })
-            };
-        }
-
-    })
-
-</script>
-<!-- JavaScript Bundle with Popper -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-        crossorigin="anonymous"></script>
-</html>
