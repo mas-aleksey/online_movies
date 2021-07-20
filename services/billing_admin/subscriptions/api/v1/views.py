@@ -1,6 +1,8 @@
 from django.http import JsonResponse, HttpResponseRedirect
 import logging
 import json
+
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.list import BaseListView
 from django.views.generic.detail import BaseDetailView
 from subscriptions.models import Tariff, Subscription
@@ -26,6 +28,7 @@ def create_subscription(data, scope):
     return payment.payment_system_instance.process_payment()
 
 
+@csrf_exempt
 def make_order(request):
     """
     {
