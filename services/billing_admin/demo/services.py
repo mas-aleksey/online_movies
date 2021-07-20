@@ -3,6 +3,7 @@ from django.conf import settings
 from requests import HTTPError
 
 AUTH_BASE_URL = settings.AUTH_SERVER
+BILLING_BASE_URL = 'https://yandexmovies.online/billing'
 
 
 def auth_login(login, password):
@@ -88,6 +89,28 @@ def async_movies_search(access_token, query):
 
 def async_movies_detail(access_token, movies_id):
     url = f'{settings.ASYNC_SERVER}/api/v1/film/{movies_id}'
+    headers = {'content-type': 'application/json', 'user-agent': 'billing', 'authorization': f'Bearer {access_token}'}
+    resp = requests.get(url, headers=headers)
+    if resp.status_code == 200:
+        data = resp.json()
+        return data
+
+    raise HTTPError(resp.text)
+
+
+def billing_tariffs(access_token):
+    url = f'{BILLING_BASE_URL}/subscription/v1/tariffs/'
+    headers = {'content-type': 'application/json', 'user-agent': 'billing', 'authorization': f'Bearer {access_token}'}
+    resp = requests.get(url, headers=headers)
+    if resp.status_code == 200:
+        data = resp.json()
+        return data
+
+    raise HTTPError(resp.text)
+
+
+def billing_tariff(access_token, tariff_id):
+    url = f'{BILLING_BASE_URL}/subscription/v1/tariff/{tariff_id}'
     headers = {'content-type': 'application/json', 'user-agent': 'billing', 'authorization': f'Bearer {access_token}'}
     resp = requests.get(url, headers=headers)
     if resp.status_code == 200:

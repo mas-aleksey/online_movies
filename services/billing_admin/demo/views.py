@@ -1,10 +1,10 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-from requests import HTTPError
 
 from demo.forms import LoginForm
-from demo.services import auth_profile, auth_logout, async_movies_search, async_movies_detail
+from demo.services import auth_profile, auth_logout, async_movies_search, async_movies_detail, billing_tariffs, \
+    billing_tariff
 
 
 def index(request):
@@ -40,7 +40,7 @@ def profile(request):
     }
     try:
         ctx = auth_profile(request.session['refresh_token'])
-    except HTTPError as e:
+    except Exception as e:
         ctx['errors'] = str(e)
 
     request.session['access_token'] = ctx['access_token']
@@ -76,7 +76,7 @@ def movies(request):
 
         try:
             ctx['data'] = async_movies_search(access_token, query)
-        except HTTPError as e:
+        except Exception as e:
             ctx['errors'] = str(e)
 
     return render(request, 'movies.html', ctx)
@@ -92,15 +92,37 @@ def movies_detail(request, movies_id):
 
     try:
         ctx['data'] = async_movies_detail(access_token, movies_id)
-    except HTTPError as e:
+    except Exception as e:
         ctx['errors'] = str(e)
 
     return render(request, 'movies_detail.html', ctx)
 
 
-def subscribe(request):
+def tariffs(request):
+    """Подписки"""
+    access_token = request.session.get('access_token')
+    if not access_token:
+        return HttpResponseRedirect(reverse('demo:login'))
+    ctx = {'data': []}
+
+    try:
+        ctx['data'] = billing_tariffs(access_token)
+    except Exception as e:
+        ctx['errors'] = str(e)
+
+    return render(request, 'tariffs.html', ctx)
+
+
+def tariff(request, tariff_id):
     """Оформить подписку"""
     access_token = request.session.get('access_token')
     if not access_token:
         return HttpResponseRedirect(reverse('demo:login'))
-    return render(request, 'subscribe.html')
+    ctx = {'data': []}
+
+    try:
+        ctx['data'] = billing_tariff(access_token, tariff_id)
+    except Exception as e:
+        ctx['errors'] = str(e)
+
+    return render(request, 'tariff.html', ctx)
