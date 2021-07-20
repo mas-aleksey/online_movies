@@ -73,3 +73,25 @@ def auth_profile(refresh_token):
         raise HTTPError(resp.text)
 
     return scope
+
+
+def async_movies_search(access_token, query):
+    url = f'{settings.ASYNC_SERVER}/api/v1/film/search?limit=50&page=1&query={query}'
+    headers = {'content-type': 'application/json', 'user-agent': 'billing', 'authorization': f'Bearer {access_token}'}
+    resp = requests.get(url, headers=headers)
+    if resp.status_code == 200:
+        data = resp.json()
+        return data
+
+    raise HTTPError(resp.text)
+
+
+def async_movies_detail(access_token, movies_id):
+    url = f'{settings.ASYNC_SERVER}/api/v1/film/{movies_id}'
+    headers = {'content-type': 'application/json', 'user-agent': 'billing', 'authorization': f'Bearer {access_token}'}
+    resp = requests.get(url, headers=headers)
+    if resp.status_code == 200:
+        data = resp.json()
+        return data
+
+    raise HTTPError(resp.text)

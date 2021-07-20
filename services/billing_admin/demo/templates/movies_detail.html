@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %} Информация о фильме {% endblock %}
+{% block body %}
+    {% if data %}
+        <h1>{{ data.title }}</h1>
+        <p class="fs-5 col-md-8">{{ data.description }}</p>
+        <p class="fs-5 col-md-8"><strong>ID: </strong>{{ data.id }}</p>
+        <p class="fs-5 col-md-8"><strong>Type: </strong>{{ data.type }}</p>
+        <p class="fs-5 col-md-8"><strong>Access: </strong>{{ data.access_type }}</p>
+        <p class="fs-5 col-md-8"><strong>Rating: </strong>{{ data.imdb_rating }}</p>
+        {% if data.genre %}
+            <p class="fs-5 col-md-8">
+                <strong>Genres: </strong>
+                {% for item in data.genre %}
+                    {{ item.name }} {% if not forloop.last %},{% endif %}
+                {% endfor %}
+            </p>
+        {% endif %}
+        {% if data.actors %}
+            <p class="fs-5 col-md-8">
+                <strong>Actors: </strong>
+                {% for item in data.actors %}
+                    {{ item.name }} {% if not forloop.last %},{% endif %}
+                {% endfor %}
+            </p>
+        {% endif %}
+        {% if data.writers %}
+            <p class="fs-5 col-md-8">
+                <strong>Writers: </strong>
+                {% for item in data.writers %}
+                    {{ item.name }} {% if not forloop.last %},{% endif %}
+                {% endfor %}
+            </p>
+        {% endif %}
+        {% if data.directors %}
+            <p class="fs-5 col-md-8">
+                <strong>Directors: </strong>
+                {% for item in data.directors %}
+                    {{ item.name }} {% if not forloop.last %},{% endif %}
+                {% endfor %}
+            </p>
+        {% endif %}
+    {% endif %}
+    {% if errors %}
+        {{ errors }}
+    {% endif %}
+{% endblock %}
