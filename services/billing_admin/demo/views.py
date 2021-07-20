@@ -1,10 +1,12 @@
+from functools import wraps
+
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
 from demo.forms import LoginForm
 from demo.services import auth_profile, auth_logout, async_movies_search, async_movies_detail, billing_tariffs, \
-    billing_tariff
+    billing_tariff, billing_order, billing_subscribe, auth_access_check, billing_subscriptions
 
 
 def index(request):
@@ -12,6 +14,18 @@ def index(request):
     if not access_token:
         return HttpResponseRedirect(reverse('demo:login'))
     return HttpResponseRedirect(reverse('demo:profile'))
+
+
+def check_token(view_func):
+    """Проверка валидности токена."""
+
+    def wrapped_view(request, **kwargs):
+        access_token = request.session.get('access_token')
+        if not access_token or not auth_access_check(access_token):
+            return HttpResponseRedirect(reverse('demo:login'))
+        return view_func(request, **kwargs)
+
+    return wraps(view_func)(wrapped_view)
 
 
 def login(request):
@@ -28,6 +42,7 @@ def login(request):
     return render(request, 'login.html', {'form': form})
 
 
+@check_token
 def profile(request):
     """профиль пользователя"""
 
@@ -62,12 +77,10 @@ def logout(request):
     return HttpResponseRedirect(reverse('demo:login'))
 
 
+@check_token
 def movies(request):
     """доступные фильмы"""
     access_token = request.session.get('access_token')
-    if not access_token:
-        return HttpResponseRedirect(reverse('demo:login'))
-
     ctx = {'data': [], 'query': ''}
 
     if request.method == 'POST':
@@ -82,12 +95,10 @@ def movies(request):
     return render(request, 'movies.html', ctx)
 
 
+@check_token
 def movies_detail(request, movies_id):
     """Информация о фильме"""
     access_token = request.session.get('access_token')
-    if not access_token:
-        return HttpResponseRedirect(reverse('demo:login'))
-
     ctx = {'data': []}
 
     try:
@@ -98,11 +109,10 @@ def movies_detail(request, movies_id):
     return render(request, 'movies_detail.html', ctx)
 
 
+@check_token
 def tariffs(request):
     """Подписки"""
     access_token = request.session.get('access_token')
-    if not access_token:
-        return HttpResponseRedirect(reverse('demo:login'))
     ctx = {'data': []}
 
     try:
@@ -113,11 +123,10 @@ def tariffs(request):
     return render(request, 'tariffs.html', ctx)
 
 
+@check_token
 def tariff(request, tariff_id):
     """Оформить подписку"""
     access_token = request.session.get('access_token')
-    if not access_token:
-        return HttpResponseRedirect(reverse('demo:login'))
     ctx = {'data': []}
 
     try:
@@ -126,3 +135,55 @@ def tariff(request, tariff_id):
         ctx['errors'] = str(e)
 
     return render(request, 'tariff.html', ctx)
+
+
+@check_token
+def order(request, tariff_id):
+    """оплата подписки"""
+
+    access_token = request.session.get('access_token')
+    ctx = {'data': []}
+
+    try:
+        ctx['data'] = billing_order(access_token, tariff_id)
+    except Exception as e:
+        ctx['errors'] = str(e)
+        return render(request, '500.html', ctx)
+
+    return HttpResponseRedirect(ctx['data']['confirmation_url'])
+
+
+@check_token
+def subscriptions(request):
+    """мои подписки"""
+
+    access_token = request.session.get('access_token')
+    ctx = {'data': []}
+
+    try:
+        ctx['data'] = billing_subscriptions(access_token)
+    except Exception as e:
+        ctx['errors'] = str(e)
+        return render(request, '500.html', ctx)
+
+    return render(request, 'subscriptions.html', ctx)
+
+
+@check_token
+def subscribe(request, subscribe_id):
+    """статус подписки"""
+
+    refresh_page = request.GET.get('refresh_page', "0")
+    access_token = request.session.get('access_token')
+    ctx = {
+        'data': [],
+        'refresh_page': refresh_page
+    }
+
+    try:
+        ctx['data'] = billing_subscribe(access_token, subscribe_id)
+    except Exception as e:
+        ctx['errors'] = str(e)
+        return render(request, '500.html', ctx)
+
+    return render(request, 'subscribe.html', ctx)

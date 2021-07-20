@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %} Ваши подписки {% endblock %}
+{% block body %}
+    {% if data %}
+        <h2 class="pb-2 border-bottom">Ваши подписки</h2>
+        <div class="row g-4 py-5 row-cols-1 row-cols-lg-1">
+            {% for item in data.results %}
+                <div class="feature col">
+                    <h2>{{ item.tariff__product__name }}</h2>
+                    <p>{{ item.tariff__product__description }}</p>
+                    <p><strong>Цена: </strong>{{ item.tariff__price }}</p>
+                    <p><strong>Период: </strong>{% if item.tariff__period == "per year" %}Год{% else %}Месяц{% endif %}</p>
+                    <p><strong>Дата окончания: </strong>{{ item.expiration_date }}</p>
+                    {% if item.discount__name %}
+                        <p><strong>Скидка: </strong>{{ item.discount__name }} {{ item.discount__value }}%</p>
+                    {% endif %}
+                    <p class="fs-5 col-md-8 {% if item.status == 'active' %} text-success {% else %} text-danger {% endif %}"><strong>Статус: </strong>{{ item.status }}</p>
+                    <a href="{% url "demo:subscribe" item.id %}" class="icon-link">
+                        Подробнее
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if errors %}
+        {{ errors }}
+    {% endif %}
+{% endblock %}

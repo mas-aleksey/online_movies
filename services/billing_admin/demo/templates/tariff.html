@@ -7,12 +7,14 @@
     <p class="fs-5 col-md-8"><strong>Цена: </strong>{{ data.price }}</p>
     <p class="fs-5 col-md-8"><strong>Период: </strong>{% if data.period == "per year" %}Год{% else %}Месяц{% endif %}
     </p>
-    <p class="fs-5 col-md-8"><strong>Скидка: </strong>{{ data.discount__name }} {{ data.discount__value }}%</p>
-    <p class="fs-5 col-md-8"><a href="#" class="icon-link">
+    {% if data.discount__name %}
+        <p class="fs-5 col-md-8"><strong>Скидка: </strong>{{ data.discount__name }} {{ data.discount__value }}%</p>
+    {% endif %}
+    <p class="fs-5 col-md-8"><a href="{% url 'demo:order' data.id %}" class="icon-link">
         Купить
     </a></p>
 
-    {% if error %}
+    {% if errors %}
         {{ errors }}
     {% endif %}
 {% endblock %}

@@ -4,6 +4,7 @@ from requests import HTTPError
 
 AUTH_BASE_URL = settings.AUTH_SERVER
 BILLING_BASE_URL = 'https://yandexmovies.online/billing'
+# BILLING_BASE_URL = 'http://127.0.0.1:8000/billing'
 
 
 def auth_login(login, password):
@@ -47,6 +48,15 @@ def auth_refresh(refresh_token):
         raise HTTPError(resp.text)
 
     return resp.json()
+
+
+def auth_access_check(access_token):
+    url = f'{AUTH_BASE_URL}/api/v1/auth/access_check'
+    headers = {'content-type': 'application/json', 'user-agent': 'billing', 'authorization': f'Bearer {access_token}'}
+    resp = requests.get(url, headers=headers)
+    if resp.status_code == 200:
+        return True
+    return False
 
 
 def auth_profile(refresh_token):
@@ -113,6 +123,49 @@ def billing_tariff(access_token, tariff_id):
     url = f'{BILLING_BASE_URL}/subscription/v1/tariff/{tariff_id}'
     headers = {'content-type': 'application/json', 'user-agent': 'billing', 'authorization': f'Bearer {access_token}'}
     resp = requests.get(url, headers=headers)
+    if resp.status_code == 200:
+        data = resp.json()
+        return data
+
+    raise HTTPError(resp.text)
+
+
+def billing_order(access_token, tariff_id):
+    url = f'{BILLING_BASE_URL}/subscription/v1/order/'
+    headers = {'content-type': 'application/json', 'user-agent': 'billing', 'authorization': f'Bearer {access_token}'}
+    payload = {
+        "tariff_id": tariff_id,
+        "payment_system": 'yoomoney'
+    }
+    resp = requests.post(
+        url=url,
+        json=payload,
+        headers=headers,
+
+    )
+    if resp.status_code == 200:
+        data = resp.json()
+        return data
+
+    raise HTTPError(resp.text)
+
+
+def billing_subscriptions(access_token):
+    url = f'{BILLING_BASE_URL}/subscription/v1/subscriptions/'
+    headers = {'content-type': 'application/json', 'user-agent': 'billing', 'authorization': f'Bearer {access_token}'}
+    resp = requests.get(url, headers=headers)
+    if resp.status_code == 200:
+        data = resp.json()
+        return data
+
+    raise HTTPError(resp.text)
+
+
+def billing_subscribe(access_token, subscribe_id):
+    url = f'{BILLING_BASE_URL}/subscription/v1/subscriptions/{subscribe_id}'
+    headers = {'content-type': 'application/json', 'user-agent': 'billing', 'authorization': f'Bearer {access_token}'}
+    resp = requests.get(url=url, headers=headers)
+
     if resp.status_code == 200:
         data = resp.json()
         return data

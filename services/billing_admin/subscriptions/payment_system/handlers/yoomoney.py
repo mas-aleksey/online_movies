@@ -64,7 +64,7 @@ class YoomoneyPaymentSystem(AbstractPaymentSystem):
                 },
                 "confirmation": {
                     "type": "redirect",
-                    "return_url": RETURN_UTL
+                    "return_url": f'{RETURN_UTL}/{self.payment.subscription.id}?refresh_page=1'
                 },
                 "capture": True,
                 "save_payment_method": True,
