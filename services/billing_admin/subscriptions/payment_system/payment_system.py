@@ -1,12 +1,9 @@
 import logging
-from django.apps import apps
-
-PaymentInvoice = apps.get_model('subscriptions', 'PaymentInvoice')
 
 
 class AbstractPaymentSystem:
 
-    def __init__(self, payment: PaymentInvoice):
+    def __init__(self, payment):
         self.logger = logging.getLogger(self.__class__.__name__)
         self.payment = payment
 
