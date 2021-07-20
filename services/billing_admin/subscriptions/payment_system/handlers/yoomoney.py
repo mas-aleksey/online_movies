@@ -70,7 +70,7 @@ class YoomoneyPaymentSystem(AbstractPaymentSystem):
                 "save_payment_method": True,
                 "description": f"Заказ {self.payment.id}",
                 "metadata": {
-                    "created": self.payment.created,
+                    "created": str(self.payment.created),
                 }
             }
         )
