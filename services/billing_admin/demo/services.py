@@ -50,6 +50,15 @@ def auth_refresh(refresh_token):
     return resp.json()
 
 
+def auth_access_check(access_token):
+    url = f'{AUTH_BASE_URL}/api/v1/auth/access_check'
+    headers = {'content-type': 'application/json', 'user-agent': 'billing', 'authorization': f'Bearer {access_token}'}
+    resp = requests.get(url, headers=headers)
+    if resp.status_code == 200:
+        return True
+    return False
+
+
 def auth_profile(refresh_token):
     tokens = auth_refresh(refresh_token)
     access_token = tokens['access_token']
