@@ -1,11 +1,10 @@
 import json
-
-from django.http import HttpResponseRedirect
 from subscriptions.payment_system.payment_factory import AbstractPaymentSystem
 from subscriptions.tasks import wait_payment_task
 from django.conf import settings
-from yookassa import Configuration, Payment
-from yookassa.domain.response import PaymentResponse
+from yookassa import Configuration, Payment, Refund
+from yookassa.domain.response import PaymentResponse, RefundResponse
+from subscriptions.models.meta import PaymentStatus
 
 
 CONFIG = settings.PAYMENT_SYSTEMS[settings.YOOMONEY]
@@ -17,7 +16,44 @@ Configuration.configure(CONFIG["shop_id"], CONFIG["key"])
 class YoomoneyPaymentSystem(AbstractPaymentSystem):
 
     def process_payment(self):
-        response: PaymentResponse = Payment.create(
+        response = self._create_payment()
+        self.payment.info = json.loads(response.json())
+        self.payment.status = PaymentStatus.PENDING
+        self.payment.save()
+        wait_payment_task.apply_async((self.payment.id,), countdown=5)
+        return response.confirmation.confirmation_url
+
+    def check_payment_status(self):
+        payment_id = self.payment.info['id']
+        response: PaymentResponse = Payment.find_one(payment_id=payment_id)
+
+        self.payment.info = json.loads(response.json())
+        self.payment.save()
+
+        if response.status == 'pending':
+            return False
+        elif response.status == 'succeeded':
+            self.payment.set_payed_status()
+            return True
+        elif response.status == 'waiting_for_capture':
+            Payment.capture(self.payment.info['id'])
+            return False
+        else:  # canceled
+            self.payment.set_cancelled_status()
+            return True
+
+    def refund_payment(self):
+        refund: RefundResponse = Refund.create({
+            "amount": {
+                "value": self.payment.amount,
+                "currency": "RUB"
+            },
+            "payment_id": self.payment.info['id']
+        })
+        return refund.status
+
+    def _create_payment(self) -> PaymentResponse:
+        return Payment.create(
             {
                 "amount": {
                     "value": self.payment.amount,
@@ -30,31 +66,11 @@ class YoomoneyPaymentSystem(AbstractPaymentSystem):
                     "type": "redirect",
                     "return_url": RETURN_UTL
                 },
-                "capture": self.payment.amount,
-                "description": f"Заказ {self.payment.amount}",
+                "capture": True,
                 "save_payment_method": True,
+                "description": f"Заказ {self.payment.id}",
                 "metadata": {
-                  "order_id": "lalala"
+                    "created": self.payment.created,
                 }
             }
         )
-        data = json.loads(response.json())
-        self.logger.info(data)
-        self.payment.info = data
-        self.payment.save()
-        wait_payment_task.apply_async((self.payment.id,), countdown=10)
-        return response.confirmation.confirmation_url
-
-    def callback(self, *args, **kwargs):
-        self.logger.info(args)
-        self.logger.info(kwargs)
-
-    def check_payment_status(self):
-        payment_id = self.payment.info['id']
-        response: PaymentResponse = Payment.find_one(payment_id=payment_id)
-        data = json.loads(response.json())
-        self.logger.info(data)
-        self.payment.info = data
-        if response.status == 'succeeded':
-            return True
-        return False

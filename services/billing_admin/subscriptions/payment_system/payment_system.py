@@ -1,9 +1,13 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
 import logging
+if TYPE_CHECKING:
+    from subscriptions.models.models import PaymentInvoice
 
 
 class AbstractPaymentSystem:
 
-    def __init__(self, payment):
+    def __init__(self, payment: PaymentInvoice):
         self.logger = logging.getLogger(self.__class__.__name__)
         self.payment = payment
 
@@ -15,6 +19,6 @@ class AbstractPaymentSystem:
         """ Проверяем статус платежа """
         raise NotImplementedError
 
-    def callback(self, *args, **kwargs):
-        """ обработка callback метода """
+    def refund_payment(self):
+        """ Возврат платежа """
         raise NotImplementedError

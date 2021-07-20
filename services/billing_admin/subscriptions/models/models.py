@@ -1,45 +1,13 @@
-from django.conf import settings
+from datetime import date
+from dateutil.relativedelta import relativedelta
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from model_utils.models import TimeStampedModel, SoftDeletableModel
 from subscriptions.payment_system.payment_factory import PaymentSystemFactory
-
-
-class AccessType(models.TextChoices):
-    FREE = 'free', _('бесплатный доступ')
-    STANDARD = 'standard', _('обычная подписка')
-    EXTRA = 'extra', _('расширенная подписка')
-
-
-class PaymentSystem(models.TextChoices):
-    """ Платежные системы, например YooKassa, robokassa, и т.д. """
-    YOOMONEY = settings.YOOMONEY, _("Платежная система Юмани")
-    STRIPE = settings.STRIPE, _("Платежная система Stripe")
-
-
-class SubscriptionPeriods(models.TextChoices):
-    """ Периоды списания средств """
-    MONTHLY = "per month", _("каждый месяц")
-    YEARLY = "per year", _("каждый год")
-
-
-class SubscriptionStatus(models.TextChoices):
-    """ Статусы подписок """
-    DRAFT = "draft", _("На оформлении")
-    INACTIVE = "inactive", _("Не активная")
-    ACTIVE = "active", _("Активная")
-    EXPIRED = "expired", _("Истек срок действия")
-    CANCELLED = "cancelled", _("Подписка отмененна")
-
-
-class PaymentStatus(models.TextChoices):
-    """ Статусы платежей """
-    NOT_PAYED = "not_payed", _("Не оплачен")
-    PAYED = "payed", _("Оплачен")
-    PENDING = "pending", _("Ждем подтверждения оплаты")
-    FAILED = "failed", _("Оплата не успешна")
-    CANCELLED = "cancelled", _("Оплата отмененна")
+from subscriptions.models.meta import (
+    PaymentStatus, PaymentSystem, AccessType, SubscriptionStatus, SubscriptionPeriods
+)
 
 
 class Client(TimeStampedModel):
@@ -113,6 +81,17 @@ class Tariff(TimeStampedModel):
     def __str__(self):
         return f'{self.product} {self.price} {self.period}'
 
+    @property
+    def next_payment_date(self) -> date:
+        if self.period == SubscriptionPeriods.MONTHLY:
+            delta = relativedelta(months=+1)
+        elif self.period == SubscriptionPeriods.YEARLY:
+            delta = relativedelta(years=+1)
+        else:
+            delta = relativedelta(days=+1)
+
+        return date.today() + delta
+
 
 class Subscription(TimeStampedModel, SoftDeletableModel):
     """ Подписка """
@@ -135,6 +114,12 @@ class Subscription(TimeStampedModel, SoftDeletableModel):
 
     def __str__(self):
         return f'{self.client} {self.tariff} {self.status}'
+
+    def set_active(self):
+        """ делаем подписку активной """
+        self.status = SubscriptionStatus.ACTIVE
+        self.expiration_date = self.tariff.next_payment_date
+        self.save()
 
 
 class PaymentInvoice(TimeStampedModel):
@@ -166,3 +151,18 @@ class PaymentInvoice(TimeStampedModel):
     @property
     def payment_system_instance(self):
         return PaymentSystemFactory.get_payment_system(self)
+
+    def set_payed_status(self):
+        """ тут логика при получении подтверждения об оплате """
+        self.subscription.set_active()
+        self.status = PaymentStatus.PAYED
+        self.save()
+
+    def set_cancelled_status(self):
+        """ тут логика при отмене платежа """
+        self.status = PaymentStatus.CANCELLED
+        self.save()
+
+    def refund_payment(self):
+        """ тут локика для возврата платежа """
+        self.payment_system_instance.refund_payment()

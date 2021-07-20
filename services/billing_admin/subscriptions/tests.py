@@ -1,7 +1,7 @@
 import uuid
 from django.test import TestCase
-from subscriptions.models import Tariff, Product
-from subscriptions.utils import get_or_create_client, get_tariff_by_id, create_subscription
+from subscriptions.models.models import Tariff, Product
+from subscriptions.utils import get_or_create_client, create_subscription
 
 
 class UsersManagersTests(TestCase):

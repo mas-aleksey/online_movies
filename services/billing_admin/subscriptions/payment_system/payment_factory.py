@@ -1,7 +1,7 @@
 from django.conf import settings
 from typing import Dict, Type
-from .payment_system import AbstractPaymentSystem
-from .handlers import YoomoneyPaymentSystem
+from subscriptions.payment_system.payment_system import AbstractPaymentSystem
+from subscriptions.payment_system.handlers import YoomoneyPaymentSystem
 
 
 class PaymentSystemFactory:

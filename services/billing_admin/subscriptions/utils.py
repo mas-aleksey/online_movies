@@ -1,6 +1,6 @@
 from uuid import uuid4, UUID
 from typing import Optional
-from subscriptions.models import (
+from subscriptions.models.models import (
     Client, Tariff, Subscription, SubscriptionStatus, PaymentInvoice,
     PaymentSystem, PaymentStatus
 )

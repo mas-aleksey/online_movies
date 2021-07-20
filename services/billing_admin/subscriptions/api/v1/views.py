@@ -1,11 +1,10 @@
-from django.http import JsonResponse, HttpResponseRedirect
+from django.http import JsonResponse
 import logging
 import json
 from django.views.generic.list import BaseListView
 from django.views.generic.detail import BaseDetailView
-from subscriptions.models import Tariff, Subscription
+from subscriptions.models.models import Tariff, Subscription
 import subscriptions.utils as utils
-from subscriptions.payment_system.payment_factory import PaymentSystemFactory
 
 
 LOGGER = logging.getLogger(__file__)
