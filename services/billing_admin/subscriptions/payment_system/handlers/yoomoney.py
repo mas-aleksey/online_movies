@@ -28,7 +28,7 @@ class YoomoneyPaymentSystem(AbstractPaymentSystem):
                 },
                 "confirmation": {
                     "type": "redirect",
-                    "return_url": RETURN_UTL
+                    "return_url": f'{RETURN_UTL}/{self.payment.subscription.id}'
                 },
                 "capture": self.payment.amount,
                 "description": f"Заказ {self.payment.amount}",
