@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %} Статус подписки {% endblock %}
+{% block extrahead %}
+    {% if refresh_page == "1" %}
+        <meta http-equiv="refresh"
+              content="3; url={% url 'demo:subscribe' data.id %}?refresh_page={{ refresh_page }}">
+    {% endif %}
+{% endblock %}
+{% block body %}
+    <h1>{{ data.tariff_product_name }}</h1>
+    <p class="fs-5 col-md-8">{{ data.tariff_product_description }}</p>
+    <p class="fs-5 col-md-8"><strong>Цена: </strong>{{ data.price }}</p>
+    <p class="fs-5 col-md-8"><strong>Период: </strong>{% if data.period == "per year" %}Год{% else %}Месяц{% endif %}
+    </p>
+    <p class="fs-5 col-md-8"><strong>Дата окончания: </strong>{{ data.expiration_date }}</p>
+
+    {% if data.discount_name %}
+        <p class="fs-5 col-md-8"><strong>Скидка: </strong>{{ data.discount_name }} {{ data.discount_value }}%</p>
+    {% endif %}
+    </p>
+    <p class="fs-5 col-md-8 {% if data.status == 'active' %} text-success {% else %} text-danger {% endif %}"><strong>Статус: </strong>{{ data.status_display }}</p>
+
+
+    {% if errors %}
+        {{ errors }}
+    {% endif %}
+{% endblock %}

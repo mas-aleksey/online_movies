@@ -1,14 +1,13 @@
-from django.http import JsonResponse, HttpResponseRedirect
-import logging
 import json
+import logging
 
+from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic.list import BaseListView
 from django.views.generic.detail import BaseDetailView
-from subscriptions.models import Tariff, Subscription
-import subscriptions.utils as utils
-from subscriptions.payment_system.payment_factory import PaymentSystemFactory
+from django.views.generic.list import BaseListView
 
+import subscriptions.utils as utils
+from subscriptions.models import Tariff, Subscription
 
 LOGGER = logging.getLogger(__file__)
 
@@ -136,3 +135,38 @@ class UserSubscriptionsApi(BaseListView):
 
     def render_to_response(self, context, **response_kwargs):
         return JsonResponse(context)
+
+
+class UserSubscriptionDetailApi(BaseDetailView):
+    model = Subscription
+
+    def dispatch(self, request, *args, **kwargs):
+        self.kwargs['user_id'] = request.scope.get('user_id')
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_object(self, queryset=None):
+        qs = super().get_queryset()
+        return qs.filter(
+            pk=self.kwargs['subscription_id'],
+            client__id=self.kwargs['user_id']
+        ).first()
+
+    def get_context_data(self, **kwargs):
+        if self.object:
+            ctx = {
+                'id': self.object.id,
+                'expiration_date': self.object.expiration_date,
+                'status_display': self.object.get_status_display(),
+                'status': self.object.status,
+                'price': self.object.tariff.price,
+                'period': self.object.tariff.period,
+                'discount_name': self.object.discount.name if self.object.discount else None,
+                'discount_value': self.object.discount.value if self.object.discount else None,
+                'tariff_product_name': self.object.tariff.product.name,
+                'tariff_product_description': self.object.tariff.product.description
+            }
+            return ctx
+        return {}
+
+    def render_to_response(self, context, **response_kwargs):
+        return JsonResponse(context, safe=False)
