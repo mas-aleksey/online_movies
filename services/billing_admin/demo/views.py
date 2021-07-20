@@ -4,7 +4,7 @@ from django.urls import reverse
 
 from demo.forms import LoginForm
 from demo.services import auth_profile, auth_logout, async_movies_search, async_movies_detail, billing_tariffs, \
-    billing_tariff
+    billing_tariff, billing_order
 
 
 def index(request):
@@ -126,3 +126,21 @@ def tariff(request, tariff_id):
         ctx['errors'] = str(e)
 
     return render(request, 'tariff.html', ctx)
+
+
+def order(request, tariff_id):
+    """оплата подписки"""
+
+    access_token = request.session.get('access_token')
+    if not access_token:
+        return HttpResponseRedirect(reverse('demo:login'))
+
+    ctx = {'data': []}
+
+    try:
+        ctx['data'] = billing_order(access_token, tariff_id)
+    except Exception as e:
+        ctx['errors'] = str(e)
+        return render(request, '500.html', ctx)
+
+    return HttpResponseRedirect(ctx['data']['confirmation_url'])

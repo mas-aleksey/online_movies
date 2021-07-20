@@ -10,7 +10,9 @@
                     <p>{{ item.product__description }}</p>
                     <p><strong>Цена: </strong>{{ item.price }}</p>
                     <p><strong>Период: </strong>{% if item.period == "per year" %}Год{% else %}Месяц{% endif %}</p>
-                    <p><strong>Скидка: </strong>{{ item.discount__name }} {{ item.discount__value }}%</p>
+                    {% if item.discount__name %}
+                        <p><strong>Скидка: </strong>{{ item.discount__name }} {{ item.discount__value }}%</p>
+                    {% endif %}
                     <a href="{% url "demo:tariff" item.id %}" class="icon-link">
                         Оформить
                     </a>
@@ -19,7 +21,7 @@
         </div>
     {% endif %}
 
-    {% if error %}
+    {% if errors %}
         {{ errors }}
     {% endif %}
 {% endblock %}

@@ -1,6 +1,6 @@
 from django.urls import path
 
-from demo.views import login, profile, movies, tariffs, logout, index, movies_detail, tariff
+from demo.views import login, profile, movies, tariffs, logout, index, movies_detail, tariff, order
 
 app_name = "demo"
 
@@ -12,5 +12,6 @@ urlpatterns = [
     path('movies/<str:movies_id>', movies_detail, name='movies_detail'),
     path('tariffs/', tariffs, name='tariffs'),
     path('tariffs/<str:tariff_id>', tariff, name='tariff'),
+    path('order/<str:tariff_id>', order, name='order'),
     path('logout/', logout, name='logout'),
 ]

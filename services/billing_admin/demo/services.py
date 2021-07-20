@@ -4,6 +4,7 @@ from requests import HTTPError
 
 AUTH_BASE_URL = settings.AUTH_SERVER
 BILLING_BASE_URL = 'https://yandexmovies.online/billing'
+# BILLING_BASE_URL = 'http://127.0.0.1:8000/billing'
 
 
 def auth_login(login, password):
@@ -113,6 +114,26 @@ def billing_tariff(access_token, tariff_id):
     url = f'{BILLING_BASE_URL}/subscription/v1/tariff/{tariff_id}'
     headers = {'content-type': 'application/json', 'user-agent': 'billing', 'authorization': f'Bearer {access_token}'}
     resp = requests.get(url, headers=headers)
+    if resp.status_code == 200:
+        data = resp.json()
+        return data
+
+    raise HTTPError(resp.text)
+
+
+def billing_order(access_token, tariff_id):
+    url = f'{BILLING_BASE_URL}/subscription/v1/order/'
+    headers = {'content-type': 'application/json', 'user-agent': 'billing', 'authorization': f'Bearer {access_token}'}
+    payload = {
+        "tariff_id": tariff_id,
+        "payment_system": 'yoomoney'
+    }
+    resp = requests.post(
+        url=url,
+        json=payload,
+        headers=headers,
+
+    )
     if resp.status_code == 200:
         data = resp.json()
         return data
