@@ -1,8 +1,8 @@
 import json
 
-from config.celery import wait_payment_task
 from django.http import HttpResponseRedirect
 from subscriptions.payment_system.payment_factory import AbstractPaymentSystem
+from subscriptions.tasks import wait_payment_task
 from django.conf import settings
 from yookassa import Configuration, Payment
 from yookassa.domain.response import PaymentResponse

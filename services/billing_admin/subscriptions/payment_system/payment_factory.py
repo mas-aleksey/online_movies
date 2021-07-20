@@ -1,9 +1,12 @@
 from typing import Dict, Type
-from subscriptions.models import PaymentSystem, PaymentInvoice
+from django.apps import apps
 from subscriptions.payment_system.payment_system import AbstractPaymentSystem
 from subscriptions.payment_system.handlers import (
     YoomoneyPaymentSystem
 )
+
+PaymentSystem = apps.get_model('subscriptions', 'PaymentSystem')
+PaymentInvoice = apps.get_model('subscriptions', 'PaymentInvoice')
 
 
 class PaymentSystemFactory:

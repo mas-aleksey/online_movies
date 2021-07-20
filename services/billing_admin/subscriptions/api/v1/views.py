@@ -1,11 +1,9 @@
 from django.http import JsonResponse, HttpResponseRedirect
 import logging
 import json
-from subscriptions.models import PaymentInvoice
 from django.views.generic.list import BaseListView
 from django.views.generic.detail import BaseDetailView
 from subscriptions.models import Tariff, Subscription
-from subscriptions.payment_system.payment_factory import PaymentSystemFactory
 import subscriptions.utils as utils
 
 
@@ -24,8 +22,7 @@ def create_subscription(data, scope):
 
     subscription = utils.create_subscription(user_id, tariff_id)
     payment = utils.create_payment(subscription, payment_system)
-    ps = PaymentSystemFactory.get_payment_system(payment)
-    return ps.process_payment()
+    return payment.payment_system_instance.process_payment()
 
 
 def make_order(request):
