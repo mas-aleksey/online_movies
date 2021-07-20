@@ -2,7 +2,7 @@ from django.urls import path
 
 from .views import (
     TariffListApi, TariffDetailApi, UserSubscriptionsApi,
-    make_order, status, payment, callback
+    make_order, status, callback
 )
 
 
@@ -12,6 +12,5 @@ urlpatterns = [
     path('order/', make_order, name="make_order"),
     path('subscriptions/', UserSubscriptionsApi.as_view()),
     path('status/', status, name='status'),
-    path('payment/<uuid:payment_id>', payment, name='payment'),
     path('callback/', callback, name='callback'),
 ]
