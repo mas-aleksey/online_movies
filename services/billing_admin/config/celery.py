@@ -1,7 +1,6 @@
 import os
 from celery import Celery
 from django.apps import apps
-from subscriptions.payment_system.payment_factory import PaymentSystemFactory
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.dev')
 
@@ -19,5 +18,4 @@ def debug_task():
 def wait_payment_task(payment_id):
     payment_model = apps.get_model('subscriptions', 'PaymentInvoice')
     pay = payment_model.objects.filter(id=payment_id).first()
-    ps = PaymentSystemFactory.get_payment_system(pay)
-    ps.check_payment_status()
+    pay.payment_system_instance.check_payment_status()
