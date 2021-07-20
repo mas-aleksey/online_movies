@@ -1,3 +1,4 @@
+import datetime
 from uuid import uuid4, UUID
 from typing import Optional
 from subscriptions.models import (
@@ -29,7 +30,8 @@ def create_subscription(user_id, tariff_id) -> Subscription:
             id=uuid4(),
             client=client,
             tariff_id=tariff_id,
-            status=SubscriptionStatus.DRAFT
+            status=SubscriptionStatus.DRAFT,
+            expiration_date=datetime.datetime.now()
         )
     subscription.save()
     return subscription
