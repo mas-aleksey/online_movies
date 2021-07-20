@@ -55,6 +55,6 @@ class YoomoneyPaymentSystem(AbstractPaymentSystem):
         data = json.loads(response.json())
         self.logger.info(data)
         self.payment.info = data
-        if response.status == 'success':
+        if response.status == 'succeeded':
             return True
         return False
