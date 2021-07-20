@@ -150,6 +150,17 @@ def billing_order(access_token, tariff_id):
     raise HTTPError(resp.text)
 
 
+def billing_subscriptions(access_token):
+    url = f'{BILLING_BASE_URL}/subscription/v1/subscriptions/'
+    headers = {'content-type': 'application/json', 'user-agent': 'billing', 'authorization': f'Bearer {access_token}'}
+    resp = requests.get(url, headers=headers)
+    if resp.status_code == 200:
+        data = resp.json()
+        return data
+
+    raise HTTPError(resp.text)
+
+
 def billing_subscribe(access_token, subscribe_id):
     url = f'{BILLING_BASE_URL}/subscription/v1/subscriptions/{subscribe_id}'
     headers = {'content-type': 'application/json', 'user-agent': 'billing', 'authorization': f'Bearer {access_token}'}
