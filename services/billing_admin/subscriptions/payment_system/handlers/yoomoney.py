@@ -1,7 +1,11 @@
 import json
+
+from config.celery import wait_payment_task
+from django.http import HttpResponseRedirect
 from subscriptions.payment_system.payment_factory import AbstractPaymentSystem
 from django.conf import settings
 from yookassa import Configuration, Payment
+from yookassa.domain.response import PaymentResponse
 
 
 CONFIG = settings.PAYMENT_SYSTEMS[settings.YOOMONEY]
@@ -13,7 +17,7 @@ Configuration.configure(CONFIG["shop_id"], CONFIG["key"])
 class YoomoneyPaymentSystem(AbstractPaymentSystem):
 
     def process_payment(self):
-        response = Payment.create(
+        response: PaymentResponse = Payment.create(
             {
                 "amount": {
                     "value": self.payment.amount,
@@ -38,8 +42,15 @@ class YoomoneyPaymentSystem(AbstractPaymentSystem):
         self.logger.info(data)
         self.payment.info = data
         self.payment.save()
-        return data
+        wait_payment_task.apply_async((response.id,), countdown=10, expires=60*5)
+        return HttpResponseRedirect(response.confirmation.confirmation_url)
 
     def callback(self, *args, **kwargs):
         self.logger.info(args)
         self.logger.info(kwargs)
+
+    def check_payment_status(self):
+        payment_id = self.payment.info['id']
+        response: PaymentResponse = Payment.find_one(payment_id=payment_id)
+        self.logger.error(response.json())
+        return response.status

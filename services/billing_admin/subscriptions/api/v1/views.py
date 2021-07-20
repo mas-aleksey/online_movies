@@ -17,21 +17,15 @@ def status(request):
 
 
 def create_subscription(data, scope):
-    LOGGER.error(data)
-    LOGGER.error(scope)
     user_id = scope['user_id']
     user_email = scope['email']
     payment_system = data['payment_system']
     tariff_id = data['tariff_id']
-    amount = data['amount']
 
-    subscr = utils.create_subscription(user_id, tariff_id)
-    payment = utils.create_payment(subscr, payment_system, amount)
+    subscription = utils.create_subscription(user_id, tariff_id)
+    payment = utils.create_payment(subscription, payment_system)
     ps = PaymentSystemFactory.get_payment_system(payment)
-    resp = ps.process_payment()
-    LOGGER.error('resp %s %s', type(resp), resp)
-    return JsonResponse(resp, safe=False)
-    # return HttpResponseRedirect(resp.confirmation.confirmation_url)
+    return ps.process_payment()
 
 
 def make_order(request):
@@ -41,7 +35,6 @@ def make_order(request):
         'payment_system'
     }
     :param request:
-    :param tariff_id:
     :return:
     """
     LOGGER.error(request.method)
@@ -52,13 +45,6 @@ def make_order(request):
 
     # redirect to payment_system
     return JsonResponse({'status': 'ok'})
-
-
-def payment(request, payment_id):
-    pay: PaymentInvoice = PaymentInvoice.objects.filter(pk=payment_id).first()
-    ps = PaymentSystemFactory.get_payment_system(pay)
-    resp = ps.process_payment()
-    return HttpResponseRedirect(resp.confirmation.confirmation_url)
 
 
 def callback(request):

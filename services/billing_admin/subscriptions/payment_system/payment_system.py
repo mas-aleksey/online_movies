@@ -12,6 +12,10 @@ class AbstractPaymentSystem:
         """ Запускаем обработку платежа """
         raise NotImplementedError
 
+    def check_payment_status(self):
+        """ Проверяем статус платежа """
+        raise NotImplementedError
+
     def callback(self, *args, **kwargs):
         """ обработка callback метода """
         raise NotImplementedError
