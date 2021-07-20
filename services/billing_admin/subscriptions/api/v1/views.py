@@ -35,11 +35,10 @@ def make_order(request):
     :param request:
     :return:
     """
-    LOGGER.error(request.method)
     if request.method == 'POST':
         data = (json.loads(request.body))
-        ctx = create_subscription(data, request.scope)
-        return JsonResponse(ctx)
+        url = create_subscription(data, request.scope)
+        return JsonResponse({'confirmation_url': url})
 
     # redirect to payment_system
     return JsonResponse({'status': 'ok'})

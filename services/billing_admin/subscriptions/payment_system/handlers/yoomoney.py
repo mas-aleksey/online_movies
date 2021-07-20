@@ -42,8 +42,8 @@ class YoomoneyPaymentSystem(AbstractPaymentSystem):
         self.logger.info(data)
         self.payment.info = data
         self.payment.save()
-        wait_payment_task.apply_async((response.id,), countdown=10, expires=60*5)
-        return HttpResponseRedirect(response.confirmation.confirmation_url)
+        wait_payment_task.apply_async((response.id,), countdown=10)
+        return response.confirmation.confirmation_url
 
     def callback(self, *args, **kwargs):
         self.logger.info(args)
@@ -52,5 +52,8 @@ class YoomoneyPaymentSystem(AbstractPaymentSystem):
     def check_payment_status(self):
         payment_id = self.payment.info['id']
         response: PaymentResponse = Payment.find_one(payment_id=payment_id)
-        self.logger.error(response.json())
-        return response.status
+        data = json.loads(response.json())
+        self.payment.info = data
+        if response.status == 'success':
+            return True
+        return False
