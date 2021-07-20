@@ -107,8 +107,8 @@ class UserSubscriptionsApi(BaseListView):
         return super().get(request, *args, **kwargs)
 
     def get_queryset(self):
-        return self.model.objects.values(
-            'expiration_date', 'status', 'client__id',
+        return self.model.objects.filter(client__user_id=self.kwargs['user_id']).values(
+            'expiration_date', 'status', 'client__user_id',
             'tariff__price', 'tariff__period',
             'discount__name', 'discount__description', 'discount__value',
             'tariff__product__name', 'tariff__product__description', 'tariff__product__access_type'
@@ -116,20 +116,12 @@ class UserSubscriptionsApi(BaseListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         paginator, page, object_list, _ = self.paginate_queryset(self.object_list, self.paginate_by)
-        if self.kwargs['user_id']:
-            object_list = [
-                subscr for subscr in self.object_list
-                if subscr['client__id'] == self.kwargs['user_id']
-            ]
-        else:
-            # TODO: object_list = []
-            object_list = self.object_list
         context = {
             "count": paginator.count,
             "total_pages": paginator.num_pages,
             "prev": page.previous_page_number() if page.has_previous() else None,
             "next": page.next_page_number() if page.has_next() else None,
-            'results': list(object_list),
+            'results': list(self.object_list),
         }
         return context
 

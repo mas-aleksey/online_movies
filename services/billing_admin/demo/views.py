@@ -6,7 +6,7 @@ from django.urls import reverse
 
 from demo.forms import LoginForm
 from demo.services import auth_profile, auth_logout, async_movies_search, async_movies_detail, billing_tariffs, \
-    billing_tariff, billing_order, billing_subscribe, auth_access_check
+    billing_tariff, billing_order, billing_subscribe, auth_access_check, billing_subscriptions
 
 
 def index(request):
@@ -151,6 +151,22 @@ def order(request, tariff_id):
         return render(request, '500.html', ctx)
 
     return HttpResponseRedirect(ctx['data']['confirmation_url'])
+
+
+@check_token
+def subscriptions(request):
+    """мои подписки"""
+
+    access_token = request.session.get('access_token')
+    ctx = {'data': []}
+
+    try:
+        ctx['data'] = billing_subscriptions(access_token)
+    except Exception as e:
+        ctx['errors'] = str(e)
+        return render(request, '500.html', ctx)
+
+    return render(request, 'subscriptions.html', ctx)
 
 
 @check_token
