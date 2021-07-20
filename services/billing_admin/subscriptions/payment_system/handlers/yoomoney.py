@@ -53,6 +53,7 @@ class YoomoneyPaymentSystem(AbstractPaymentSystem):
         payment_id = self.payment.info['id']
         response: PaymentResponse = Payment.find_one(payment_id=payment_id)
         data = json.loads(response.json())
+        self.logger.info(data)
         self.payment.info = data
         if response.status == 'success':
             return True
