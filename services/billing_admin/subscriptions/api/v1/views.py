@@ -108,7 +108,7 @@ class UserSubscriptionsApi(BaseListView):
 
     def get_queryset(self):
         return self.model.objects.filter(client__user_id=self.kwargs['user_id']).values(
-            'expiration_date', 'status', 'client__user_id',
+            'id', 'expiration_date', 'status', 'client__user_id',
             'tariff__price', 'tariff__period',
             'discount__name', 'discount__description', 'discount__value',
             'tariff__product__name', 'tariff__product__description', 'tariff__product__access_type'
