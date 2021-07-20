@@ -13,17 +13,22 @@
             margin-right: 20px
         }
     </style>
-    <p class="profile-row"><strong>email:</strong>{{ email }}</p>
-    <p class="profile-row"><strong>user_id:</strong>{{ user_id }}</p>
-    <p class="profile-row"><strong>is_superuser:</strong>{{ is_superuser }}</p>
-    <p class="profile-row"><strong>user_roles:</strong>{{ user_roles }}</p>
-    <div class="profile-row">
-        <div><strong>access token:</strong>
-            <p>{{ access_token }}</p>
+    {% if not errors %}
+        <p class="profile-row"><strong>email:</strong>{{ email }}</p>
+        <p class="profile-row"><strong>user_id:</strong>{{ user_id }}</p>
+        <p class="profile-row"><strong>is_superuser:</strong>{{ is_superuser }}</p>
+        <p class="profile-row"><strong>user_roles:</strong>{{ user_roles }}</p>
+        <div class="profile-row">
+            <div><strong>access token:</strong>
+                <p>{{ access_token }}</p>
+            </div>
+            <div><strong>refresh token: </strong>
+                <p>{{ refresh_token }}</p>
+            </div>
         </div>
-        <div><strong>refresh token: </strong>
-            <p>{{ refresh_token }}</p>
-        </div>
-    </div>
+    {% else %}
+        {{ errors }}
+    {% endif %}
+
 {% endblock %}
 
