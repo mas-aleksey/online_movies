@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block title %} Статус подписки {% endblock %}
 {% block extrahead %}
-    {% if refresh_page == "1" %}
+    {% if refresh_page == "1" and data.id %}
         <meta http-equiv="refresh"
               content="3; url={% url 'demo:subscribe' data.id %}?refresh_page={{ refresh_page }}">
     {% endif %}
