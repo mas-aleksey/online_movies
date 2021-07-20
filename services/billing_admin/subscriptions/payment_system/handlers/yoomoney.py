@@ -42,7 +42,7 @@ class YoomoneyPaymentSystem(AbstractPaymentSystem):
         self.logger.info(data)
         self.payment.info = data
         self.payment.save()
-        wait_payment_task.apply_async((response.id,), countdown=10)
+        wait_payment_task.apply_async((self.payment.id,), countdown=10)
         return response.confirmation.confirmation_url
 
     def callback(self, *args, **kwargs):
