@@ -183,8 +183,6 @@ services:
     image: billing_admin
     container_name: billing_admin
     restart: on-failure
-    ports:
-    - "8000:8000"
     volumes:
       - billing-admin-static:/var/app/static/billing-admin
     env_file: docker-compose-env/billing_admin.env

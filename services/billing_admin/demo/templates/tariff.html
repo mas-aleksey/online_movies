@@ -10,22 +10,19 @@
     {% if data.discount__name %}
         <p class="fs-5 col-md-8"><strong>Скидка: </strong>{{ data.discount__name }} {{ data.discount__value }}%</p>
     {% endif %}
-    <p class="fs-5 col-md-8"><a href="{% url 'demo:order' data.id %}" class="icon-link">
-        Купить
-    </a></p>
 
     {% if errors %}
         {{ errors }}
     {% endif %}
-    <form action="{% url 'demo:ordering' %}" method="POST">
+    <form action="{% url 'demo:order' %}" method="POST">
         {% csrf_token %}
         <input type="hidden" name="tariff_id" value={{ data.id }}>
 
-        <label for="cars">Платежная система:</label>
+        <label class="fs-5 col-md-8">Платежная система:</label>
         <select name="payment_system">
             <option value="yoomoney" selected>Юмани</option>
             <option value="stripe">Stripe</option>
         </select>
-        <button type="submit">Buy</button>
+        <button type="submit">Купить</button>
     </form>
 {% endblock %}
