@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %} Продукты {% endblock %}
+{% block body %}
+    {% if data %}
+        <h2 class="pb-2 border-bottom">Продписки</h2>
+        <div class="row g-4 py-5 row-cols-1 row-cols-lg-4">
+            {% for product in data.results %}
+                <div class="feature col">
+                    <h2>{{ product.name }}</h2>
+                    <p>{{ product.description }}</p>
+                    <table style="width: 100%;">
+                        <tr>
+                            {% for period in product.tariff_perions %}
+                                <th>{% if period == "per year" %}Год{% else %}Месяц{% endif %}</th>
+                            {% endfor %}
+                        </tr>
+                        <tr>
+                            {% for price in product.tariff_prices %}
+                                <th><p>{{ price }} руб.</p></th>
+                            {% endfor %}
+                        </tr>
+                        <tr>
+                            {% for discount in product.discounts %}
+                                <th>{% if discount %}<p>Скидка: {{ discount }} %</p>{% endif %}</th>
+                            {% endfor %}
+                        </tr>
+                        <tr>
+                            {% for tariff_id in product.tariff_ids %}
+                                <th>
+                                    <button>
+                                        <a href="{% url "demo:tariff" tariff_id %}" class="icon-link">Оформить</a>
+                                    </button>
+                                </th>
+                            {% endfor %}
+                        </tr>
+                    </table>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if errors %}
+        {{ errors }}
+    {% endif %}
+{% endblock %}

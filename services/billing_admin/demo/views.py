@@ -6,7 +6,7 @@ from django.urls import reverse
 
 from demo.forms import LoginForm
 from demo.services import auth_profile, auth_logout, async_movies_search, async_movies_detail, billing_tariffs, \
-    billing_tariff, billing_order, billing_subscribe, auth_access_check, billing_subscriptions
+    billing_tariff, billing_order, billing_subscribe, auth_access_check, billing_subscriptions, billing_products
 
 
 def index(request):
@@ -111,7 +111,7 @@ def movies_detail(request, movies_id):
 
 @check_token
 def tariffs(request):
-    """Подписки"""
+    """Тарифы"""
     access_token = request.session.get('access_token')
     ctx = {'data': []}
 
@@ -121,6 +121,20 @@ def tariffs(request):
         ctx['errors'] = str(e)
 
     return render(request, 'tariffs.html', ctx)
+
+
+@check_token
+def products(request):
+    """ Продукты """
+    access_token = request.session.get('access_token')
+    ctx = {'data': []}
+
+    try:
+        ctx['data'] = billing_products(access_token)
+    except Exception as e:
+        ctx['errors'] = str(e)
+
+    return render(request, 'products.html', ctx)
 
 
 @check_token

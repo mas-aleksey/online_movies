@@ -63,7 +63,7 @@ class Discount(TimeStampedModel):
 class Tariff(TimeStampedModel):
     """ Тарифные планы подписок """
     id = models.UUIDField(primary_key=True)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='продукт')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='продукт', related_name='tariffs')
     discount = models.ForeignKey(Discount, on_delete=models.DO_NOTHING, verbose_name="скидка", blank=True, null=True)
     price = models.FloatField(_('цена'), validators=[MinValueValidator(0)])
     period = models.CharField(

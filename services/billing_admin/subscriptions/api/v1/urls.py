@@ -1,13 +1,14 @@
 from django.urls import path
 
 from .views import (
-    TariffListApi, TariffDetailApi, UserSubscriptionsApi,
+    TariffListApi, TariffDetailApi, UserSubscriptionsApi, ProductListApi,
     make_order, status, callback, UserSubscriptionDetailApi
 )
 
 
 urlpatterns = [
     path('tariffs/', TariffListApi.as_view()),
+    path('products/', ProductListApi.as_view()),
     path('tariff/<uuid:tariff_id>', TariffDetailApi.as_view()),
     path('order/', make_order, name="make_order"),
     path('subscriptions/', UserSubscriptionsApi.as_view()),

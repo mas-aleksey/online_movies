@@ -1,13 +1,17 @@
+from django.contrib.postgres.fields import ArrayField
+from django.db.models.expressions import RawSQL
 from django.http import JsonResponse
 import logging
 import json
 import logging
+from django.contrib.postgres.aggregates import ArrayAgg
+from django.db.models import Q, F
 
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.detail import BaseDetailView
 from django.views.generic.list import BaseListView
-from subscriptions.models.models import Tariff, Subscription
+from subscriptions.models.models import Tariff, Subscription, Product
 import subscriptions.utils as utils
 
 
@@ -66,7 +70,7 @@ class BaseTariffApiMixin:
 
     def get_queryset(self):
         return self.model.objects.values(
-            'id', 'price', 'period',
+            'id', 'price', 'period', 'product__id',
             'discount__name', 'discount__description', 'discount__value',
             'product__name', 'product__description', 'product__access_type'
         )
@@ -103,6 +107,7 @@ class TariffListApi(BaseTariffApiMixin, BaseListView):
 class UserSubscriptionsApi(BaseListView):
     model = Subscription
     paginate_by = 10
+    http_method_names = ['get']
 
     def get(self, request, *args, **kwargs):
         self.kwargs['user_id'] = request.scope.get('user_id')
@@ -133,6 +138,7 @@ class UserSubscriptionsApi(BaseListView):
 
 class UserSubscriptionDetailApi(BaseDetailView):
     model = Subscription
+    http_method_names = ['get']
 
     def dispatch(self, request, *args, **kwargs):
         self.kwargs['user_id'] = request.scope.get('user_id')
@@ -164,3 +170,41 @@ class UserSubscriptionDetailApi(BaseDetailView):
 
     def render_to_response(self, context, **response_kwargs):
         return JsonResponse(context, safe=False)
+
+
+class ProductListApi(BaseListView):
+    model = Product
+    paginate_by = 50
+    http_method_names = ['get']
+
+    def get_queryset(self):
+        return self.model.objects.values(
+            'id', 'name', 'description', 'access_type'
+        ).annotate(
+            tariff_ids=ArrayAgg(
+                'tariffs__id',
+            ),
+            tariff_perions=ArrayAgg(
+                'tariffs__period',
+            ),
+            tariff_prices=ArrayAgg(
+                'tariffs__price',
+            ),
+            discounts=ArrayAgg(
+                'tariffs__discount__value',
+            ),
+        )
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        paginator, page, object_list, _ = self.paginate_queryset(self.object_list, self.paginate_by)
+        context = {
+            "count": paginator.count,
+            "total_pages": paginator.num_pages,
+            "prev": page.previous_page_number() if page.has_previous() else None,
+            "next": page.next_page_number() if page.has_next() else None,
+            'results': list(self.object_list),
+        }
+        return context
+
+    def render_to_response(self, context, **response_kwargs):
+        return JsonResponse(context)

@@ -119,6 +119,17 @@ def billing_tariffs(access_token):
     raise HTTPError(resp.text)
 
 
+def billing_products(access_token):
+    url = f'{BILLING_BASE_URL}/subscription/v1/products/'
+    headers = {'content-type': 'application/json', 'user-agent': 'billing', 'authorization': f'Bearer {access_token}'}
+    resp = requests.get(url, headers=headers)
+    if resp.status_code == 200:
+        data = resp.json()
+        return data
+
+    raise HTTPError(resp.text)
+
+
 def billing_tariff(access_token, tariff_id):
     url = f'{BILLING_BASE_URL}/subscription/v1/tariff/{tariff_id}'
     headers = {'content-type': 'application/json', 'user-agent': 'billing', 'authorization': f'Bearer {access_token}'}
