@@ -1,19 +1,14 @@
-from django.contrib.postgres.fields import ArrayField
-from django.db.models.expressions import RawSQL
-from django.http import JsonResponse
-import logging
 import json
 import logging
-from django.contrib.postgres.aggregates import ArrayAgg
-from django.db.models import Q, F
 
+from django.contrib.postgres.aggregates import ArrayAgg
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.detail import BaseDetailView
 from django.views.generic.list import BaseListView
 
 import subscriptions.utils as utils
-from subscriptions.models.models import Tariff, Subscription
+from subscriptions.models.models import Tariff, Subscription, Product
 
 LOGGER = logging.getLogger(__file__)
 
