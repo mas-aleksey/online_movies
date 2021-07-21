@@ -1,6 +1,15 @@
 {% extends 'base.html' %}
 {% block title %} Продукты {% endblock %}
 {% block body %}
+    <style>
+        table {
+            width: 100%;
+        }
+
+        table tr {
+            height: 42px;
+        }
+    </style>
     {% if data %}
         <h2 class="pb-2 border-bottom">Подписки</h2>
         <div class="row g-4 py-5 row-cols-1 row-cols-lg-4">
@@ -8,7 +17,7 @@
                 <div class="feature col">
                     <h2>{{ product.name }}</h2>
                     <p>{{ product.description }}</p>
-                    <table style="width: 100%;">
+                    <table>
                         <tr>
                             {% for period in product.tariff_perions %}
                                 <th>{% if period == "per year" %}Год{% else %}Месяц{% endif %}</th>
@@ -27,9 +36,7 @@
                         <tr>
                             {% for tariff_id in product.tariff_ids %}
                                 <th>
-                                    <button>
-                                        <a href="{% url "demo:tariff" tariff_id %}" class="icon-link">Оформить</a>
-                                    </button>
+                                    <a class="btn btn-primary" href="{% url "demo:tariff" tariff_id %}">Оформить</a>
                                 </th>
                             {% endfor %}
                         </tr>

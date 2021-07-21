@@ -14,15 +14,21 @@
     {% if errors %}
         {{ errors }}
     {% endif %}
-    <form action="{% url 'demo:order' %}" method="POST">
+    <form action="{% url 'demo:order' %}" method="POST" class="form-inline">
         {% csrf_token %}
         <input type="hidden" name="tariff_id" value={{ data.id }}>
+        <div class="row">
+            <label class="col-form-label col-auto fs-5"><strong>Платежная система:</strong></label>
+            <div class="col-auto">
+                <select class="form-select my-1" name="payment_system">
+                    <option value="yoomoney" selected>Юмани</option>
+                    <option value="stripe">Stripe</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <button class="btn btn-primary my-1" type="submit">Купить</button>
+            </div>
+        </div>
 
-        <label>Платежная система:</label>
-        <select name="payment_system">
-            <option value="yoomoney" selected>Юмани</option>
-            <option value="stripe">Stripe</option>
-        </select>
-        <button type="submit">Купить</button>
     </form>
 {% endblock %}

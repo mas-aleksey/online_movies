@@ -108,17 +108,6 @@ def async_movies_detail(access_token, movies_id):
     raise HTTPError(resp.text)
 
 
-def billing_tariffs(access_token):
-    url = f'{BILLING_BASE_URL}/subscription/v1/tariffs/'
-    headers = {'content-type': 'application/json', 'user-agent': 'billing', 'authorization': f'Bearer {access_token}'}
-    resp = requests.get(url, headers=headers)
-    if resp.status_code == 200:
-        data = resp.json()
-        return data
-
-    raise HTTPError(resp.text)
-
-
 def billing_products(access_token):
     url = f'{BILLING_BASE_URL}/subscription/v1/products/'
     headers = {'content-type': 'application/json', 'user-agent': 'billing', 'authorization': f'Bearer {access_token}'}
