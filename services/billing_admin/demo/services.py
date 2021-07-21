@@ -141,12 +141,12 @@ def billing_tariff(access_token, tariff_id):
     raise HTTPError(resp.text)
 
 
-def billing_order(access_token, tariff_id):
+def billing_order(access_token, tariff_id, payment_system):
     url = f'{BILLING_BASE_URL}/subscription/v1/order/'
     headers = {'content-type': 'application/json', 'user-agent': 'billing', 'authorization': f'Bearer {access_token}'}
     payload = {
         "tariff_id": tariff_id,
-        "payment_system": 'stripe'
+        "payment_system": payment_system
     }
     resp = requests.post(
         url=url,

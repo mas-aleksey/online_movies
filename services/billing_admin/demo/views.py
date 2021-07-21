@@ -159,7 +159,27 @@ def order(request, tariff_id):
     ctx = {'data': []}
 
     try:
-        ctx['data'] = billing_order(access_token, tariff_id)
+        ctx['data'] = billing_order(access_token, tariff_id, 'stripe')
+    except Exception as e:
+        ctx['errors'] = str(e)
+        return render(request, '500.html', ctx)
+
+    return HttpResponseRedirect(ctx['data']['confirmation_url'])
+
+
+@check_token
+def ordering(request):
+    """оплата подписки"""
+    if not request.POST:
+        return render(request, '500.html', {'errors': 'Something went wrong'})
+
+    tariff_id = request.POST.get('tariff_id')
+    payment_system = request.POST.get('payment_system')
+    access_token = request.session.get('access_token')
+    ctx = {'data': []}
+
+    try:
+        ctx['data'] = billing_order(access_token, tariff_id, payment_system)
     except Exception as e:
         ctx['errors'] = str(e)
         return render(request, '500.html', ctx)

@@ -88,7 +88,7 @@ class Tariff(TimeStampedModel):
         elif self.period == SubscriptionPeriods.YEARLY:
             delta = relativedelta(years=+1)
         else:
-            delta = relativedelta(days=+1)
+            raise ValueError(f"unknown period: {self.period}")
 
         return date.today() + delta
 
