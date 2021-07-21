@@ -3,7 +3,6 @@ from typing import Dict, Union
 
 PAYMENT_RETURN_URL = "https://yandexmovies.online/billing/demo/subscriptions"
 YOOMONEY = "yoomoney"
-
 STRIPE = "stripe"
 
 PAYMENT_SYSTEMS: Dict[str, Dict[str, Union[str, bool, None]]] = {
@@ -14,6 +13,8 @@ PAYMENT_SYSTEMS: Dict[str, Dict[str, Union[str, bool, None]]] = {
         "return_url": PAYMENT_RETURN_URL,
     },
     STRIPE: {
-
+        "secret_key": os.environ.get("STRIPE_SECRET_KEY"),
+        "active": True,
+        "return_url": PAYMENT_RETURN_URL
     }
 }

@@ -135,7 +135,7 @@ def billing_order(access_token, tariff_id):
     headers = {'content-type': 'application/json', 'user-agent': 'billing', 'authorization': f'Bearer {access_token}'}
     payload = {
         "tariff_id": tariff_id,
-        "payment_system": 'yoomoney'
+        "payment_system": 'stripe'
     }
     resp = requests.post(
         url=url,

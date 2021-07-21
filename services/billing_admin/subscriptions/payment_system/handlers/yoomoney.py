@@ -1,5 +1,6 @@
 import json
-from subscriptions.payment_system.payment_factory import AbstractPaymentSystem
+
+from subscriptions.payment_system.payment_system import AbstractPaymentSystem
 from subscriptions.tasks import wait_payment_task
 from django.conf import settings
 from yookassa import Configuration, Payment, Refund

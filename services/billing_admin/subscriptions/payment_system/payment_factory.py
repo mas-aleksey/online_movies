@@ -1,13 +1,20 @@
+from __future__ import annotations
+
+from typing import Dict, Type, TYPE_CHECKING
+
 from django.conf import settings
-from typing import Dict, Type
-from subscriptions.payment_system.payment_system import AbstractPaymentSystem
-from subscriptions.payment_system.handlers import YoomoneyPaymentSystem
+
+from subscriptions.payment_system.handlers import YoomoneyPaymentSystem, StripePaymentSystem
+
+if TYPE_CHECKING:
+    from subscriptions.payment_system.payment_system import AbstractPaymentSystem
 
 
 class PaymentSystemFactory:
 
     payment_systems: Dict[str, Type[AbstractPaymentSystem]] = {
         settings.YOOMONEY: YoomoneyPaymentSystem,
+        settings.STRIPE: StripePaymentSystem,
     }
 
     @classmethod
