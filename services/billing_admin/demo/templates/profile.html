@@ -1,25 +1,15 @@
 {% extends 'base.html' %}
 {% block title %} Профиль {% endblock %}
 {% block body %}
-    <style>
-        .profile-row {
-            display: flex;
-            margin: 10px;
-        }
-
-        .profile-row p {
-            max-width: 300px;
-            word-wrap: anywhere;
-            margin-right: 20px
-        }
-    </style>
     {% if not errors %}
-        <p class="profile-row"><strong>email:</strong>{{ email }}</p>
-        <p class="profile-row"><strong>user_id:</strong>{{ user_id }}</p>
-        <p class="profile-row"><strong>is_superuser:</strong>{{ is_superuser }}</p>
-        <p class="profile-row"><strong>user_roles:</strong>{{ user_roles }}</p>
-        <p class="profile-row"><strong>access_token:</strong>{{ access_token }}</p>
-        <p class="profile-row"><strong>refresh_token:</strong>{{ refresh_token }}</p>
+        <p class="col-12"><strong>email:</strong>{{ email }}</p>
+        <p class="col-12"><strong>user_id:</strong>{{ user_id }}</p>
+        <p class="col-12"><strong>is_superuser:</strong>{{ is_superuser }}</p>
+        <p class="col-12"><strong>user_roles:</strong>{{ user_roles }}</p>
+        <div class="row">
+            <p class="col-6 text-justify text-break"><strong>access_token: </strong>{{ access_token }}</p>
+            <p class="col-6 text-justify text-break"><strong>refresh_token: `</strong>{{ refresh_token }}</p>
+        </div>
     {% else %}
         {{ errors }}
     {% endif %}
