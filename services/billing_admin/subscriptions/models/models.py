@@ -159,7 +159,6 @@ class PaymentInvoice(TimeStampedModel):
 
     def set_payed_status(self):
         """ тут логика при получении подтверждения об оплате """
-        self.subscription.set_active()
         self.status = PaymentStatus.PAYED
         self.save()
 

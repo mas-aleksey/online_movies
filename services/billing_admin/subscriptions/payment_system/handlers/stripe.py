@@ -66,7 +66,6 @@ class StripePaymentSystem(AbstractPaymentSystem):
                 billing_subscription_id=str(self.payment.subscription.id),
                 stripe_subscription_id=stripe_subscription_id
             )
-            return self.check_subscribe_status()
 
         self.payment.info = data
         self.payment.save()
@@ -76,7 +75,7 @@ class StripePaymentSystem(AbstractPaymentSystem):
             return False
         elif status == 'paid':
             self.payment.set_payed_status()
-            return True
+            return self.check_subscribe_status()
         else:  # failed
             self.payment.set_cancelled_status()
             return False

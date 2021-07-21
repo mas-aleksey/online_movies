@@ -35,6 +35,7 @@ class YoomoneyPaymentSystem(AbstractPaymentSystem):
             return False
         elif response.status == 'succeeded':
             self.payment.set_payed_status()
+            self.payment.subscription.set_active()
             return True
         elif response.status == 'waiting_for_capture':
             Payment.capture(self.payment.info['id'])
