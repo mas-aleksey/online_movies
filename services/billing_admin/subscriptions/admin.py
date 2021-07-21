@@ -43,4 +43,4 @@ class SubscriptionAdmin(BaseAdmin):
 
 @admin.register(PaymentInvoice)
 class PaymentHistoryAdmin(BaseAdmin):
-    list_display = ('subscription', 'amount', 'status', 'payment_system')
+    list_display = ('subscription', 'amount', 'status', 'payment_system', 'created', 'modified')
