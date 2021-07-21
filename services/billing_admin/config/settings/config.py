@@ -18,3 +18,5 @@ PAYMENT_SYSTEMS: Dict[str, Dict[str, Union[str, bool, None]]] = {
         "return_url": PAYMENT_RETURN_URL
     }
 }
+
+STRIPE_SECRET_KEY = PAYMENT_SYSTEMS[STRIPE]['secret_key']

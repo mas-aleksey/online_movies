@@ -121,6 +121,11 @@ class Subscription(TimeStampedModel, SoftDeletableModel):
         self.expiration_date = self.tariff.next_payment_date
         self.save()
 
+    def set_cancelled_status(self):
+        """ отмена подписки """
+        self.status = SubscriptionStatus.CANCELLED
+        self.save()
+
 
 class PaymentInvoice(TimeStampedModel):
     """ История оплат """

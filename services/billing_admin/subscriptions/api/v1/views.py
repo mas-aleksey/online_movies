@@ -1,5 +1,3 @@
-from django.http import JsonResponse
-import logging
 import json
 import logging
 
@@ -7,9 +5,9 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.detail import BaseDetailView
 from django.views.generic.list import BaseListView
-from subscriptions.models.models import Tariff, Subscription
-import subscriptions.utils as utils
 
+import subscriptions.utils as utils
+from subscriptions.models.models import Tariff, Subscription
 
 LOGGER = logging.getLogger(__file__)
 
@@ -41,7 +39,11 @@ def make_order(request):
     """
     if request.method == 'POST':
         data = (json.loads(request.body))
-        url = create_subscription(data, request.scope)
+        try:
+            url = create_subscription(data, request.scope)
+        except Exception as e:
+            LOGGER.error(e)
+            return JsonResponse({'status': 'failed', 'msg': str(e)}, status=500)
         return JsonResponse({'confirmation_url': url})
 
     # redirect to payment_system
