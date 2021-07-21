@@ -6,7 +6,7 @@ from django.urls import reverse
 
 from demo.forms import LoginForm
 from demo.services import auth_profile, auth_logout, async_movies_search, async_movies_detail, billing_tariffs, \
-    billing_tariff, billing_order, billing_subscribe, auth_access_check, billing_subscriptions
+    billing_tariff, billing_order, billing_subscribe, auth_access_check, billing_subscriptions, billing_products
 
 
 def index(request):
@@ -111,7 +111,7 @@ def movies_detail(request, movies_id):
 
 @check_token
 def tariffs(request):
-    """Подписки"""
+    """Тарифы"""
     access_token = request.session.get('access_token')
     ctx = {'data': []}
 
@@ -121,6 +121,20 @@ def tariffs(request):
         ctx['errors'] = str(e)
 
     return render(request, 'tariffs.html', ctx)
+
+
+@check_token
+def products(request):
+    """ Продукты """
+    access_token = request.session.get('access_token')
+    ctx = {'data': []}
+
+    try:
+        ctx['data'] = billing_products(access_token)
+    except Exception as e:
+        ctx['errors'] = str(e)
+
+    return render(request, 'products.html', ctx)
 
 
 @check_token
@@ -138,14 +152,18 @@ def tariff(request, tariff_id):
 
 
 @check_token
-def order(request, tariff_id):
+def order(request):
     """оплата подписки"""
+    if not request.POST:
+        return render(request, '500.html', {'errors': 'Something went wrong'})
 
+    tariff_id = request.POST.get('tariff_id')
+    payment_system = request.POST.get('payment_system')
     access_token = request.session.get('access_token')
     ctx = {'data': []}
 
     try:
-        ctx['data'] = billing_order(access_token, tariff_id)
+        ctx['data'] = billing_order(access_token, tariff_id, payment_system)
     except Exception as e:
         ctx['errors'] = str(e)
         return render(request, '500.html', ctx)
