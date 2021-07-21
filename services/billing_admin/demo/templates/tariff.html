@@ -18,7 +18,7 @@
         {% csrf_token %}
         <input type="hidden" name="tariff_id" value={{ data.id }}>
 
-        <label class="fs-5 col-md-8">Платежная система:</label>
+        <label>Платежная система:</label>
         <select name="payment_system">
             <option value="yoomoney" selected>Юмани</option>
             <option value="stripe">Stripe</option>
