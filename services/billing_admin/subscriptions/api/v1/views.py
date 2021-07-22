@@ -10,6 +10,7 @@ from django.views.generic.list import BaseListView
 
 import subscriptions.utils as utils
 from subscriptions.models.models import Tariff, Subscription, Product
+from subscriptions.tasks import unsubscribe_task
 
 LOGGER = logging.getLogger(__file__)
 
@@ -114,7 +115,7 @@ class UserSubscriptionsApi(BaseListView):
         return super().get(request, *args, **kwargs)
 
     def get_queryset(self):
-        return self.model.objects.filter(client__user_id=self.kwargs['user_id']).values(
+        return self.model.objects.exclude_cancelled().filter_by_user_id(self.kwargs['user_id']).values(
             'id', 'expiration_date', 'status', 'client__user_id',
             'tariff__price', 'tariff__period',
             'discount__name', 'discount__description', 'discount__value',
@@ -242,9 +243,10 @@ class UserUnsubscribeApi(View):
             client__user_id=self.kwargs['user_id']
         ).first()
 
-    def get(self, request, subscription_id, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         subscription = self.get_object()
         if not subscription:
             return Http404()
-        print('yees')
+
+        unsubscribe_task.apply_async((subscription.id,))
         return JsonResponse({'status': 'ok'})

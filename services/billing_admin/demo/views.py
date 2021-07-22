@@ -198,17 +198,12 @@ def subscribe(request, subscribe_id):
 def unsubscribe(request, subscribe_id):
     """отмена подписки"""
 
-    refresh_page = request.GET.get('refresh_page', "0")
     access_token = request.session.get('access_token')
-    ctx = {
-        'data': [],
-        'refresh_page': refresh_page
-    }
 
     try:
-        ctx['data'] = billing_unsubscribe(access_token, subscribe_id)
+        billing_unsubscribe(access_token, subscribe_id)
     except Exception as e:
-        ctx['errors'] = str(e)
+        ctx = {'errors': str(e)}
         return render(request, '500.html', ctx)
 
-    return HttpResponseRedirect(reverse('demo:subscribe', args=(subscribe_id,)))
+    return HttpResponseRedirect(reverse('demo:subscribe', args=(subscribe_id,)) + "?refresh_page=1")

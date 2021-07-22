@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 import logging
+
 if TYPE_CHECKING:
     from subscriptions.models.models import PaymentInvoice
 
@@ -21,4 +22,8 @@ class AbstractPaymentSystem:
 
     def refund_payment(self):
         """ Возврат платежа """
+        raise NotImplementedError
+
+    def subscription_cancel(self, cancel_at_period_end=True):
+        """ Отмена подписки """
         raise NotImplementedError

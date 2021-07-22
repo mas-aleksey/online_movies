@@ -58,3 +58,29 @@ def subscription_retrieve_stripe(subscription_id: str) -> dict:
 
     response = stripe.Subscription.retrieve(subscription_id)
     return response
+
+
+def subscription_cancel_stripe(subscription_id: str) -> dict:
+    """Отмена подписки."""
+    response = stripe.Subscription.modify(subscription_id, cancel_at_period_end=True)
+    return response
+
+
+def subscription_delete_stripe(subscription_id: str) -> dict:
+    """удаление подписки."""
+    response = stripe.Subscription.delete(subscription_id)
+    return response
+
+
+def invoice_retrieve_stripe(invoice_id: str) -> dict:
+    """получить информацию о счете."""
+
+    response = stripe.Invoice.retrieve(invoice_id)
+    return response
+
+
+def payment_refund_stripe(payment_intent_id: str):
+    """вернуть платеж."""
+
+    response = stripe.Refund.create(payment_intent=payment_intent_id)
+    return response

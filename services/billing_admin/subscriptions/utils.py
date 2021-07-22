@@ -1,9 +1,10 @@
 import datetime
-from uuid import uuid4, UUID
 from typing import Optional
+from uuid import uuid4
+
 from subscriptions.models.models import (
-    Client, Tariff, Subscription, SubscriptionStatus, PaymentInvoice,
-    PaymentSystem, PaymentStatus
+    Client, Subscription, SubscriptionStatus, PaymentInvoice,
+    PaymentSystem
 )
 
 

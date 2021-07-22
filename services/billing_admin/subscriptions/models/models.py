@@ -1,13 +1,16 @@
 from datetime import date
+
 from dateutil.relativedelta import relativedelta
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from model_utils.models import TimeStampedModel, SoftDeletableModel
-from subscriptions.payment_system.payment_factory import PaymentSystemFactory
+
 from subscriptions.models.meta import (
     PaymentStatus, PaymentSystem, AccessType, SubscriptionStatus, SubscriptionPeriods
 )
+from subscriptions.payment_system.payment_factory import PaymentSystemFactory
+from subscriptions.querysets import SubscriptionQuerySet
 
 
 class Client(TimeStampedModel):
@@ -106,6 +109,7 @@ class Subscription(TimeStampedModel, SoftDeletableModel):
         choices=SubscriptionStatus.choices,
         default=SubscriptionStatus.INACTIVE,
     )
+    objects = SubscriptionQuerySet.as_manager()
 
     class Meta:
         ordering = ['-id']
@@ -122,8 +126,13 @@ class Subscription(TimeStampedModel, SoftDeletableModel):
         self.save()
 
     def set_cancelled_status(self):
-        """ отмена подписки """
+        """ делаем подписку отмененной """
         self.status = SubscriptionStatus.CANCELLED
+        self.save()
+
+    def set_cancel_at_period_end_status(self):
+        """ делаем подписку отмененной """
+        self.status = SubscriptionStatus.CANCEL_AT_PERIOD_END
         self.save()
 
 
@@ -172,6 +181,13 @@ class PaymentInvoice(TimeStampedModel):
         self.status = PaymentStatus.CANCELLED
         self.save()
 
+    def set_refunded_status(self):
+        """ тут логика при отмене платежа """
+        self.status = PaymentStatus.REFUNDED
+        self.save()
+
     def refund_payment(self):
-        """ тут локика для возврата платежа """
-        self.payment_system_instance.refund_payment()
+        """ тут логика для возврата платежа """
+        if self.status == PaymentStatus.PAYED:
+            self.payment_system_instance.refund_payment()
+            self.set_refunded_status()

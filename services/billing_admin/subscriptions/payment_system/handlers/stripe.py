@@ -1,7 +1,8 @@
 from django.conf import settings
 
 from stripe_payment.models import SubscriptionInfoDataclass
-from stripe_payment.services.payment import create_subscription_checkout, get_subscription_info
+from stripe_payment.services.payment import create_subscription_checkout, get_subscription_info, subscription_cancel, \
+    subscription_refund
 from stripe_payment.services.stripe_api import checkout_retrieve_stripe
 from stripe_payment.services.subscription import create_or_update_subscription_id
 from subscriptions.models.meta import PaymentStatus, SubscriptionPeriods
@@ -81,5 +82,13 @@ class StripePaymentSystem(AbstractPaymentSystem):
             return False
 
     def refund_payment(self):
-        # TODO refund
-        pass
+        """возврат платежа"""
+        subscription_id = str(self.payment.subscription_id)
+        data = subscription_refund(subscription_id)
+        return data
+
+    def subscription_cancel(self, cancel_at_period_end=True):
+        """ Отмена подписки """
+        subscription_id = str(self.payment.subscription_id)
+        data = subscription_cancel(subscription_id, cancel_at_period_end)
+        return data

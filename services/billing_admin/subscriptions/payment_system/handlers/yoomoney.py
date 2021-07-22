@@ -7,7 +7,6 @@ from yookassa import Configuration, Payment, Refund
 from yookassa.domain.response import PaymentResponse, RefundResponse
 from subscriptions.models.meta import PaymentStatus
 
-
 CONFIG = settings.PAYMENT_SYSTEMS[settings.YOOMONEY]
 RETURN_UTL = CONFIG["return_url"]
 
@@ -76,3 +75,7 @@ class YoomoneyPaymentSystem(AbstractPaymentSystem):
                 }
             }
         )
+
+    def subscription_cancel(self, cancel_at_period_end=True):
+        """ Отмена подписки """
+        pass
