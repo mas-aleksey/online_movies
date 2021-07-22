@@ -28,6 +28,7 @@ class SubscriptionStatus(models.TextChoices):
     ACTIVE = "active", _("Активная")
     EXPIRED = "expired", _("Истек срок действия")
     CANCELLED = "cancelled", _("Подписка отмененна")
+    CANCEL_AT_PERIOD_END = "cancel_at_period_end", _("Отменена после окончания периода")
 
 
 class PaymentStatus(models.TextChoices):
