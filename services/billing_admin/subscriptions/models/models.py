@@ -136,7 +136,12 @@ class Subscription(TimeStampedModel, SoftDeletableModel):
 class PaymentInvoice(TimeStampedModel):
     """ История оплат """
     id = models.UUIDField(primary_key=True)
-    subscription = models.ForeignKey(Subscription, on_delete=models.CASCADE, verbose_name="подписка")
+    subscription = models.ForeignKey(
+        Subscription,
+        on_delete=models.CASCADE,
+        related_name='payments',
+        verbose_name="подписка"
+    )
     amount = models.FloatField(_('конечная цена'), validators=[MinValueValidator(0)])
     info = models.JSONField(_('информация о платеже'), blank=True, null=True)
     status = models.CharField(

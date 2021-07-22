@@ -27,7 +27,8 @@ class SubscriptionStatus(models.TextChoices):
     INACTIVE = "inactive", _("Не активная")
     ACTIVE = "active", _("Активная")
     EXPIRED = "expired", _("Истек срок действия")
-    CANCELLED = "cancelled", _("Подписка отмененна")
+    CANCELLED = "cancelled", _("Подписка отменена")
+    CANCEL_AT_PERIOD_END = "cancel_at_period_end", _("Отмена после окончания периода")
 
 
 class PaymentStatus(models.TextChoices):
@@ -36,4 +37,5 @@ class PaymentStatus(models.TextChoices):
     PAYED = "payed", _("Оплачен")
     PENDING = "pending", _("Ждем подтверждения оплаты")
     FAILED = "failed", _("Оплата не успешна")
-    CANCELLED = "cancelled", _("Оплата отмененна")
+    CANCELLED = "cancelled", _("Оплата отменена")
+    REFUNDED = "refunded", _("Выполнен возврат")
