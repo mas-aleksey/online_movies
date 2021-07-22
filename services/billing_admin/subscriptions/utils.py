@@ -1,11 +1,16 @@
 import datetime
+import logging
 from typing import Optional
 from uuid import uuid4
+
+import pytz
 
 from subscriptions.models.models import (
     Client, Subscription, SubscriptionStatus, PaymentInvoice,
     PaymentSystem
 )
+
+LOGGER = logging.getLogger(__name__)
 
 
 def get_or_create_client(user_id: str) -> Client:
@@ -52,3 +57,23 @@ def create_payment(subscription: Subscription, payment_system: str):
     )
     payment.save()
     return payment
+
+
+def unsubscribe(subscription_id):
+    """процесс отписки"""
+    subscription = Subscription.objects.filter(id=subscription_id).first()
+
+    today = datetime.datetime.now(tz=pytz.utc)
+    payment = subscription.payments.last()
+    cancel_at_period_end = (today - payment.created) > datetime.timedelta(days=1)
+
+    if cancel_at_period_end:  # отменяем подписку по окончанию периода
+        subscription.set_cancel_at_period_end_status()
+    else:  # возвращаем платеж и полностью отменяем подписку
+        payment.refund_payment()
+        subscription.set_cancelled_status()
+
+    try:
+        payment.payment_system_instance.subscription_cancel(cancel_at_period_end)
+    except Exception as e:
+        LOGGER.error(e)
