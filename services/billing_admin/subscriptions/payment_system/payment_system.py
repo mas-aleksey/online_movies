@@ -27,3 +27,7 @@ class AbstractPaymentSystem:
     def subscription_cancel(self, cancel_at_period_end=True):
         """ Отмена подписки """
         raise NotImplementedError
+
+    def subscription_renew(self):
+        """ Продлить подписку"""
+        raise NotImplementedError

@@ -79,3 +79,7 @@ class YoomoneyPaymentSystem(AbstractPaymentSystem):
     def subscription_cancel(self, cancel_at_period_end=True):
         """ Отмена подписки """
         pass
+
+    def subscription_renew(self):
+        """ Продлить подписку"""
+        pass

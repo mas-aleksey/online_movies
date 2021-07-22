@@ -92,3 +92,7 @@ class StripePaymentSystem(AbstractPaymentSystem):
         subscription_id = str(self.payment.subscription_id)
         data = subscription_cancel(subscription_id, cancel_at_period_end)
         return data
+
+    def subscription_renew(self):
+        """ Продлить подписку"""
+        pass
