@@ -37,4 +37,5 @@ class PaymentStatus(models.TextChoices):
     PAYED = "payed", _("Оплачен")
     PENDING = "pending", _("Ждем подтверждения оплаты")
     FAILED = "failed", _("Оплата не успешна")
-    CANCELLED = "cancelled", _("Оплата отмененна")
+    CANCELLED = "cancelled", _("Оплата отменена")
+    REFUNDED = "refunded", _("Выполнен возврат")
