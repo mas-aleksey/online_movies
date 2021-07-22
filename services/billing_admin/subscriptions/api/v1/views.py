@@ -2,7 +2,8 @@ import json
 import logging
 
 from django.contrib.postgres.aggregates import ArrayAgg
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
+from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.detail import BaseDetailView
 from django.views.generic.list import BaseListView
@@ -224,3 +225,26 @@ class ProductListApi(BaseListView):
 
     def render_to_response(self, context, **response_kwargs):
         return JsonResponse(context)
+
+
+class UserUnsubscribeApi(View):
+    """Отписка"""
+
+    http_method_names = ['get']
+
+    def dispatch(self, request, *args, **kwargs):
+        self.kwargs['user_id'] = request.scope.get('user_id')
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_object(self):
+        return Subscription.objects.filter(
+            pk=self.kwargs['subscription_id'],
+            client__user_id=self.kwargs['user_id']
+        ).first()
+
+    def get(self, request, subscription_id, *args, **kwargs):
+        subscription = self.get_object()
+        if not subscription:
+            return Http404()
+        print('yees')
+        return JsonResponse({'status': 'ok'})

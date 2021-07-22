@@ -1,7 +1,7 @@
 from django.urls import path
 
 from demo.views import login, profile, movies, logout, index, movies_detail, tariff, order, subscribe, \
-    subscriptions, products
+    subscriptions, products,unsubscribe
 
 app_name = "demo"
 
@@ -16,5 +16,6 @@ urlpatterns = [
     path('order/', order, name='order'),
     path('subscriptions/', subscriptions, name='subscriptions'),
     path('subscriptions/<str:subscribe_id>', subscribe, name='subscribe'),
+    path('subscriptions/<str:subscribe_id>/unsubscribe', unsubscribe, name='unsubscribe'),
     path('logout/', logout, name='logout'),
 ]

@@ -7,7 +7,7 @@ from django.urls import reverse
 from demo.forms import LoginForm
 from demo.services import (auth_profile, auth_logout, async_movies_search, async_movies_detail,
                            billing_tariff, billing_order, billing_subscribe, auth_access_check,
-                           billing_subscriptions, billing_products)
+                           billing_subscriptions, billing_products, billing_unsubscribe)
 
 
 def index(request):
@@ -192,3 +192,23 @@ def subscribe(request, subscribe_id):
         return render(request, '500.html', ctx)
 
     return render(request, 'subscribe.html', ctx)
+
+
+@check_token
+def unsubscribe(request, subscribe_id):
+    """отмена подписки"""
+
+    refresh_page = request.GET.get('refresh_page', "0")
+    access_token = request.session.get('access_token')
+    ctx = {
+        'data': [],
+        'refresh_page': refresh_page
+    }
+
+    try:
+        ctx['data'] = billing_unsubscribe(access_token, subscribe_id)
+    except Exception as e:
+        ctx['errors'] = str(e)
+        return render(request, '500.html', ctx)
+
+    return HttpResponseRedirect(reverse('demo:subscribe', args=(subscribe_id,)))

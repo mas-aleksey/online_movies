@@ -171,3 +171,15 @@ def billing_subscribe(access_token, subscribe_id):
         return data
 
     raise HTTPError(resp.text)
+
+
+def billing_unsubscribe(access_token, subscribe_id):
+    url = f'{BILLING_BASE_URL}/subscription/v1/subscriptions/{subscribe_id}/unsubscribe'
+    headers = {'content-type': 'application/json', 'user-agent': 'billing', 'authorization': f'Bearer {access_token}'}
+    resp = requests.get(url=url, headers=headers)
+
+    if resp.status_code == 200:
+        data = resp.json()
+        return data
+
+    raise HTTPError(resp.text)
