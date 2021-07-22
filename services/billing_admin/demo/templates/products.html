@@ -15,37 +15,22 @@
         <h2 class="pb-2 border-bottom">Подписки</h2>
         <div class="row g-4 py-5 row-cols-1 row-cols-lg-4">
             {% for product in data.results %}
-                <div class="card m-3" style="width: 18rem;">
+                <div class="card m-3" style="width: 20rem;">
                     <div class="card-body">
                         <h5 class="card-title">{{ product.name }}</h5>
                         <h6 class="card-subtitle mb-2 text-muted">{{ product.description }}</h6>
-                        <p class="card-text">
-                        <table>
-                            <tr>
-                                {% for period in product.tariff_perions %}
-                                    <th>{% if period == "per year" %}Год{% else %}Месяц{% endif %}</th>
-                                {% endfor %}
-                            </tr>
-                            <tr>
-                                {% for price in product.tariff_prices %}
-                                    <th><p>{{ price }} руб.</p></th>
-                                {% endfor %}
-                            </tr>
-                            <tr>
-                                {% for discount in product.discounts %}
-                                    <th class="mr-2"><p style="width:120px">{% if discount %}Скидка: {{ discount }}
-                                        %{% else %}&nbsp;{% endif %}</p></th>
-                                {% endfor %}
-                            </tr>
-                            <tr>
-                                {% for tariff_id in product.tariff_ids %}
-                                    <th>
-                                        <a class="btn btn-primary" href="{% url "demo:tariff" tariff_id %}">Оформить</a>
-                                    </th>
-                                {% endfor %}
-                            </tr>
-                        </table>
-                        </p>
+                        <div class="row mt-5">
+                        {% for fariff in product.tariffs %}
+                            <div class="block" style="width: 50%;">
+                            {% if fariff.period == "per year" %}Год{% else %}Месяц{% endif %}
+                            <p>{{ fariff.price }} руб.</p>
+                            <p style="width:120px">
+                                {% if fariff.discount %}Скидка: {{ fariff.discount }} %{% else %}&nbsp;{% endif %}
+                            </p>
+                            <a class="btn btn-primary" href="{% url "demo:tariff" fariff.id %}">Оформить</a>
+                            </div>
+                        {% endfor %}
+                        </div>
                     </div>
                 </div>
             {% endfor %}

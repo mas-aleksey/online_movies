@@ -183,7 +183,7 @@ class ProductListApi(BaseListView):
             tariff_ids=ArrayAgg(
                 'tariffs__id',
             ),
-            tariff_perions=ArrayAgg(
+            tariff_periods=ArrayAgg(
                 'tariffs__period',
             ),
             tariff_prices=ArrayAgg(
@@ -194,6 +194,23 @@ class ProductListApi(BaseListView):
             ),
         )
 
+    @staticmethod
+    def prepare_item(product: dict) -> dict:
+        item = {
+            'id': product['id'],
+            'name': product['name'],
+            'description': product['description'],
+            'access_type': product['access_type'],
+            'tariffs': []
+        }
+        for _id, period, price, discount in zip(
+                product['tariff_ids'], product['tariff_periods'],
+                product['tariff_prices'], product['discounts']
+        ):
+            tariff = {'id': _id, 'period': period, 'price': price, 'discount': discount}
+            item['tariffs'].append(tariff)
+        return item
+
     def get_context_data(self, *, object_list=None, **kwargs):
         paginator, page, object_list, _ = self.paginate_queryset(self.object_list, self.paginate_by)
         context = {
@@ -201,7 +218,7 @@ class ProductListApi(BaseListView):
             "total_pages": paginator.num_pages,
             "prev": page.previous_page_number() if page.has_previous() else None,
             "next": page.next_page_number() if page.has_next() else None,
-            'results': list(self.object_list),
+            'results': [self.prepare_item(item) for item in self.object_list],
         }
         return context
 
