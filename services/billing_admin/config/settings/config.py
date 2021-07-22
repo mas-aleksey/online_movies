@@ -3,7 +3,9 @@ from typing import Dict, Union
 
 PAYMENT_RETURN_URL = "https://yandexmovies.online/billing/demo/subscriptions"
 YOOMONEY = "yoomoney"
+
 STRIPE = "stripe"
+STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
 
 PAYMENT_SYSTEMS: Dict[str, Dict[str, Union[str, bool, None]]] = {
     YOOMONEY: {
@@ -13,10 +15,13 @@ PAYMENT_SYSTEMS: Dict[str, Dict[str, Union[str, bool, None]]] = {
         "return_url": PAYMENT_RETURN_URL,
     },
     STRIPE: {
-        "secret_key": os.environ.get("STRIPE_SECRET_KEY"),
+        "secret_key": STRIPE_SECRET_KEY,
         "active": True,
         "return_url": PAYMENT_RETURN_URL
     }
 }
 
-STRIPE_SECRET_KEY = PAYMENT_SYSTEMS[STRIPE]['secret_key']
+ACCESS_ROLES_MAPPING = {
+    'standard': ['standard'],
+    'extra': ['standard', 'extra']
+}

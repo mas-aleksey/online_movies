@@ -3,12 +3,14 @@ from datetime import date
 from dateutil.relativedelta import relativedelta
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from model_utils.models import TimeStampedModel, SoftDeletableModel
 
 from subscriptions.models.meta import (
     PaymentStatus, PaymentSystem, AccessType, SubscriptionStatus, SubscriptionPeriods
 )
+from services.auth import add_auth_user_role, delete_auth_user_role
 from subscriptions.payment_system.payment_factory import PaymentSystemFactory
 from subscriptions.querysets import SubscriptionQuerySet
 
@@ -121,12 +123,16 @@ class Subscription(TimeStampedModel, SoftDeletableModel):
 
     def set_active(self):
         """ делаем подписку активной """
+        roles = settings.ACCESS_ROLES_MAPPING[self.tariff.product.access_type]
+        add_auth_user_role(self.client.user_id, roles)
         self.status = SubscriptionStatus.ACTIVE
         self.expiration_date = self.tariff.next_payment_date
         self.save()
 
     def set_cancelled_status(self):
-        """ делаем подписку отмененной """
+        """ отмена подписки """
+        roles = settings.ACCESS_ROLES_MAPPING[self.tariff.product.access_type]
+        delete_auth_user_role(self.client.user_id, roles)
         self.status = SubscriptionStatus.CANCELLED
         self.save()
 

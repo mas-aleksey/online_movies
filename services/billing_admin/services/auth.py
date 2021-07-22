@@ -29,7 +29,7 @@ def revoke_auth_user_access_token(admit_token: str, user_id: str):
     r.raise_for_status()
 
 
-def change_auth_user_role(method, user_id: str, access_type: str):
+def change_auth_user_role(method, user_id: str, roles: list):
     """Добавить/удалить роль пользователю."""
     token = get_auth_access_token()
     url = f'{settings.AUTH_SERVER}/api/v1/users/{user_id}/roles'
@@ -37,23 +37,19 @@ def change_auth_user_role(method, user_id: str, access_type: str):
         'content-type': 'application/json',
         'authorization': f'Bearer {token}'
     }
-
-    data = {
-        "role": access_type
-    }
-
-    r = requests.request(method, url, json=data, headers=headers)
-    if r.status_code not in [200, 409]:
-        r.raise_for_status()
+    for role in roles:
+        r = requests.request(method, url, json={"role": role}, headers=headers)
+        if r.status_code not in [200, 409]:
+            r.raise_for_status()
 
     revoke_auth_user_access_token(token, user_id)
 
 
-def add_auth_user_role(user_id: str, access_type: str):
-    """Добавить роль пользователю."""
-    change_auth_user_role('post', user_id, access_type)
+def add_auth_user_role(user_id: str, roles: list):
+    """Добавить роли для пользователю."""
+    change_auth_user_role('post', user_id, roles)
 
 
-def delete_auth_user_role(user_id: str, access_type: str):
-    """Удалить роль пользователя."""
-    change_auth_user_role('delete', user_id, access_type)
+def delete_auth_user_role(user_id: str, roles: list):
+    """Удалить роли у пользователя."""
+    change_auth_user_role('delete', user_id, roles)
