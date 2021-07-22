@@ -7,7 +7,7 @@ import pytz
 
 from subscriptions.models.models import (
     Client, Subscription, SubscriptionStatus, PaymentInvoice,
-    PaymentSystem
+    PaymentSystem, Tariff
 )
 
 LOGGER = logging.getLogger(__name__)
@@ -28,7 +28,8 @@ def get_subscription_by_client(client: Client, status: SubscriptionStatus) -> Op
 
 def create_subscription(user_id, tariff_id) -> Subscription:
     client = get_or_create_client(user_id)
-    subscription = get_subscription_by_client(client, SubscriptionStatus.DRAFT)
+    subscription = Subscription.objects.filter_by_user_id(user_id).filter_by_status(SubscriptionStatus.DRAFT)
+    tariff = Tariff.objects.get(id=tariff_id)
     if subscription:
         subscription.tariff_id = tariff_id
     else:
@@ -37,7 +38,7 @@ def create_subscription(user_id, tariff_id) -> Subscription:
             client=client,
             tariff_id=tariff_id,
             status=SubscriptionStatus.DRAFT,
-            expiration_date=datetime.datetime.now()
+            expiration_date=tariff.next_payment_date()
         )
     subscription.save()
     return subscription

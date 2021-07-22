@@ -13,3 +13,6 @@ class SubscriptionQuerySet(QuerySet):
 
     def filter_by_user_id(self, user_id: str):
         return self.filter(client__user_id=user_id)
+
+    def filter_by_status(self, status):
+        return self.filter(status=status)

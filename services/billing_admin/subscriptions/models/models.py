@@ -86,8 +86,9 @@ class Tariff(TimeStampedModel):
     def __str__(self):
         return f'{self.product} {self.price} {self.period}'
 
-    @property
-    def next_payment_date(self) -> date:
+    def next_payment_date(self, today: date = None) -> date:
+        if not today:
+            today = date.today()
         if self.period == SubscriptionPeriods.MONTHLY:
             delta = relativedelta(months=+1)
         elif self.period == SubscriptionPeriods.YEARLY:
@@ -95,7 +96,7 @@ class Tariff(TimeStampedModel):
         else:
             raise ValueError(f"unknown period: {self.period}")
 
-        return date.today() + delta
+        return today + delta
 
 
 class Subscription(TimeStampedModel, SoftDeletableModel):
@@ -126,7 +127,7 @@ class Subscription(TimeStampedModel, SoftDeletableModel):
         roles = settings.ACCESS_ROLES_MAPPING[self.tariff.product.access_type]
         add_auth_user_role(self.client.user_id, roles)
         self.status = SubscriptionStatus.ACTIVE
-        self.expiration_date = self.tariff.next_payment_date
+        self.expiration_date = self.tariff.next_payment_date()
         self.save()
 
     def set_cancelled_status(self):
@@ -139,6 +140,12 @@ class Subscription(TimeStampedModel, SoftDeletableModel):
     def set_cancel_at_period_end_status(self):
         """ делаем подписку отмененной """
         self.status = SubscriptionStatus.CANCEL_AT_PERIOD_END
+        self.save()
+
+    def inc_expiration_date(self):
+        """продлить дату окончания подписки"""
+        next_date = self.tariff.next_payment_date(self.expiration_date)
+        self.expiration_date = next_date
         self.save()
 
 

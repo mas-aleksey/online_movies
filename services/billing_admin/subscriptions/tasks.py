@@ -1,10 +1,6 @@
-
-
 from config.celery import app
 from django.apps import apps
 import logging
-
-from subscriptions.utils import unsubscribe
 
 LOGGER = logging.getLogger(__name__)
 
@@ -21,4 +17,5 @@ def wait_payment_task(payment_id):
 
 @app.task(queue="high", timeout=60 * 5, default_retry_delay=10, max_retries=3)
 def unsubscribe_task(subscription_id):
+    from subscriptions.utils import unsubscribe
     unsubscribe(subscription_id)
