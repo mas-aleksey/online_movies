@@ -7,7 +7,7 @@ from django.urls import reverse
 from demo.forms import LoginForm
 from demo.services import (auth_profile, auth_logout, async_movies_search, async_movies_detail,
                            billing_tariff, billing_order, billing_subscribe, auth_access_check,
-                           billing_subscriptions, billing_products, billing_unsubscribe)
+                           billing_subscriptions, billing_products, billing_unsubscribe, auth_refresh)
 
 
 def index(request):
@@ -22,8 +22,22 @@ def check_token(view_func):
 
     def wrapped_view(request, **kwargs):
         access_token = request.session.get('access_token')
-        if not access_token or not auth_access_check(access_token):
+        refresh_token = request.session.get('refresh_token')
+
+        if not access_token or not refresh_token:
             return HttpResponseRedirect(reverse('demo:login'))
+
+        if not auth_access_check(access_token):
+            try:
+                tokens = auth_refresh(refresh_token)
+            except:
+                request.session['access_token'] = None
+                request.session['refresh_token'] = None
+                return HttpResponseRedirect(reverse('demo:login'))
+
+            request.session['access_token'] = tokens['access_token']
+            request.session['refresh_token'] = tokens['refresh_token']
+
         return view_func(request, **kwargs)
 
     return wraps(view_func)(wrapped_view)
@@ -47,20 +61,18 @@ def login(request):
 def profile(request):
     """профиль пользователя"""
 
-    if not request.session.get('refresh_token'):
+    access_token = request.session.get('access_token')
+    if not access_token:
         return HttpResponseRedirect(reverse('demo:login'))
 
-    ctx = {
-        'access_token': None,
-        'refresh_token': None
-    }
+    ctx = {}
     try:
-        ctx = auth_profile(request.session['refresh_token'])
+        ctx = auth_profile(access_token)
     except Exception as e:
         ctx['errors'] = str(e)
 
-    request.session['access_token'] = ctx['access_token']
-    request.session['refresh_token'] = ctx['refresh_token']
+    ctx['access_token'] = access_token
+    ctx['refresh_token'] = request.session.get('refresh_token')
 
     return render(request, 'profile.html', ctx)
 

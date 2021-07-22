@@ -59,17 +59,10 @@ def auth_access_check(access_token):
     return False
 
 
-def auth_profile(refresh_token):
-    tokens = auth_refresh(refresh_token)
-    access_token = tokens['access_token']
-    refresh_token = tokens['refresh_token']
-
+def auth_profile(access_token):
     url = f'{AUTH_BASE_URL}/api/v1/auth/access_check'
     headers = {'content-type': 'application/json', 'user-agent': 'billing', 'authorization': f'Bearer {access_token}'}
-    scope = {
-        'access_token': access_token,
-        'refresh_token': refresh_token
-    }
+    scope = {}
 
     resp = requests.get(url, headers=headers)
     if resp.status_code == 200:
