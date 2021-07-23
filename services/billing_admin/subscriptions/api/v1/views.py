@@ -19,15 +19,15 @@ def status(request):
     return JsonResponse({'status': 'ok'})
 
 
-def create_subscription(data, scope):
+def create_new_subscription(data, scope):
     user_id = scope['user_id']
     user_email = scope['email']
     payment_system = data['payment_system']
     tariff_id = data['tariff_id']
 
-    subscription = utils.create_subscription(user_id, tariff_id)
-    payment = utils.create_payment(subscription, payment_system)
-    return payment.payment_system_instance.process_payment()
+    subscription = utils.create_subscription(user_id, tariff_id, payment_system)
+    url = subscription.process_confirm()
+    return url
 
 
 @csrf_exempt
@@ -43,7 +43,7 @@ def make_order(request):
     if request.method == 'POST':
         data = (json.loads(request.body))
         try:
-            url = create_subscription(data, request.scope)
+            url = create_new_subscription(data, request.scope)
         except Exception as e:
             LOGGER.error(e)
             return JsonResponse({'status': 'failed', 'msg': str(e)}, status=500)
@@ -194,7 +194,7 @@ class ProductListApi(BaseListView):
             discounts=ArrayAgg(
                 'tariffs__discount__value',
             ),
-        )
+        ).order_by('id')
 
     @staticmethod
     def prepare_item(product: dict) -> dict:
