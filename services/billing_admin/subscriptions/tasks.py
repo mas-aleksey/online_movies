@@ -37,3 +37,14 @@ def unsubscribe_task(subscription_id):
 
     subscription = Subscription.objects.filter(id=subscription_id).first()
     subscription.process_cancel()
+
+
+@app.task(queue="default", timeout=60 * 5)
+def renew_subscriptions_task():
+    """таска для продления подписок"""
+    from subscriptions.models.models import Subscription
+
+    subscriptions = Subscription.objects.need_renew()
+
+    for subscription in subscriptions:
+        subscription.process_renew()

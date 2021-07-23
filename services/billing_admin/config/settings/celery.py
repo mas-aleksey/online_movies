@@ -24,8 +24,8 @@ CELERY_QUEUES = (
 )
 
 CELERY_BEAT_SCHEDULE = {
-    'debug_task': {
-        "task": 'config.celery.debug_task',
-        "schedule": 10.0
+    'renew_subscriptions_task': {
+        "task": 'subscriptions.tasks.renew_subscriptions_task',  # продление подписок
+        "schedule": 60.0  # каждые 60 сек
     }
 }
