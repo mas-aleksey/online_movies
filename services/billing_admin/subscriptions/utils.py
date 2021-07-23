@@ -1,9 +1,6 @@
-import datetime
 import logging
 from typing import Optional
 from uuid import uuid4
-
-import pytz
 
 from subscriptions.models.models import (
     Client, Subscription, SubscriptionStatus, PaymentInvoice,
@@ -26,9 +23,9 @@ def get_subscription_by_client(client: Client, status: SubscriptionStatus) -> Op
     return Subscription.objects.filter(client=client, status=status).first()
 
 
-def create_subscription(user_id, tariff_id) -> Subscription:
+def create_subscription(user_id, tariff_id, payment_system: str) -> Subscription:
     client = get_or_create_client(user_id)
-    subscription = Subscription.objects.filter_by_user_id(user_id).filter_by_status(SubscriptionStatus.DRAFT)
+    subscription = Subscription.objects.filter_by_user_id(user_id).filter_by_status(SubscriptionStatus.DRAFT).first()
     tariff = Tariff.objects.get(id=tariff_id)
     if subscription:
         subscription.tariff_id = tariff_id
@@ -38,13 +35,14 @@ def create_subscription(user_id, tariff_id) -> Subscription:
             client=client,
             tariff_id=tariff_id,
             status=SubscriptionStatus.DRAFT,
-            expiration_date=tariff.next_payment_date()
+            expiration_date=tariff.next_payment_date(),
+            payment_system=PaymentSystem(payment_system)
         )
     subscription.save()
     return subscription
 
 
-def create_payment(subscription: Subscription, payment_system: str):
+def create_payment(subscription: Subscription):
     amount = subscription.tariff.price
     discount = subscription.discount or subscription.tariff.discount
     if discount:
@@ -53,28 +51,8 @@ def create_payment(subscription: Subscription, payment_system: str):
     payment = PaymentInvoice(
         id=uuid4(),
         subscription=subscription,
-        payment_system=PaymentSystem(payment_system),
+        payment_system=PaymentSystem(subscription.payment_system),
         amount=amount
     )
     payment.save()
     return payment
-
-
-def unsubscribe(subscription_id):
-    """процесс отписки"""
-    subscription = Subscription.objects.filter(id=subscription_id).first()
-
-    today = datetime.datetime.now(tz=pytz.utc)
-    payment = subscription.payments.last()
-    cancel_at_period_end = (today - payment.created) > datetime.timedelta(days=1)
-
-    if cancel_at_period_end:  # отменяем подписку по окончанию периода
-        subscription.set_cancel_at_period_end_status()
-    else:  # возвращаем платеж и полностью отменяем подписку
-        payment.refund_payment()
-        subscription.set_cancelled_status()
-
-    try:
-        payment.payment_system_instance.subscription_cancel(cancel_at_period_end)
-    except Exception as e:
-        LOGGER.error(e)

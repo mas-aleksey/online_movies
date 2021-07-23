@@ -1,98 +1,97 @@
-from django.conf import settings
+from typing import Optional
 
 from stripe_payment.models import SubscriptionInfoDataclass
 from stripe_payment.services.payment import create_subscription_checkout, get_subscription_info, subscription_cancel, \
-    subscription_refund
+    subscription_refund, get_latest_invoice
 from stripe_payment.services.stripe_api import checkout_retrieve_stripe
 from stripe_payment.services.subscription import create_or_update_subscription_id
-from subscriptions.models.meta import PaymentStatus, SubscriptionPeriods
+from subscriptions.models.meta import SubscriptionPeriods
+from subscriptions.payment_system.models import SubscribePaymentStatus, PaymentStatus
 from subscriptions.payment_system.payment_system import AbstractPaymentSystem
-from subscriptions.tasks import wait_payment_task
-
-CONFIG = settings.PAYMENT_SYSTEMS[settings.STRIPE]
-RETURN_UTL = CONFIG["return_url"]
 
 PERIODS = {
-    SubscriptionPeriods.MONTHLY: "month",
-    SubscriptionPeriods.YEARLY: "year"
+    str(SubscriptionPeriods.MONTHLY): "month",
+    str(SubscriptionPeriods.YEARLY): "year"
 }
 
 
 class StripePaymentSystem(AbstractPaymentSystem):
 
     def process_payment(self):
-        amount = int(self.payment.amount * 100)
+        pass
 
-        tariff = self.payment.subscription.tariff
-        period = PERIODS[tariff.period]
-        return_url = f'{RETURN_UTL}/{self.payment.subscription.id}?refresh_page=1'
-
-        subscription = SubscriptionInfoDataclass(
-            product_id=str(tariff.product.id),
-            product_name=tariff.product.name,
-            tariff_id=str(tariff.id),
-            tariff_period=period,
-            amount=amount,
-            success_url=return_url,
-            cancel_url=return_url
-        )
-
-        response = create_subscription_checkout(subscription)
-
-        self.payment.info = response
-        self.payment.status = PaymentStatus.PENDING
-        self.payment.save()
-        self.check_payment_status()
-        wait_payment_task.apply_async((self.payment.id,), countdown=5)
-        return response['url']
-
-    def check_subscribe_status(self):
-        data = get_subscription_info(str(self.payment.subscription.id))
+    def check_subscription_status(self) -> Optional[SubscribePaymentStatus]:
+        data = get_subscription_info(self.subscription_id)
         status = data['status']
-
         if status == 'active':
-            self.payment.subscription.set_active()
-            return True
-        else:  # failed
-            self.payment.set_cancelled_status()
-            return False
+            return SubscribePaymentStatus.ACTIVE
+        return SubscribePaymentStatus.CANCELLED
 
     def check_payment_status(self):
-        payment_id = self.payment.info['id']
-        data = checkout_retrieve_stripe(payment_id)
+        payment_id = self.last_payment['id']
+        data = self.last_payment
 
-        stripe_subscription_id = data.get('subscription')
+        stripe_subscription_id = self.last_payment.get('subscription')
+        if not stripe_subscription_id:
+            data = checkout_retrieve_stripe(payment_id)
+            stripe_subscription_id = data.get('subscription')
+
         if stripe_subscription_id:
             create_or_update_subscription_id(
-                billing_subscription_id=str(self.payment.subscription.id),
+                billing_subscription_id=str(self.subscription_id),
                 stripe_subscription_id=stripe_subscription_id
             )
+            data = get_latest_invoice(self.subscription_id)
 
-        self.payment.info = data
-        self.payment.save()
-        status = data['payment_status']
+        status = data['status'] if data['object'] == 'invoice' else data['payment_status']
 
-        if status == 'unpaid':
-            return False
-        elif status == 'paid':
-            self.payment.set_payed_status()
-            return self.check_subscribe_status()
-        else:  # failed
-            self.payment.set_cancelled_status()
-            return False
+        data = {'payment_info': data, 'status': PaymentStatus.CANCELED}
+        if status == 'paid':
+            data['status'] = PaymentStatus.PAID
+        elif status == 'unpaid':
+            data['status'] = PaymentStatus.UNPAID
+
+        return data
 
     def refund_payment(self):
         """возврат платежа"""
-        subscription_id = str(self.payment.subscription_id)
+        subscription_id = str(self.subscription_id)
         data = subscription_refund(subscription_id)
         return data
 
-    def subscription_cancel(self, cancel_at_period_end=True):
-        """ Отмена подписки """
-        subscription_id = str(self.payment.subscription_id)
-        data = subscription_cancel(subscription_id, cancel_at_period_end)
+    def subscription_create(self):
+        """ Создание подписки """
+
+        amount = int(self.amount * 100)
+        period = PERIODS[self.tariff_period]
+
+        subscription = SubscriptionInfoDataclass(
+            product_id=self.product_id,
+            product_name=self.product_name,
+            tariff_id=self.tariff_id,
+            tariff_period=period,
+            amount=amount,
+            success_url=self.success_url,
+            cancel_url=self.cancel_url
+        )
+        response = create_subscription_checkout(subscription)
+        data = {
+            'payment_info': response,
+            'url': response['url']
+        }
         return data
 
     def subscription_renew(self):
         """ Продлить подписку"""
-        pass
+        data = get_latest_invoice(self.subscription_id)
+
+        payment_id = self.last_payment['id']
+        if data['id'] == payment_id:  # уже сохранили этот платеж
+            return None
+
+        return data
+
+    def subscription_cancel(self, cancel_at_period_end=True):
+        """ Отмена подписки """
+        data = subscription_cancel(self.subscription_id, cancel_at_period_end)
+        return data

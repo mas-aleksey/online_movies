@@ -1,3 +1,6 @@
+import datetime
+
+import pytz
 from django.db.models import QuerySet
 
 
@@ -16,3 +19,13 @@ class SubscriptionQuerySet(QuerySet):
 
     def filter_by_status(self, status):
         return self.filter(status=status)
+
+    def need_renew(self):
+        """подписки, которые необходимо продлить"""
+        from subscriptions.models.meta import SubscriptionStatus
+        statuses = [
+            SubscriptionStatus.ACTIVE,
+            SubscriptionStatus.EXPIRED,
+        ]
+        today = datetime.datetime.now(tz=pytz.utc)
+        return self.filter(expiration_date__lte=today, status__in=statuses)
