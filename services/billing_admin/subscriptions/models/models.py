@@ -283,6 +283,14 @@ class Subscription(TimeStampedModel, SoftDeletableModel):
         except Exception as e:
             LOGGER.error(e)
 
+    def process_renew(self):
+        """ процесс продления подписки """
+
+        data = self.payment_system_instance.subscription_renew()
+        if data:
+            payment = self.create_payment(info=data)
+            wait_payment_task.apply_async((payment.id,), countdown=5)
+
 
 class PaymentInvoice(TimeStampedModel):
     """ История оплат """

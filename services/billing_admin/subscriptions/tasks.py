@@ -11,8 +11,10 @@ def wait_payment_task(payment_id):
     from subscriptions.payment_system.models import PaymentStatus
     payment_model = apps.get_model('subscriptions', 'PaymentInvoice')
     pay = payment_model.objects.filter(id=payment_id).first()
-    status = pay.check_payment_status()
-
+    data = pay.check_payment_status()
+    pay.info = data['payment_info']
+    pay.save()
+    status = data['status']
     if status == PaymentStatus.UNPAID:
         is_finish = False
     elif status == PaymentStatus.PAID:

@@ -29,6 +29,19 @@ def get_subscription_info(billing_subscription_id: str) -> dict:
     return data
 
 
+def get_latest_invoice(billing_subscription_id: str) -> dict:
+    """Получить информацию о последнем платеже"""
+    stripe_subscription_id = get_subscription_id(billing_subscription_id)
+
+    if not stripe_subscription_id:
+        return {}
+
+    subscription_data = subscription_retrieve_stripe(stripe_subscription_id)
+    invoice_data = invoice_retrieve_stripe(subscription_data['latest_invoice'])
+
+    return invoice_data
+
+
 def subscription_refund(billing_subscription_id: str):
     """Возврат последнего платежа по подписке"""
     stripe_subscription_id = get_subscription_id(billing_subscription_id)

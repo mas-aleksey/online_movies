@@ -24,19 +24,21 @@ class YoomoneyPaymentSystem(AbstractPaymentSystem):
         }
         return data
 
-    def check_payment_status(self) -> Optional[PaymentStatus]:
+    def check_payment_status(self):
         payment_id = self.last_payment['id']
         response: PaymentResponse = Payment.find_one(payment_id=payment_id)
+        status = PaymentStatus.CANCELED
 
         if response.status == 'pending':
-            return PaymentStatus.UNPAID
+            status = PaymentStatus.UNPAID
         elif response.status == 'succeeded':
-            return PaymentStatus.PAID
+            status = PaymentStatus.PAID
         elif response.status == 'waiting_for_capture':
             Payment.capture(payment_id)
-            return PaymentStatus.UNPAID
+            status = PaymentStatus.UNPAID
 
-        return PaymentStatus.CANCELED
+        data = {'payment_info': json.loads(response.json()), 'status': status}
+        return data
 
     def refund_payment(self):
         refund: RefundResponse = Refund.create({
@@ -81,4 +83,15 @@ class YoomoneyPaymentSystem(AbstractPaymentSystem):
 
     def subscription_renew(self):
         """ Продлить подписку"""
-        pass
+
+        payment_method_id = self.last_payment['payment_method']['id']
+        response = Payment.create({
+            "amount": {
+                "value": self.amount,
+                "currency": "RUB"
+            },
+            "payment_method_id": payment_method_id,
+            "description": f"Заказ {self.subscription_id}",
+        })
+
+        return json.loads(response.json())

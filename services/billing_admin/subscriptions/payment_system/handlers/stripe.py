@@ -2,7 +2,7 @@ from typing import Optional
 
 from stripe_payment.models import SubscriptionInfoDataclass
 from stripe_payment.services.payment import create_subscription_checkout, get_subscription_info, subscription_cancel, \
-    subscription_refund
+    subscription_refund, get_latest_invoice
 from stripe_payment.services.stripe_api import checkout_retrieve_stripe
 from stripe_payment.services.subscription import create_or_update_subscription_id
 from subscriptions.models.meta import SubscriptionPeriods
@@ -27,23 +27,31 @@ class StripePaymentSystem(AbstractPaymentSystem):
             return SubscribePaymentStatus.ACTIVE
         return SubscribePaymentStatus.CANCELLED
 
-    def check_payment_status(self) -> Optional[PaymentStatus]:
+    def check_payment_status(self):
         payment_id = self.last_payment['id']
-        data = checkout_retrieve_stripe(payment_id)
+        data = self.last_payment
 
-        stripe_subscription_id = data.get('subscription')
+        stripe_subscription_id = self.last_payment.get('subscription')
+        if not stripe_subscription_id:
+            data = checkout_retrieve_stripe(payment_id)
+            stripe_subscription_id = data.get('subscription')
+
         if stripe_subscription_id:
             create_or_update_subscription_id(
                 billing_subscription_id=str(self.subscription_id),
                 stripe_subscription_id=stripe_subscription_id
             )
+            data = get_latest_invoice(self.subscription_id)
 
-        status = data['payment_status']
+        status = data['status'] if data['object'] == 'invoice' else data['payment_status']
+
+        data = {'payment_info': data, 'status': PaymentStatus.CANCELED}
         if status == 'paid':
-            return PaymentStatus.PAYED
+            data['status'] = PaymentStatus.PAID
         elif status == 'unpaid':
-            return PaymentStatus.UNPAID
-        return PaymentStatus.CANCELED
+            data['status'] = PaymentStatus.UNPAID
+
+        return data
 
     def refund_payment(self):
         """возврат платежа"""
@@ -75,7 +83,13 @@ class StripePaymentSystem(AbstractPaymentSystem):
 
     def subscription_renew(self):
         """ Продлить подписку"""
-        pass
+        data = get_latest_invoice(self.subscription_id)
+
+        payment_id = self.last_payment['id']
+        if data['id'] == payment_id:  # уже сохранили этот платеж
+            return None
+
+        return data
 
     def subscription_cancel(self, cancel_at_period_end=True):
         """ Отмена подписки """
