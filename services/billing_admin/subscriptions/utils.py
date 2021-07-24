@@ -39,7 +39,7 @@ def create_subscription(user_id, tariff_id, payment_system: str) -> Subscription
             expiration_date=tariff.next_payment_date(),
             payment_system=PaymentSystem(payment_system)
         )
-    subscription.payments.clear()
+    subscription.payments.all().delete()
     subscription.save()
     return subscription
 
