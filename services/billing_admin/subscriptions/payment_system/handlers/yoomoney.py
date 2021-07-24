@@ -1,6 +1,5 @@
 import datetime
 import json
-from typing import Optional
 
 from django.conf import settings
 from yookassa import Configuration, Payment, Refund
@@ -10,7 +9,6 @@ from subscriptions.payment_system.models import PaymentStatus
 from subscriptions.payment_system.payment_system import AbstractPaymentSystem
 
 CONFIG = settings.PAYMENT_SYSTEMS[settings.YOOMONEY]
-
 Configuration.configure(CONFIG["shop_id"], CONFIG["key"])
 
 

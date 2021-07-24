@@ -29,3 +29,12 @@ class SubscriptionQuerySet(QuerySet):
         ]
         today = datetime.datetime.now(tz=pytz.utc)
         return self.filter(expiration_date__lte=today, status__in=statuses)
+
+    def need_cancel(self):
+        """подписки, которые необходимо отменить"""
+        from subscriptions.models.meta import SubscriptionStatus
+        statuses = [
+            SubscriptionStatus.CANCEL_AT_PERIOD_END,
+        ]
+        today = datetime.datetime.now(tz=pytz.utc)
+        return self.filter(expiration_date__lte=today, status__in=statuses)

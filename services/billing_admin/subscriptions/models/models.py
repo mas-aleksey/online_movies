@@ -148,7 +148,7 @@ class Subscription(TimeStampedModel, SoftDeletableModel):
 
     @property
     def return_url(self):
-        config = settings.PAYMENT_SYSTEMS[settings.STRIPE]
+        config = settings.PAYMENT_SYSTEMS[self.payment_system]
         return_utl = config["return_url"]
         return f'{return_utl}/{self.id}?refresh_page=1'
 
@@ -179,15 +179,8 @@ class Subscription(TimeStampedModel, SoftDeletableModel):
         self.expiration_date = self.tariff.next_payment_date()
         self.save()
 
-    def set_cancelled_status(self):
+    def set_cancelled(self):
         """ отмена подписки """
-        roles = settings.ACCESS_ROLES_MAPPING[self.tariff.product.access_type]
-        delete_auth_user_role(self.client.user_id, roles)
-        self.status = SubscriptionStatus.CANCELLED
-        self.save()
-
-    def set_expired_status(self):
-        """ подписки просрочена """
         roles = settings.ACCESS_ROLES_MAPPING[self.tariff.product.access_type]
         delete_auth_user_role(self.client.user_id, roles)
         self.status = SubscriptionStatus.CANCELLED
@@ -198,7 +191,7 @@ class Subscription(TimeStampedModel, SoftDeletableModel):
         self.status = SubscriptionStatus.CANCEL_AT_PERIOD_END
         self.save()
 
-    def inc_expiration_date(self):
+    def prolong_expiration_date(self):
         """продлить дату окончания подписки"""
         next_date = self.tariff.next_payment_date(self.expiration_date)
         self.expiration_date = next_date
@@ -222,7 +215,6 @@ class Subscription(TimeStampedModel, SoftDeletableModel):
         Процесс подтверждения подписки. Для подтверждения необходимо оплатить подписку.
         Возвращает url на страницу платежной системы.
         """
-
         data = self.payment_system_instance.subscription_create()
         payment = self.create_payment(info=data['payment_info'])
         wait_payment_task.apply_async((payment.id,), countdown=5)
@@ -258,11 +250,14 @@ class Subscription(TimeStampedModel, SoftDeletableModel):
             status = self.define_status_from_payment_invoices()
 
         if status == SubscribePaymentStatus.ACTIVE:
-            self.set_active()
+            if self.status.ACTIVE:
+                self.prolong_expiration_date()
+            else:
+                self.set_active()
         elif status == SubscribePaymentStatus.EXPIRED:
-            self.set_expired_status()
+            self.set_cancelled()
         else:  # failed
-            self.set_cancelled_status()
+            self.set_cancelled()
 
         return status
 
@@ -276,7 +271,7 @@ class Subscription(TimeStampedModel, SoftDeletableModel):
             self.set_cancel_at_period_end_status()
         else:  # возвращаем платеж и полностью отменяем подписку
             last_payment.refund_payment()
-            self.set_cancelled_status()
+            self.set_cancelled()
 
         try:
             self.payment_system_instance.subscription_cancel(cancel_at_period_end)

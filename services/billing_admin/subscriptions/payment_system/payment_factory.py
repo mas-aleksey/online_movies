@@ -1,9 +1,6 @@
 from __future__ import annotations
-
 from typing import Dict, Type, TYPE_CHECKING
-
 from django.conf import settings
-
 from subscriptions.payment_system.handlers import YoomoneyPaymentSystem, StripePaymentSystem
 
 if TYPE_CHECKING:
