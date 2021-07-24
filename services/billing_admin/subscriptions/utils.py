@@ -4,7 +4,7 @@ from uuid import uuid4
 
 from subscriptions.models.models import (
     Client, Subscription, SubscriptionStatus, PaymentInvoice,
-    PaymentSystem, Tariff
+    PaymentSystem, Tariff, AuditEvents
 )
 
 LOGGER = logging.getLogger(__name__)
@@ -15,7 +15,7 @@ def get_or_create_client(user_id: str) -> Client:
     if not client:
         client = Client(id=uuid4(), user_id=user_id)
         client.save()
-
+        AuditEvents.create('system', 'create', 'user', client.user_id)
     return client
 
 
@@ -23,13 +23,17 @@ def get_subscription_by_client(client: Client, status: SubscriptionStatus) -> Op
     return Subscription.objects.filter(client=client, status=status).first()
 
 
-def create_subscription(user_id, tariff_id, payment_system: str) -> Subscription:
+def create_subscription(user_id, tariff_id, payment_system: str, user_email: str) -> Subscription:
     client = get_or_create_client(user_id)
     subscription = Subscription.objects.filter_by_user_id(user_id).filter_by_status(SubscriptionStatus.DRAFT).first()
     tariff = Tariff.objects.get(id=tariff_id)
     if subscription:
         subscription.tariff_id = tariff_id
         subscription.payment_system = PaymentSystem(payment_system)
+        AuditEvents.create(
+            f'user {user_id}', 'update', 'subscription', subscription.id,
+            f'tariff: {tariff_id}, payment_system: {payment_system}, user: {user_email}'
+        )
     else:
         subscription = Subscription(
             id=uuid4(),
@@ -38,6 +42,10 @@ def create_subscription(user_id, tariff_id, payment_system: str) -> Subscription
             status=SubscriptionStatus.DRAFT,
             expiration_date=tariff.next_payment_date(),
             payment_system=PaymentSystem(payment_system)
+        )
+        AuditEvents.create(
+            f'user {user_id}', 'create', 'subscription', subscription.id,
+            f'tariff: {tariff_id}, payment_system: {payment_system}, user: {user_email}'
         )
     subscription.payments.all().delete()
     subscription.save()

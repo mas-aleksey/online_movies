@@ -1,7 +1,7 @@
 import uuid
 from django.contrib import admin
 from subscriptions.models.models import (
-    Client, Product, Tariff, Discount, Subscription, PaymentInvoice
+    Client, Product, Tariff, Discount, Subscription, PaymentInvoice, AuditEvents
 )
 
 
@@ -44,3 +44,11 @@ class SubscriptionAdmin(BaseAdmin):
 @admin.register(PaymentInvoice)
 class PaymentHistoryAdmin(BaseAdmin):
     list_display = ('subscription', 'amount', 'status', 'payment_system', 'created', 'modified')
+
+
+@admin.register(AuditEvents)
+class AuditEventsAdmin(admin.ModelAdmin):
+    exclude = ('id',)
+    list_display = ('created', 'who', 'what', 'related_name')
+    search_fields = ['who', 'what', 'related_name']
+    ordering = ['-created', ]

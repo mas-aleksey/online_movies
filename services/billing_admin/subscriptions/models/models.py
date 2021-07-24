@@ -208,6 +208,10 @@ class Subscription(TimeStampedModel, SoftDeletableModel):
             info=info
         )
         payment.save()
+        AuditEvents.create(
+            'system', 'create', 'payment', payment.id,
+            f'subscription {self.id}'
+        )
         return payment
 
     def process_confirm(self):
@@ -216,8 +220,16 @@ class Subscription(TimeStampedModel, SoftDeletableModel):
         Возвращает url на страницу платежной системы.
         """
         data = self.payment_system_instance.subscription_create()
+        AuditEvents.create(
+            f'payment_system {self.payment_system}', 'create', 'payment', 'None',
+            f'subscription {self.id} data: {data}'
+        )
         payment = self.create_payment(info=data['payment_info'])
         wait_payment_task.apply_async((payment.id,), countdown=5)
+        AuditEvents.create(
+            f'system', 'create', 'wait_payment_task', payment.id,
+            f'subscription {self.id}'
+        )
         return data['url']
 
     def define_status_from_payment_system(self):
@@ -361,3 +373,20 @@ class PaymentInvoice(TimeStampedModel):
         if self.status == PaymentStatus.PAYED:
             self.payment_system_instance.refund_payment()
             self.set_refunded_status()
+
+
+class AuditEvents(TimeStampedModel):
+    """ История событий """
+    who = models.CharField(_("Инициатор события"), max_length=50)
+    what = models.CharField(_("Событие"), max_length=50)
+    related_name = models.CharField(_("Объект"), max_length=50)
+    related_id = models.CharField(_("Id объекта"), max_length=50)
+    details = models.TextField(_("Подробности"), blank=True, null=True)
+
+    class Meta:
+        verbose_name = _('событие')
+        verbose_name_plural = _('событий')
+
+    @classmethod
+    def create(cls, who, what, related_name, related_id, details=None) -> None:
+        cls(who=who, what=what, related_name=related_name, related_id=related_id, details=details).save()

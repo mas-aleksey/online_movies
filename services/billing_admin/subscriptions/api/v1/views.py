@@ -9,7 +9,7 @@ from django.views.generic.detail import BaseDetailView
 from django.views.generic.list import BaseListView
 
 import subscriptions.utils as utils
-from subscriptions.models.models import Tariff, Subscription, Product
+from subscriptions.models.models import Tariff, Subscription, Product, AuditEvents
 from subscriptions.tasks import unsubscribe_task
 
 LOGGER = logging.getLogger(__file__)
@@ -25,7 +25,7 @@ def create_new_subscription(data, scope):
     payment_system = data['payment_system']
     tariff_id = data['tariff_id']
 
-    subscription = utils.create_subscription(user_id, tariff_id, payment_system)
+    subscription = utils.create_subscription(user_id, tariff_id, payment_system, user_email)
     url = subscription.process_confirm()
     return url
 
