@@ -29,6 +29,7 @@ def create_subscription(user_id, tariff_id, payment_system: str) -> Subscription
     tariff = Tariff.objects.get(id=tariff_id)
     if subscription:
         subscription.tariff_id = tariff_id
+        subscription.payment_system = PaymentSystem(payment_system)
     else:
         subscription = Subscription(
             id=uuid4(),
@@ -38,6 +39,7 @@ def create_subscription(user_id, tariff_id, payment_system: str) -> Subscription
             expiration_date=tariff.next_payment_date(),
             payment_system=PaymentSystem(payment_system)
         )
+    subscription.payments.clear()
     subscription.save()
     return subscription
 
