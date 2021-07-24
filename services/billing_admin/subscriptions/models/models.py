@@ -250,7 +250,7 @@ class Subscription(TimeStampedModel, SoftDeletableModel):
             status = self.define_status_from_payment_invoices()
 
         if status == SubscribePaymentStatus.ACTIVE:
-            if self.status.ACTIVE:
+            if self.status == SubscriptionStatus.ACTIVE:
                 self.prolong_expiration_date()
             else:
                 self.set_active()
