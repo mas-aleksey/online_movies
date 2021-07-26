@@ -416,7 +416,7 @@ class AuditEvents(TimeStampedModel):
 
     class Meta:
         verbose_name = _('событие')
-        verbose_name_plural = _('событий')
+        verbose_name_plural = _('события')
 
     @classmethod
     def create(cls, who, what, related_name, related_id, details=None) -> None:
