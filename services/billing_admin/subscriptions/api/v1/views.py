@@ -21,11 +21,10 @@ def status(request):
 
 def create_new_subscription(data, scope):
     user_id = scope['user_id']
-    user_email = scope['email']
     payment_system = data['payment_system']
     tariff_id = data['tariff_id']
 
-    subscription = utils.create_subscription(user_id, tariff_id, payment_system, user_email)
+    subscription = utils.create_subscription(user_id, tariff_id, payment_system)
     url = subscription.process_confirm()
     return url
 

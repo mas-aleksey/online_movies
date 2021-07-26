@@ -116,14 +116,12 @@ class AuditMixin(models.Model):
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None, action=None):
         super().save(force_insert, force_update, using, update_fields)
-        status = getattr(self, 'status', action)
-        AuditEvents.create(
-            f'models', status, self.__class__.__name__, self.id, str(self.details)
-        )
+        status = action or getattr(self, 'status', 'something')
+        AuditEvents.create('models', status, self.__class__.__name__, self.id, self.details)
 
     @property
-    def details(self):
-        return model_to_dict(self)
+    def details(self) -> str:
+        return str(model_to_dict(self))
 
 
 class Subscription(TimeStampedModel, SoftDeletableModel, AuditMixin):

@@ -20,17 +20,14 @@ def get_subscription_by_client(client: Client, status: SubscriptionStatus) -> Op
     return Subscription.objects.filter(client=client, status=status).first()
 
 
-def create_subscription(user_id, tariff_id, payment_system: str, user_email: str) -> Subscription:
+def create_subscription(user_id, tariff_id, payment_system: str) -> Subscription:
     client = get_or_create_client(user_id)
     subscription = Subscription.objects.filter_by_user_id(user_id).filter_by_status(SubscriptionStatus.DRAFT).first()
     tariff = Tariff.objects.get(id=tariff_id)
     if subscription:
         subscription.tariff_id = tariff_id
         subscription.payment_system = PaymentSystem(payment_system)
-        AuditEvents.create(
-            f'user {user_id}', 'update', 'subscription', subscription.id,
-            f'tariff: {tariff_id}, payment_system: {payment_system}, user: {user_email}'
-        )
+        AuditEvents.create(f'user {user_id}', 'update', 'subscription', subscription.id, subscription.details)
     else:
         subscription = Subscription(
             id=uuid4(),
@@ -40,10 +37,7 @@ def create_subscription(user_id, tariff_id, payment_system: str, user_email: str
             expiration_date=tariff.next_payment_date(),
             payment_system=PaymentSystem(payment_system)
         )
-        AuditEvents.create(
-            f'user {user_id}', 'create', 'subscription', subscription.id,
-            f'tariff: {tariff_id}, payment_system: {payment_system}, user: {user_email}'
-        )
+        AuditEvents.create(f'user {user_id}', 'create', 'subscription', subscription.id, subscription.details)
     subscription.payments.all().delete()
     subscription.save()
     return subscription
