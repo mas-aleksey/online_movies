@@ -21,11 +21,10 @@ def status(request):
 
 def create_new_subscription(data, scope):
     user_id = scope['user_id']
-    user_email = scope['email']
     payment_system = data['payment_system']
     tariff_id = data['tariff_id']
 
-    subscription = utils.create_subscription(user_id, tariff_id, payment_system, user_email)
+    subscription = utils.create_subscription(user_id, tariff_id, payment_system)
     url = subscription.process_confirm()
     return url
 
@@ -249,4 +248,5 @@ class UserUnsubscribeApi(View):
             return Http404()
 
         unsubscribe_task.apply_async((subscription.id,))
+        AuditEvents.create(f"user {self.kwargs['user_id']}", 'unsubscribe', 'subscription', subscription.id)
         return JsonResponse({'status': 'ok'})

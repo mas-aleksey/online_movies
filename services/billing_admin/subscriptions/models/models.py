@@ -6,6 +6,7 @@ import pytz
 from dateutil.relativedelta import relativedelta
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.forms.models import model_to_dict
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from model_utils.models import TimeStampedModel, SoftDeletableModel
@@ -110,7 +111,22 @@ class Tariff(TimeStampedModel):
         return today + delta
 
 
-class Subscription(TimeStampedModel, SoftDeletableModel):
+class AuditMixin(models.Model):
+
+    class Meta:
+        abstract = True
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None, action=None):
+        super().save(force_insert, force_update, using, update_fields)
+        status = action or getattr(self, 'status', 'something')
+        AuditEvents.create('models', status, self.__class__.__name__, self.id, self.details)
+
+    @property
+    def details(self) -> str:
+        return str(model_to_dict(self))
+
+
+class Subscription(TimeStampedModel, SoftDeletableModel, AuditMixin):
     """ Подписка """
     id = models.UUIDField(primary_key=True)
     client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name="клиент")
@@ -181,6 +197,7 @@ class Subscription(TimeStampedModel, SoftDeletableModel):
             user_id=self.client.user_id,
             description=f'Подписка "{self.tariff.product.name}" активирована'
         )
+        AuditEvents.create('system', f'granted: {roles}', 'user', self.client.user_id, self.details)
         self.status = SubscriptionStatus.ACTIVE
         self.expiration_date = self.tariff.next_payment_date()
         self.save()
@@ -193,6 +210,7 @@ class Subscription(TimeStampedModel, SoftDeletableModel):
             user_id=self.client.user_id,
             description=f'Подписка "{self.tariff.product.name}" отменена'
         )
+        AuditEvents.create('system', f'deleted: {roles}', 'user', self.client.user_id, self.details)
         self.status = SubscriptionStatus.CANCELLED
         self.save()
 
@@ -209,7 +227,7 @@ class Subscription(TimeStampedModel, SoftDeletableModel):
         """продлить дату окончания подписки"""
         next_date = self.tariff.next_payment_date(self.expiration_date)
         self.expiration_date = next_date
-        self.save()
+        self.save(action='prolong')
 
     def create_payment(self, info=None):
         """создать платеж для подписки"""
@@ -222,10 +240,6 @@ class Subscription(TimeStampedModel, SoftDeletableModel):
             info=info
         )
         payment.save()
-        AuditEvents.create(
-            'system', 'create', 'payment', payment.id,
-            f'subscription {self.id}'
-        )
         return payment
 
     def process_confirm(self):
@@ -234,16 +248,9 @@ class Subscription(TimeStampedModel, SoftDeletableModel):
         Возвращает url на страницу платежной системы.
         """
         data = self.payment_system_instance.subscription_create()
-        AuditEvents.create(
-            f'payment_system {self.payment_system}', 'create', 'payment', 'None',
-            f'subscription {self.id} data: {data}'
-        )
         payment = self.create_payment(info=data['payment_info'])
         wait_payment_task.apply_async((payment.id,), countdown=5)
-        AuditEvents.create(
-            f'system', 'create', 'wait_payment_task', payment.id,
-            f'subscription {self.id}'
-        )
+        AuditEvents.create('system', 'create', 'wait_payment_task', payment.id, payment.details)
         return data['url']
 
     def define_status_from_payment_system(self):
@@ -413,4 +420,5 @@ class AuditEvents(TimeStampedModel):
 
     @classmethod
     def create(cls, who, what, related_name, related_id, details=None) -> None:
+        LOGGER.info('%s %s %s %s %s', who, what, related_name, related_id, details)
         cls(who=who, what=what, related_name=related_name, related_id=related_id, details=details).save()

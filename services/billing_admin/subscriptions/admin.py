@@ -49,6 +49,6 @@ class PaymentHistoryAdmin(BaseAdmin):
 @admin.register(AuditEvents)
 class AuditEventsAdmin(admin.ModelAdmin):
     exclude = ('id',)
-    list_display = ('created', 'who', 'what', 'related_name')
-    search_fields = ['who', 'what', 'related_name']
+    list_display = ('created', 'who', 'what', 'related_name', 'related_id')
+    search_fields = ['who', 'what', 'related_name', 'related_id', 'details']
     ordering = ['-created', ]
