@@ -8,7 +8,7 @@ services:
 
   movies_async_api:
     ports:
-    - "8000:8001"
+    - "8001:8000"
 
   movies_auth:
     ports:
@@ -16,11 +16,11 @@ services:
 
   notify_admin:
     ports:
-    - "8000:8002"
+    - "8002:8000"
 
   notify_api:
     ports:
-    - "8000:8003"
+    - "8003:8000"
 
   billing_admin:
     ports:
