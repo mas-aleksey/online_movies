@@ -11,6 +11,8 @@ from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from model_utils.models import TimeStampedModel, SoftDeletableModel
 
+from services.notify import send_payment_notify, send_refund_notify, send_subscription_active_notify, \
+    send_subscription_cancelled_notify
 from subscriptions.models.meta import (
     PaymentStatus, PaymentSystem, AccessType, SubscriptionStatus, SubscriptionPeriods
 )
@@ -191,6 +193,10 @@ class Subscription(TimeStampedModel, SoftDeletableModel, AuditMixin):
         """ делаем подписку активной """
         roles = settings.ACCESS_ROLES_MAPPING[self.tariff.product.access_type]
         add_auth_user_role(self.client.user_id, roles)
+        send_subscription_active_notify(
+            user_id=self.client.user_id,
+            description=f'Подписка "{self.tariff.product.name}" активирована'
+        )
         AuditEvents.create('system', f'granted: {roles}', 'user', self.client.user_id, self.details)
         self.status = SubscriptionStatus.ACTIVE
         self.expiration_date = self.tariff.next_payment_date()
@@ -200,6 +206,10 @@ class Subscription(TimeStampedModel, SoftDeletableModel, AuditMixin):
         """ отмена подписки """
         roles = settings.ACCESS_ROLES_MAPPING[self.tariff.product.access_type]
         delete_auth_user_role(self.client.user_id, roles)
+        send_subscription_cancelled_notify(
+            user_id=self.client.user_id,
+            description=f'Подписка "{self.tariff.product.name}" отменена'
+        )
         AuditEvents.create('system', f'deleted: {roles}', 'user', self.client.user_id, self.details)
         self.status = SubscriptionStatus.CANCELLED
         self.save()
@@ -207,6 +217,10 @@ class Subscription(TimeStampedModel, SoftDeletableModel, AuditMixin):
     def set_cancel_at_period_end_status(self):
         """ делаем подписку отмененной """
         self.status = SubscriptionStatus.CANCEL_AT_PERIOD_END
+        send_subscription_cancelled_notify(
+            user_id=self.client.user_id,
+            description=f'Подписка "{self.tariff.product.name}" отменена'
+        )
         self.save()
 
     def prolong_expiration_date(self):
@@ -306,7 +320,7 @@ class Subscription(TimeStampedModel, SoftDeletableModel, AuditMixin):
             wait_payment_task.apply_async((payment.id,), countdown=5)
 
 
-class PaymentInvoice(TimeStampedModel, AuditMixin):
+class PaymentInvoice(TimeStampedModel):
     """ История оплат """
     id = models.UUIDField(primary_key=True)
     subscription = models.ForeignKey(
@@ -363,6 +377,11 @@ class PaymentInvoice(TimeStampedModel, AuditMixin):
     def set_payed_status(self):
         """ тут логика при получении подтверждения об оплате """
         self.status = PaymentStatus.PAYED
+        send_payment_notify(
+            user_id=self.subscription.client.user_id,
+            amount=self.amount,
+            description=f'Продление подписки "{self.subscription.tariff.product.name}"'
+        )
         self.save()
 
     def set_cancelled_status(self):
@@ -373,6 +392,11 @@ class PaymentInvoice(TimeStampedModel, AuditMixin):
     def set_refunded_status(self):
         """ тут логика при отмене платежа """
         self.status = PaymentStatus.REFUNDED
+        send_refund_notify(
+            user_id=self.subscription.client.user_id,
+            amount=self.amount,
+            description=f'Возврат средств по подписке "{self.subscription.tariff.product.name}"'
+        )
         self.save()
 
     def refund_payment(self):
