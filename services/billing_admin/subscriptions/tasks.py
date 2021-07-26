@@ -10,8 +10,10 @@ def wait_payment_task(payment_id):
     """ожидание списания оплаты"""
     from subscriptions.payment_system.models import PaymentStatus
     payment_model = apps.get_model('subscriptions', 'PaymentInvoice')
+    audit_model = apps.get_model('subscriptions', 'AuditEvents')
     pay = payment_model.objects.filter(id=payment_id).first()
     data = pay.check_payment_status()
+    audit_model.create('celery', 'got status', 'payment', payment_id, data)
     pay.info = data['payment_info']
     pay.save()
     status = data['status']

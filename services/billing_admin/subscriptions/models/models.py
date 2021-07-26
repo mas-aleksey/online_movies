@@ -6,6 +6,7 @@ import pytz
 from dateutil.relativedelta import relativedelta
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.forms.models import model_to_dict
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from model_utils.models import TimeStampedModel, SoftDeletableModel
@@ -108,7 +109,24 @@ class Tariff(TimeStampedModel):
         return today + delta
 
 
-class Subscription(TimeStampedModel, SoftDeletableModel):
+class AuditMixin(models.Model):
+
+    class Meta:
+        abstract = True
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None, action=None):
+        super().save(force_insert, force_update, using, update_fields)
+        status = getattr(self, 'status', action)
+        AuditEvents.create(
+            f'models', status, self.__class__.__name__, self.id, str(self.details)
+        )
+
+    @property
+    def details(self):
+        return model_to_dict(self)
+
+
+class Subscription(TimeStampedModel, SoftDeletableModel, AuditMixin):
     """ Подписка """
     id = models.UUIDField(primary_key=True)
     client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name="клиент")
@@ -178,6 +196,10 @@ class Subscription(TimeStampedModel, SoftDeletableModel):
         self.status = SubscriptionStatus.ACTIVE
         self.expiration_date = self.tariff.next_payment_date()
         self.save()
+        AuditEvents.create(
+            f'system', 'activate', 'subscription', self.id,
+            f'expiration_date {self.expiration_date}'
+        )
 
     def set_cancelled(self):
         """ отмена подписки """
@@ -185,17 +207,29 @@ class Subscription(TimeStampedModel, SoftDeletableModel):
         delete_auth_user_role(self.client.user_id, roles)
         self.status = SubscriptionStatus.CANCELLED
         self.save()
+        AuditEvents.create(
+            f'system', 'canceled', 'subscription', self.id,
+            f'expiration_date {self.expiration_date}'
+        )
 
     def set_cancel_at_period_end_status(self):
         """ делаем подписку отмененной """
         self.status = SubscriptionStatus.CANCEL_AT_PERIOD_END
         self.save()
+        AuditEvents.create(
+            f'system', 'set_cancel_at_period_end_status', 'subscription', self.id,
+            f'expiration_date {self.expiration_date}'
+        )
 
     def prolong_expiration_date(self):
         """продлить дату окончания подписки"""
         next_date = self.tariff.next_payment_date(self.expiration_date)
         self.expiration_date = next_date
         self.save()
+        AuditEvents.create(
+            f'system', 'prolong', 'subscription', self.id,
+            f'expiration_date {self.expiration_date}'
+        )
 
     def create_payment(self, info=None):
         """создать платеж для подписки"""
@@ -299,7 +333,7 @@ class Subscription(TimeStampedModel, SoftDeletableModel):
             wait_payment_task.apply_async((payment.id,), countdown=5)
 
 
-class PaymentInvoice(TimeStampedModel):
+class PaymentInvoice(TimeStampedModel, AuditMixin):
     """ История оплат """
     id = models.UUIDField(primary_key=True)
     subscription = models.ForeignKey(
@@ -357,16 +391,28 @@ class PaymentInvoice(TimeStampedModel):
         """ тут логика при получении подтверждения об оплате """
         self.status = PaymentStatus.PAYED
         self.save()
+        AuditEvents.create(
+            f'system', 'payed', 'payment', self.id,
+            f'subscription {self.subscription.id}'
+        )
 
     def set_cancelled_status(self):
         """ тут логика при отмене платежа """
         self.status = PaymentStatus.CANCELLED
         self.save()
+        AuditEvents.create(
+            f'system', 'cancelled', 'payment', self.id,
+            f'subscription {self.subscription.id}'
+        )
 
     def set_refunded_status(self):
         """ тут логика при отмене платежа """
         self.status = PaymentStatus.REFUNDED
         self.save()
+        AuditEvents.create(
+            f'system', 'refunded', 'payment', self.id,
+            f'subscription {self.subscription.id}'
+        )
 
     def refund_payment(self):
         """ тут логика для возврата платежа """
@@ -389,4 +435,5 @@ class AuditEvents(TimeStampedModel):
 
     @classmethod
     def create(cls, who, what, related_name, related_id, details=None) -> None:
+        LOGGER.info('%s %s %s %s %s', who, what, related_name, related_id, details)
         cls(who=who, what=what, related_name=related_name, related_id=related_id, details=details).save()

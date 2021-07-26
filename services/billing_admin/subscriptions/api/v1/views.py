@@ -249,4 +249,5 @@ class UserUnsubscribeApi(View):
             return Http404()
 
         unsubscribe_task.apply_async((subscription.id,))
+        AuditEvents.create(f"user {self.kwargs['user_id']}", 'unsubscribe', 'subscription', subscription.id)
         return JsonResponse({'status': 'ok'})

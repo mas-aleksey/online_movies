@@ -1,13 +1,10 @@
-import logging
+
 from typing import Optional
 from uuid import uuid4
 
 from subscriptions.models.models import (
-    Client, Subscription, SubscriptionStatus, PaymentInvoice,
-    PaymentSystem, Tariff, AuditEvents
+    Client, Subscription, SubscriptionStatus, PaymentSystem, Tariff, AuditEvents
 )
-
-LOGGER = logging.getLogger(__name__)
 
 
 def get_or_create_client(user_id: str) -> Client:
@@ -50,19 +47,3 @@ def create_subscription(user_id, tariff_id, payment_system: str, user_email: str
     subscription.payments.all().delete()
     subscription.save()
     return subscription
-
-
-def create_payment(subscription: Subscription):
-    amount = subscription.tariff.price
-    discount = subscription.discount or subscription.tariff.discount
-    if discount:
-        amount = round(subscription.tariff.price - (subscription.tariff.price / 100 * discount.value), 2)
-
-    payment = PaymentInvoice(
-        id=uuid4(),
-        subscription=subscription,
-        payment_system=PaymentSystem(subscription.payment_system),
-        amount=amount
-    )
-    payment.save()
-    return payment
