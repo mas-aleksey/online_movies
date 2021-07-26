@@ -118,7 +118,7 @@ class AuditMixin(models.Model):
         super().save(force_insert, force_update, using, update_fields)
         status = getattr(self, 'status', action)
         AuditEvents.create(
-            f'models', f'{status} {update_fields}', self.__class__.__name__, self.id, str(self.details)
+            f'models', status, self.__class__.__name__, self.id, str(self.details)
         )
 
     @property

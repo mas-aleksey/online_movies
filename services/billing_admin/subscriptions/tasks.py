@@ -10,23 +10,25 @@ def wait_payment_task(payment_id):
     """ожидание списания оплаты"""
     from subscriptions.payment_system.models import PaymentStatus
     payment_model = apps.get_model('subscriptions', 'PaymentInvoice')
-    pay = payment_model.objects.filter(id=payment_id).first()
-    data = pay.check_payment_status()
-    pay.info = data['payment_info']
-    pay.save()
+    payment = payment_model.objects.filter(id=payment_id).first()
+
+    data = payment.check_payment_status()
     status = data['status']
+
     if status == PaymentStatus.UNPAID:
         is_finish = False
     elif status == PaymentStatus.PAID:
-        pay.set_payed_status()
+        payment.set_payed_status()
         is_finish = True
     else:  # failed
-        pay.set_cancelled_status()
+        payment.set_cancelled_status()
         is_finish = True
 
     print(f'wait_payment_task payed: {is_finish}')
     if is_finish:
-        pay.subscription.auto_update_status()
+        payment.info = data['payment_info']
+        payment.save()
+        payment.subscription.auto_update_status()
     else:
         wait_payment_task.apply_async((payment_id,), countdown=5)
 
