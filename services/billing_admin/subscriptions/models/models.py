@@ -118,7 +118,7 @@ class AuditMixin(models.Model):
         super().save(force_insert, force_update, using, update_fields)
         status = getattr(self, 'status', action)
         AuditEvents.create(
-            f'models', status, self.__class__.__name__, self.id, str(self.details)
+            f'models', f'{status} {update_fields}', self.__class__.__name__, self.id, str(self.details)
         )
 
     @property
@@ -193,43 +193,29 @@ class Subscription(TimeStampedModel, SoftDeletableModel, AuditMixin):
         """ делаем подписку активной """
         roles = settings.ACCESS_ROLES_MAPPING[self.tariff.product.access_type]
         add_auth_user_role(self.client.user_id, roles)
+        AuditEvents.create('system', f'granted: {roles}', 'user', self.client.user_id, self.details)
         self.status = SubscriptionStatus.ACTIVE
         self.expiration_date = self.tariff.next_payment_date()
         self.save()
-        AuditEvents.create(
-            f'system', 'activate', 'subscription', self.id,
-            f'expiration_date {self.expiration_date}'
-        )
 
     def set_cancelled(self):
         """ отмена подписки """
         roles = settings.ACCESS_ROLES_MAPPING[self.tariff.product.access_type]
         delete_auth_user_role(self.client.user_id, roles)
+        AuditEvents.create('system', f'deleted: {roles}', 'user', self.client.user_id, self.details)
         self.status = SubscriptionStatus.CANCELLED
         self.save()
-        AuditEvents.create(
-            f'system', 'canceled', 'subscription', self.id,
-            f'expiration_date {self.expiration_date}'
-        )
 
     def set_cancel_at_period_end_status(self):
         """ делаем подписку отмененной """
         self.status = SubscriptionStatus.CANCEL_AT_PERIOD_END
         self.save()
-        AuditEvents.create(
-            f'system', 'set_cancel_at_period_end_status', 'subscription', self.id,
-            f'expiration_date {self.expiration_date}'
-        )
 
     def prolong_expiration_date(self):
         """продлить дату окончания подписки"""
         next_date = self.tariff.next_payment_date(self.expiration_date)
         self.expiration_date = next_date
-        self.save()
-        AuditEvents.create(
-            f'system', 'prolong', 'subscription', self.id,
-            f'expiration_date {self.expiration_date}'
-        )
+        self.save(action='prolong')
 
     def create_payment(self, info=None):
         """создать платеж для подписки"""
@@ -242,10 +228,6 @@ class Subscription(TimeStampedModel, SoftDeletableModel, AuditMixin):
             info=info
         )
         payment.save()
-        AuditEvents.create(
-            'system', 'create', 'payment', payment.id,
-            f'subscription {self.id}'
-        )
         return payment
 
     def process_confirm(self):
@@ -254,16 +236,9 @@ class Subscription(TimeStampedModel, SoftDeletableModel, AuditMixin):
         Возвращает url на страницу платежной системы.
         """
         data = self.payment_system_instance.subscription_create()
-        AuditEvents.create(
-            f'payment_system {self.payment_system}', 'create', 'payment', 'None',
-            f'subscription {self.id} data: {data}'
-        )
         payment = self.create_payment(info=data['payment_info'])
         wait_payment_task.apply_async((payment.id,), countdown=5)
-        AuditEvents.create(
-            f'system', 'create', 'wait_payment_task', payment.id,
-            f'subscription {self.id}'
-        )
+        AuditEvents.create('system', 'create', 'wait_payment_task', payment.id, payment.details)
         return data['url']
 
     def define_status_from_payment_system(self):
@@ -391,28 +366,16 @@ class PaymentInvoice(TimeStampedModel, AuditMixin):
         """ тут логика при получении подтверждения об оплате """
         self.status = PaymentStatus.PAYED
         self.save()
-        AuditEvents.create(
-            f'system', 'payed', 'payment', self.id,
-            f'subscription {self.subscription.id}'
-        )
 
     def set_cancelled_status(self):
         """ тут логика при отмене платежа """
         self.status = PaymentStatus.CANCELLED
         self.save()
-        AuditEvents.create(
-            f'system', 'cancelled', 'payment', self.id,
-            f'subscription {self.subscription.id}'
-        )
 
     def set_refunded_status(self):
         """ тут логика при отмене платежа """
         self.status = PaymentStatus.REFUNDED
         self.save()
-        AuditEvents.create(
-            f'system', 'refunded', 'payment', self.id,
-            f'subscription {self.subscription.id}'
-        )
 
     def refund_payment(self):
         """ тут логика для возврата платежа """
