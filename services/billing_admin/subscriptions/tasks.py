@@ -11,8 +11,8 @@ def wait_payment_task(payment_id):
     from subscriptions.payment_system.models import PaymentStatus
     payment_model = apps.get_model('subscriptions', 'PaymentInvoice')
     payment = payment_model.objects.filter(id=payment_id).first()
-
     data = payment.check_payment_status()
+    payment.info = data['payment_info']
     status = data['status']
 
     if status == PaymentStatus.UNPAID:
@@ -26,8 +26,6 @@ def wait_payment_task(payment_id):
 
     print(f'wait_payment_task payed: {is_finish}')
     if is_finish:
-        payment.info = data['payment_info']
-        payment.save()
         payment.subscription.auto_update_status()
     else:
         wait_payment_task.apply_async((payment_id,), countdown=5)
