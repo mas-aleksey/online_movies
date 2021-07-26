@@ -1,0 +1,27 @@
+version: '3.4'
+
+services:
+
+  movies_admin:
+    ports:
+    - "8000:8000"
+
+  movies_async_api:
+    ports:
+    - "8000:8001"
+
+  movies_auth:
+    ports:
+    - "5000:5000"
+
+  notify_admin:
+    ports:
+    - "8000:8002"
+
+  notify_api:
+    ports:
+    - "8000:8003"
+
+  billing_admin:
+    ports:
+    - "8004:8000"
