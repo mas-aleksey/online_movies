@@ -320,7 +320,7 @@ class Subscription(TimeStampedModel, SoftDeletableModel, AuditMixin):
             wait_payment_task.apply_async((payment.id,), countdown=5)
 
 
-class PaymentInvoice(TimeStampedModel):
+class PaymentInvoice(TimeStampedModel, AuditMixin):
     """ История оплат """
     id = models.UUIDField(primary_key=True)
     subscription = models.ForeignKey(
