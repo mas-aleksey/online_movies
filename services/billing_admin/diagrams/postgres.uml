@@ -3,56 +3,52 @@
   <ID>DATABASE</ID>
   <OriginalElement>10e35ff4-6a52-43be-be99-8428efbc8944.TABLE:billing_admin.public.subscriptions_client</OriginalElement>
   <nodes>
-    <node x="76.25" y="383.30434782608694">10e35ff4-6a52-43be-be99-8428efbc8944.TABLE:billing_admin.public.subscriptions_subscription</node>
-    <node x="-400.47826086956525" y="46.0">10e35ff4-6a52-43be-be99-8428efbc8944.TABLE:billing_admin.public.subscriptions_product</node>
-    <node x="76.25" y="46.0">10e35ff4-6a52-43be-be99-8428efbc8944.TABLE:billing_admin.public.subscriptions_tariff</node>
-    <node x="542.9130434782609" y="764.695652173913">10e35ff4-6a52-43be-be99-8428efbc8944.TABLE:billing_admin.public.subscriptions_client</node>
-    <node x="542.9130434782609" y="46.0">10e35ff4-6a52-43be-be99-8428efbc8944.TABLE:billing_admin.public.subscriptions_discount</node>
-    <node x="79.86956521739137" y="764.695652173913">10e35ff4-6a52-43be-be99-8428efbc8944.TABLE:billing_admin.public.subscriptions_paymentinvoice</node>
+    <node x="270.0000000000001" y="354.0">10e35ff4-6a52-43be-be99-8428efbc8944.TABLE:billing_admin.public.subscriptions_subscription</node>
+    <node x="-182.0" y="26.0">10e35ff4-6a52-43be-be99-8428efbc8944.TABLE:billing_admin.public.subscriptions_product</node>
+    <node x="270.00000000000006" y="24.0">10e35ff4-6a52-43be-be99-8428efbc8944.TABLE:billing_admin.public.subscriptions_tariff</node>
+    <node x="722.0" y="748.0">10e35ff4-6a52-43be-be99-8428efbc8944.TABLE:billing_admin.public.subscriptions_client</node>
+    <node x="722.0" y="26.0">10e35ff4-6a52-43be-be99-8428efbc8944.TABLE:billing_admin.public.subscriptions_discount</node>
+    <node x="264.0000000000001" y="748.0">10e35ff4-6a52-43be-be99-8428efbc8944.TABLE:billing_admin.public.subscriptions_paymentinvoice</node>
   </nodes>
   <notes />
   <edges>
-    <edge source="10e35ff4-6a52-43be-be99-8428efbc8944.TABLE:billing_admin.public.subscriptions_subscription" target="10e35ff4-6a52-43be-be99-8428efbc8944.TABLE:billing_admin.public.subscriptions_client" relationship="REFERENCES">
-      <point x="101.66666666666663" y="-137.0" />
-      <point x="330.41666666666663" y="546.0" />
-      <point x="695.4130434782609" y="546.0" />
-      <point x="0.0" y="72.0" />
-    </edge>
     <edge source="10e35ff4-6a52-43be-be99-8428efbc8944.TABLE:billing_admin.public.subscriptions_subscription" target="10e35ff4-6a52-43be-be99-8428efbc8944.TABLE:billing_admin.public.subscriptions_discount" relationship="REFERENCES">
-      <point x="0.0" y="-137.0" />
-      <point x="228.75" y="488.39130434782606" />
-      <point x="695.4130434782609" y="488.39130434782606" />
+      <point x="-1.1368683772161603E-13" y="-150.0" />
+      <point x="422.5" y="451.0" />
+      <point x="874.5" y="451.0" />
       <point x="0.0" y="124.0" />
     </edge>
+    <edge source="10e35ff4-6a52-43be-be99-8428efbc8944.TABLE:billing_admin.public.subscriptions_subscription" target="10e35ff4-6a52-43be-be99-8428efbc8944.TABLE:billing_admin.public.subscriptions_client" relationship="REFERENCES">
+      <point x="152.5" y="0.0" />
+      <point x="874.5" y="504.0" />
+      <point x="0.0" y="-72.0" />
+    </edge>
     <edge source="10e35ff4-6a52-43be-be99-8428efbc8944.TABLE:billing_admin.public.subscriptions_subscription" target="10e35ff4-6a52-43be-be99-8428efbc8944.TABLE:billing_admin.public.subscriptions_tariff" relationship="REFERENCES">
-      <point x="-101.66666666666669" y="-137.0" />
-      <point x="127.08333333333331" y="546.0" />
-      <point x="228.75" y="546.0" />
-      <point x="0.0" y="111.0" />
+      <point x="-15.000000000000114" y="-150.0" />
+      <point x="-15.000000000000057" y="111.0" />
     </edge>
     <edge source="10e35ff4-6a52-43be-be99-8428efbc8944.TABLE:billing_admin.public.subscriptions_tariff" target="10e35ff4-6a52-43be-be99-8428efbc8944.TABLE:billing_admin.public.subscriptions_product" relationship="REFERENCES">
-      <point x="-76.25" y="-111.0" />
-      <point x="152.5" y="164.7826086956522" />
-      <point x="-247.97826086956525" y="164.7826086956522" />
-      <point x="0.0" y="98.0" />
+      <point x="-152.5" y="-11.0" />
+      <point x="152.5" y="0.0" />
     </edge>
     <edge source="10e35ff4-6a52-43be-be99-8428efbc8944.TABLE:billing_admin.public.subscriptions_paymentinvoice" target="10e35ff4-6a52-43be-be99-8428efbc8944.TABLE:billing_admin.public.subscriptions_subscription" relationship="REFERENCES">
       <point x="0.0" y="-124.0" />
-      <point x="238.36956521739137" y="871.0" />
-      <point x="228.75" y="871.0" />
-      <point x="0.0" y="137.0" />
+      <point x="0.0" y="150.0" />
     </edge>
     <edge source="10e35ff4-6a52-43be-be99-8428efbc8944.TABLE:billing_admin.public.subscriptions_tariff" target="10e35ff4-6a52-43be-be99-8428efbc8944.TABLE:billing_admin.public.subscriptions_discount" relationship="REFERENCES">
-      <point x="76.25" y="-111.0" />
-      <point x="305.0" y="157.0" />
-      <point x="695.4130434782609" y="157.0" />
+      <point x="-5.6843418860808015E-14" y="111.0" />
+      <point x="422.5" y="150.0" />
+      <point x="874.5" y="150.0" />
       <point x="0.0" y="124.0" />
     </edge>
   </edges>
-  <settings layout="Hierarchic" zoom="1.15" showDependencies="false" x="523.304347826087" y="561.4347826086957" />
-  <SelectedNodes />
+  <settings layout="Hierarchic" zoom="1.0" showDependencies="false" x="649.5" y="578.0" />
+  <SelectedNodes>
+    <node>10e35ff4-6a52-43be-be99-8428efbc8944.TABLE:billing_admin.public.subscriptions_paymentinvoice</node>
+  </SelectedNodes>
   <Categories>
     <Category>Columns</Category>
+    <Category>Comments</Category>
     <Category>Key columns</Category>
     <Category>Virtual foreign keys</Category>
   </Categories>
