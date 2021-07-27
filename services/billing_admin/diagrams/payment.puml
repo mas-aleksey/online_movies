@@ -1,0 +1,60 @@
+@startuml
+
+actor User
+participant Front
+participant Billing
+participant PaySystem
+participant Auth
+participant Notify
+database Postgres
+
+alt POST /subscription/v1/order/
+  User -> Front: купить подписку
+  Front -> Billing : tariff id, pay system
+  Billing -> Postgres: create subscription
+  Billing -> PaySystem : create payment
+  PaySystem -> Billing: payment_id, url
+  Billing -> Billing: create wait payment celery task
+  
+  loop celery task
+  Billing -> PaySystem: check payment status
+  PaySystem -> Billing: status: paid
+  Billing -> Postgres: activate subscription
+  Billing -> Auth: add role for user
+  Auth -> Auth: revoke access tokens
+  Billing -> Notify: send notify for user
+  end
+  
+  Billing -> Front: confirmation_url
+  Front -> User: redirect to payment url
+  User -> PaySystem: order payment
+  PaySystem -> User: subscription url
+end
+
+alt GET subscriptions/<subscription_id>/unsubscribe
+  User -> Front: отменить подписку
+  Front -> Billing : subscription_id
+  Billing -> Billing: create cancel subscription celery task
+
+  loop celery task
+  Billing -> Postgres: get last payment
+  Postgres -> Billing: payment
+  Billing -> PaySystem: cancel subscription
+  PaySystem -> Billing: status: cancelled
+  alt if the subscription is less than 1 day
+  Billing -> PaySystem: refund
+  PaySystem -> Billing: status: refunded
+  end
+  Billing -> Postgres: cancel subscription
+  Billing -> Auth: delete role for user
+  Auth -> Auth: revoke access tokens
+  Billing -> Notify: send notify for user
+  end
+  Billing -> User: subscription url
+end
+  User -> Billing: view subscription
+  Billing -> Postgres: get subscription
+  Postgres -> Billing: subscription
+  Billing -> User: subscription info (name, status, exp. date)
+
+@enduml
