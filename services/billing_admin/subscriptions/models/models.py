@@ -1,16 +1,20 @@
 import datetime
+import logging
 from datetime import date
 from uuid import uuid4
 
 import pytz
 from dateutil.relativedelta import relativedelta
+from django.conf import settings
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.forms.models import model_to_dict
-from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from model_utils.models import TimeStampedModel, SoftDeletableModel
 
+from services.auth import add_auth_user_role, delete_auth_user_role
 from services.notify import (
     send_payment_notify, send_refund_notify, send_subscription_active_notify,
     send_subscription_cancelled_notify
@@ -18,13 +22,10 @@ from services.notify import (
 from subscriptions.models.meta import (
     PaymentStatus, PaymentSystem, AccessType, SubscriptionStatus, SubscriptionPeriods
 )
-from services.auth import add_auth_user_role, delete_auth_user_role
 from subscriptions.payment_system.models import SubscribePaymentStatus
 from subscriptions.payment_system.payment_factory import PaymentSystemFactory
 from subscriptions.querysets import SubscriptionQuerySet
 from subscriptions.tasks import wait_payment_task
-
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -120,7 +121,7 @@ class AuditMixin(models.Model):
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None, action=None):
         super().save(force_insert, force_update, using, update_fields)
         status = action or getattr(self, 'status', 'something')
-        AuditEvents.create('models', status, self.__class__.__name__, self.id, self.details)
+        AuditEvents.create('models', status, self, self.details)
 
     @property
     def details(self) -> str:
@@ -198,7 +199,7 @@ class Subscription(TimeStampedModel, SoftDeletableModel, AuditMixin):
             user_id=self.client.user_id,
             description=f'Подписка "{self.tariff.product.name}" активирована'
         )
-        AuditEvents.create('system', f'granted: {roles}', 'user', self.client.user_id, self.details)
+        AuditEvents.create('system', f'granted: {roles}', self.client, self.details)
         self.status = SubscriptionStatus.ACTIVE
         self.expiration_date = self.tariff.next_payment_date()
         self.save()
@@ -211,7 +212,7 @@ class Subscription(TimeStampedModel, SoftDeletableModel, AuditMixin):
             user_id=self.client.user_id,
             description=f'Подписка "{self.tariff.product.name}" отменена'
         )
-        AuditEvents.create('system', f'deleted: {roles}', 'user', self.client.user_id, self.details)
+        AuditEvents.create('system', f'deleted: {roles}', self.client, self.details)
         self.status = SubscriptionStatus.CANCELLED
         self.save()
 
@@ -251,7 +252,7 @@ class Subscription(TimeStampedModel, SoftDeletableModel, AuditMixin):
         data = self.payment_system_instance.subscription_create()
         payment = self.create_payment(info=data['payment_info'])
         wait_payment_task.apply_async((payment.id,), countdown=5)
-        AuditEvents.create('system', 'create', 'wait_payment_task', payment.id, payment.details)
+        AuditEvents.create('system', 'create', payment, payment.details)
         return data['url']
 
     def define_status_from_payment_system(self):
@@ -411,15 +412,17 @@ class AuditEvents(TimeStampedModel):
     """История событий."""
     who = models.CharField(_("Инициатор события"), max_length=50)
     what = models.CharField(_("Событие"), max_length=50)
-    related_name = models.CharField(_("Объект"), max_length=50)
-    related_id = models.CharField(_("Id объекта"), max_length=50)
     details = models.TextField(_("Подробности"), blank=True, null=True)
+
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, default=None, null=True, blank=True)
+    object_id = models.CharField(max_length=100, default=None, null=True, blank=True)
+    content_object = GenericForeignKey('content_type', 'object_id')
 
     class Meta:
         verbose_name = _('событие')
         verbose_name_plural = _('события')
 
     @classmethod
-    def create(cls, who, what, related_name, related_id, details=None) -> None:
-        logger.info('%s %s %s %s %s', who, what, related_name, related_id, details)
-        cls(who=who, what=what, related_name=related_name, related_id=related_id, details=details).save()
+    def create(cls, who, what, instance, details=None) -> None:
+        logger.info('%s %s %s %s %s', who, what, instance, instance.id, details)
+        cls(who=who, what=what, content_object=instance, details=details).save()

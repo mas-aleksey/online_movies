@@ -12,7 +12,7 @@ def get_or_create_client(user_id: str) -> Client:
     if not client:
         client = Client(id=uuid4(), user_id=user_id)
         client.save()
-        AuditEvents.create('system', 'create', 'user', client.user_id)
+        AuditEvents.create('system', 'create', client)
     return client
 
 
@@ -27,7 +27,7 @@ def create_subscription(user_id, tariff_id, payment_system: str) -> Subscription
     if subscription:
         subscription.tariff_id = tariff_id
         subscription.payment_system = PaymentSystem(payment_system)
-        AuditEvents.create(f'user {user_id}', 'update', 'subscription', subscription.id, subscription.details)
+        AuditEvents.create(f'user {user_id}', 'update', subscription, subscription.details)
     else:
         subscription = Subscription(
             id=uuid4(),
@@ -37,7 +37,7 @@ def create_subscription(user_id, tariff_id, payment_system: str) -> Subscription
             expiration_date=tariff.next_payment_date(),
             payment_system=PaymentSystem(payment_system)
         )
-        AuditEvents.create(f'user {user_id}', 'create', 'subscription', subscription.id, subscription.details)
+        AuditEvents.create(f'user {user_id}', 'create', subscription, subscription.details)
     subscription.payments.all().delete()
     subscription.save()
     return subscription
