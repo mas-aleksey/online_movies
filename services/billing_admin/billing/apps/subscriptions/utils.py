@@ -1,8 +1,7 @@
-
 from typing import Optional
 from uuid import uuid4
 
-from billing.apps.subscriptions.models.models import (
+from billing.apps.subscriptions.models import (
     Client, Subscription, SubscriptionStatus, PaymentSystem, Tariff, AuditEvents
 )
 
@@ -14,10 +13,6 @@ def get_or_create_client(user_id: str) -> Client:
         client.save()
         AuditEvents.create('system', 'create', client)
     return client
-
-
-def get_subscription_by_client(client: Client, status: SubscriptionStatus) -> Optional[Subscription]:
-    return Subscription.objects.filter(client=client, status=status).first()
 
 
 def create_subscription(user_id, tariff_id, payment_system: str) -> Subscription:

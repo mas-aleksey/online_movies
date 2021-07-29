@@ -9,7 +9,7 @@ from django.views.generic.detail import BaseDetailView
 from django.views.generic.list import BaseListView
 
 import billing.apps.subscriptions.utils as utils
-from billing.apps.subscriptions.models.models import Tariff, Subscription, Product, AuditEvents
+from billing.apps.subscriptions.models import Tariff, Subscription, Product, AuditEvents
 from billing.apps.subscriptions.tasks import unsubscribe_task
 
 logger = logging.getLogger(__file__)

@@ -1,7 +1,7 @@
 import logging
 
 from billing.config.celery import app
-from .models import models as subscription_models
+from . import models as m
 from .payment_system import models as payment_models
 
 logger = logging.getLogger(__name__)
@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 @app.task(queue="high", timeout=60 * 5, default_retry_delay=10, max_retries=30)
 def wait_payment_task(payment_id):
     """Ожидание списания оплаты."""
-    payment = subscription_models.PaymentInvoice.objects.filter(id=payment_id).first()
+    payment = m.PaymentInvoice.objects.filter(id=payment_id).first()
     data = payment.check_payment_status()
     payment.info = data['payment_info']
     status = data['status']
@@ -34,14 +34,14 @@ def wait_payment_task(payment_id):
 @app.task(queue="high", timeout=60 * 5, default_retry_delay=10, max_retries=3)
 def unsubscribe_task(subscription_id):
     """Задача отмены подписки."""
-    subscription = subscription_models.Subscription.objects.filter(id=subscription_id).first()
+    subscription = m.Subscription.objects.filter(id=subscription_id).first()
     subscription.process_cancel()
 
 
 @app.task(queue="default", timeout=60 * 5)
 def renew_subscriptions_task():
     """Таска для продления подписок."""
-    subscriptions = subscription_models.Subscription.objects.need_renew()
+    subscriptions = m.Subscription.objects.need_renew()
 
     for subscription in subscriptions:
         subscription.process_renew()
@@ -50,7 +50,7 @@ def renew_subscriptions_task():
 @app.task(queue="default", timeout=60 * 5)
 def cancel_expired_subscriptions_task():
     """Таска для отмены истекших подписок."""
-    subscriptions = subscription_models.Subscription.objects.need_cancel()
+    subscriptions = m.Subscription.objects.need_cancel()
 
     for subscription in subscriptions:
         subscription.set_cancelled()

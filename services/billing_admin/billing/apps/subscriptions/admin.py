@@ -1,6 +1,6 @@
 import uuid
 from django.contrib import admin
-from billing.apps.subscriptions.models.models import (
+from billing.apps.subscriptions.models import (
     Client, Product, Tariff, Discount, Subscription, PaymentInvoice, AuditEvents
 )
 
