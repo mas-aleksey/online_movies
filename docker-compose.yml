@@ -193,7 +193,7 @@ services:
     command:
       - celery
       - -A
-      - config
+      - billing.config
       - worker
       - -P
       - prefork
@@ -216,7 +216,7 @@ services:
     command:
       - celery
       - -A
-      - config
+      - billing.config
       - beat
       - -l
       - INFO

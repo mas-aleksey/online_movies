@@ -26,8 +26,8 @@ RUN poetry install --no-interaction --no-ansi --no-dev
 
 ADD . /var/app
 
-VOLUME /var/app/static
-RUN ["chmod", "+x", "./scripts/entrypoint.sh"]
-ENTRYPOINT ["/var/app/scripts/entrypoint.sh"]
+VOLUME /var/app/billing/static
+RUN ["chmod", "+x", "./deploy/entrypoint.sh"]
+ENTRYPOINT ["/var/app/deploy/entrypoint.sh"]
 ENV PYTHONPATH "/opt/app"
-CMD ["gunicorn", "config.wsgi", "-w", "2", "-b", ":8000"]
+CMD ["gunicorn", "billing.config.wsgi", "-w", "2", "-b", ":8000"]
