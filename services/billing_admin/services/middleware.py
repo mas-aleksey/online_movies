@@ -4,7 +4,7 @@ import requests
 from django.conf import settings
 from django.utils.deprecation import MiddlewareMixin
 
-LOGGER = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class AuthenticationMiddleware(MiddlewareMixin):
@@ -32,9 +32,9 @@ class AuthenticationMiddleware(MiddlewareMixin):
                 email = data.get('email') or None
                 roles.update(user_roles)
         except Exception as exc:
-            LOGGER.error(exc)
+            logger.error(exc)
         else:
-            LOGGER.info('response %s %s', resp.status_code, resp.text)
+            logger.info('response %s %s', resp.status_code, resp.text)
 
         request.scope = {
             "is_superuser": is_superuser,

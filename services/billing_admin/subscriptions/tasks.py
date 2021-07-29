@@ -2,7 +2,7 @@ from config.celery import app
 from django.apps import apps
 import logging
 
-LOGGER = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 @app.task(queue="high", timeout=60 * 5, default_retry_delay=10, max_retries=30)
@@ -24,7 +24,7 @@ def wait_payment_task(payment_id):
         payment.set_cancelled_status()
         is_finish = True
 
-    print(f'wait_payment_task payed: {is_finish}')
+    logger.info(f'wait_payment_task payed: {is_finish}')
     if is_finish:
         payment.subscription.auto_update_status()
     else:

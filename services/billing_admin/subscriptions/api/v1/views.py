@@ -12,7 +12,7 @@ import subscriptions.utils as utils
 from subscriptions.models.models import Tariff, Subscription, Product, AuditEvents
 from subscriptions.tasks import unsubscribe_task
 
-LOGGER = logging.getLogger(__file__)
+logger = logging.getLogger(__file__)
 
 
 def status(request):
@@ -44,7 +44,7 @@ def make_order(request):
         try:
             url = create_new_subscription(data, request.scope)
         except Exception as e:
-            LOGGER.error(e)
+            logger.error(e)
             return JsonResponse({'status': 'failed', 'msg': str(e)}, status=500)
         return JsonResponse({'confirmation_url': url})
 
@@ -53,11 +53,11 @@ def make_order(request):
 
 
 def callback(request):
-    LOGGER.error('callback execute')
-    LOGGER.error(request)
+    logger.error('callback execute')
+    logger.error(request)
     if request.body:
         data = json.loads(request.body.decode('utf-8'))
-        LOGGER.error(data)
+        logger.error(data)
     else:
         return JsonResponse({'status': 'ok'})
 

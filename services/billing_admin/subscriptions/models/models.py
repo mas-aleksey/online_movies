@@ -24,7 +24,7 @@ from subscriptions.tasks import wait_payment_task
 
 import logging
 
-LOGGER = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class Client(TimeStampedModel):
@@ -309,7 +309,7 @@ class Subscription(TimeStampedModel, SoftDeletableModel, AuditMixin):
         try:
             self.payment_system_instance.subscription_cancel(cancel_at_period_end)
         except Exception as e:
-            LOGGER.error(e)
+            logger.error(e)
 
     def process_renew(self):
         """ процесс продления подписки """
@@ -420,5 +420,5 @@ class AuditEvents(TimeStampedModel):
 
     @classmethod
     def create(cls, who, what, related_name, related_id, details=None) -> None:
-        LOGGER.info('%s %s %s %s %s', who, what, related_name, related_id, details)
+        logger.info('%s %s %s %s %s', who, what, related_name, related_id, details)
         cls(who=who, what=what, related_name=related_name, related_id=related_id, details=details).save()
