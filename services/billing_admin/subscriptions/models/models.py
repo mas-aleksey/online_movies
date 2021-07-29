@@ -11,8 +11,10 @@ from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from model_utils.models import TimeStampedModel, SoftDeletableModel
 
-from services.notify import send_payment_notify, send_refund_notify, send_subscription_active_notify, \
+from services.notify import (
+    send_payment_notify, send_refund_notify, send_subscription_active_notify,
     send_subscription_cancelled_notify
+)
 from subscriptions.models.meta import (
     PaymentStatus, PaymentSystem, AccessType, SubscriptionStatus, SubscriptionPeriods
 )
@@ -112,7 +114,6 @@ class Tariff(TimeStampedModel):
 
 
 class AuditMixin(models.Model):
-
     class Meta:
         abstract = True
 
@@ -175,18 +176,18 @@ class Subscription(TimeStampedModel, SoftDeletableModel, AuditMixin):
         tariff = self.tariff
         last_payment = self.payments.last()
         last_payment_info = last_payment.info if last_payment else {}
-        data = dict(
-            payment_system=self.payment_system,
-            subscription_id=str(self.id),
-            last_payment=last_payment_info,
-            product_id=str(tariff.product.id),
-            product_name=tariff.product.name,
-            tariff_id=str(tariff.id),
-            tariff_period=tariff.period,
-            amount=self.amount,
-            success_url=self.return_url,
-            cancel_url=self.return_url
-        )
+        data = {
+            'payment_system': self.payment_system,
+            'subscription_id': str(self.id),
+            'last_payment': last_payment_info,
+            'product_id': str(tariff.product.id),
+            'product_name': tariff.product.name,
+            'tariff_id': str(tariff.id),
+            'tariff_period': tariff.period,
+            'amount': self.amount,
+            'success_url': self.return_url,
+            'cancel_url': self.return_url
+        }
         return PaymentSystemFactory.get_payment_system(**data)
 
     def set_active(self):
@@ -355,18 +356,18 @@ class PaymentInvoice(TimeStampedModel, AuditMixin):
     def payment_system_instance(self):
         tariff = self.subscription.tariff
         last_payment_info = self.info if self.info else {}
-        data = dict(
-            payment_system=self.payment_system,
-            subscription_id=str(self.subscription.id),
-            last_payment=last_payment_info,
-            product_id=str(tariff.product.id),
-            product_name=tariff.product.name,
-            tariff_id=str(tariff.id),
-            tariff_period=tariff.period,
-            amount=self.amount,
-            success_url=self.subscription.return_url,
-            cancel_url=self.subscription.return_url
-        )
+        data = {
+            'payment_system': self.payment_system,
+            'subscription_id': str(self.subscription.id),
+            'last_payment': last_payment_info,
+            'product_id': str(tariff.product.id),
+            'product_name': tariff.product.name,
+            'tariff_id': str(tariff.id),
+            'tariff_period': tariff.period,
+            'amount': self.amount,
+            'success_url': self.subscription.return_url,
+            'cancel_url': self.subscription.return_url
+        }
         return PaymentSystemFactory.get_payment_system(**data)
 
     def check_payment_status(self):
