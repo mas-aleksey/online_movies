@@ -15,6 +15,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "django.contrib.postgres",
+    "psqlextra",
 
     'django_celery_results',
     'django_celery_beat',
@@ -56,7 +58,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        "ENGINE": "psqlextra.backend",
         'NAME': os.getenv('DB_NAME') or 'billing',
         'USER': os.getenv('DB_USERNAME') or 'postgres',
         'PASSWORD': os.getenv('DB_PASSWORD') or 'QWEasd123',
