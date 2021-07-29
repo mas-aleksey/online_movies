@@ -27,7 +27,7 @@ class ObjectType(models.TextChoices):
 
 
 class StripeId(PostgresPartitionedModel, TimeStampedModel):
-    """Сопоставление id в Stripe """
+    """Сопоставление id в Stripe."""
     stripe_id = models.CharField(_("id в stripe"), max_length=250)
     billing_id = models.CharField(_("id в billing"), max_length=250)
     object_type = models.CharField(_("Тип объекта"), max_length=64, choices=ObjectType.choices)

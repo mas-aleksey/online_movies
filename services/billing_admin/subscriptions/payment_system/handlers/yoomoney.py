@@ -72,15 +72,15 @@ class YoomoneyPaymentSystem(AbstractPaymentSystem):
         )
 
     def subscription_create(self):
-        """ Создание подписки """
+        """Создание подписки."""
         return self.process_payment()
 
     def subscription_cancel(self, cancel_at_period_end=True):
-        """ Отмена подписки """
+        """Отмена подписки."""
         pass
 
     def subscription_renew(self):
-        """ Продлить подписку"""
+        """Продлить подписку."""
 
         payment_method_id = self.last_payment['payment_method']['id']
         response = Payment.create({

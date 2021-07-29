@@ -6,7 +6,7 @@ from stripe_payment.services.subscription import get_subscription_id
 
 
 def create_subscription_checkout(subscription: SubscriptionInfoDataclass) -> dict:
-    """Создать чек на оплату подписки"""
+    """Создать чек на оплату подписки."""
 
     price_id = get_price_id(subscription)
     data = create_subscription_checkout_stripe(
@@ -18,7 +18,7 @@ def create_subscription_checkout(subscription: SubscriptionInfoDataclass) -> dic
 
 
 def get_subscription_info(billing_subscription_id: str) -> dict:
-    """Получить информацию о подписке"""
+    """Получить информацию о подписке."""
     stripe_subscription_id = get_subscription_id(billing_subscription_id)
 
     if not stripe_subscription_id:
@@ -30,7 +30,7 @@ def get_subscription_info(billing_subscription_id: str) -> dict:
 
 
 def get_latest_invoice(billing_subscription_id: str) -> dict:
-    """Получить информацию о последнем платеже"""
+    """Получить информацию о последнем платеже."""
     stripe_subscription_id = get_subscription_id(billing_subscription_id)
 
     if not stripe_subscription_id:
@@ -43,7 +43,7 @@ def get_latest_invoice(billing_subscription_id: str) -> dict:
 
 
 def subscription_refund(billing_subscription_id: str):
-    """Возврат последнего платежа по подписке"""
+    """Возврат последнего платежа по подписке."""
     stripe_subscription_id = get_subscription_id(billing_subscription_id)
     data = subscription_retrieve_stripe(stripe_subscription_id)
     invoice_id = data['latest_invoice']

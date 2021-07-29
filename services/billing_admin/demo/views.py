@@ -44,7 +44,7 @@ def check_token(view_func):
 
 
 def login(request):
-    """логин"""
+    """Логин."""
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -59,7 +59,7 @@ def login(request):
 
 @check_token
 def profile(request):
-    """профиль пользователя"""
+    """Профиль пользователя."""
 
     access_token = request.session.get('access_token')
     if not access_token:
@@ -78,7 +78,7 @@ def profile(request):
 
 
 def logout(request):
-    """профиль пользователя"""
+    """Выход пользователя."""
     access_token = request.session.get('access_token', '')
 
     if access_token:
@@ -92,7 +92,7 @@ def logout(request):
 
 @check_token
 def movies(request):
-    """доступные фильмы"""
+    """Доступные фильмы."""
     access_token = request.session.get('access_token')
     ctx = {'data': [], 'query': ''}
 
@@ -110,7 +110,7 @@ def movies(request):
 
 @check_token
 def movies_detail(request, movies_id):
-    """Информация о фильме"""
+    """Информация о фильме."""
     access_token = request.session.get('access_token')
     ctx = {'data': []}
 
@@ -124,7 +124,7 @@ def movies_detail(request, movies_id):
 
 @check_token
 def products(request):
-    """ Продукты """
+    """Продукты."""
     access_token = request.session.get('access_token')
     ctx = {'data': []}
 
@@ -138,7 +138,7 @@ def products(request):
 
 @check_token
 def tariff(request, tariff_id):
-    """Оформить подписку"""
+    """Оформить подписку."""
     access_token = request.session.get('access_token')
     ctx = {'data': []}
 
@@ -152,7 +152,7 @@ def tariff(request, tariff_id):
 
 @check_token
 def order(request):
-    """оплата подписки"""
+    """Оплата подписки."""
     if not request.POST:
         return render(request, '500.html', {'errors': 'Something went wrong'})
 
@@ -172,7 +172,7 @@ def order(request):
 
 @check_token
 def subscriptions(request):
-    """мои подписки"""
+    """Мои подписки."""
 
     access_token = request.session.get('access_token')
     ctx = {'data': []}
@@ -188,7 +188,7 @@ def subscriptions(request):
 
 @check_token
 def subscribe(request, subscribe_id):
-    """статус подписки"""
+    """Статус подписки."""
 
     refresh_page = request.GET.get('refresh_page', "0")
     access_token = request.session.get('access_token')
@@ -208,7 +208,7 @@ def subscribe(request, subscribe_id):
 
 @check_token
 def unsubscribe(request, subscribe_id):
-    """отмена подписки"""
+    """Отмена подписки."""
 
     access_token = request.session.get('access_token')
 

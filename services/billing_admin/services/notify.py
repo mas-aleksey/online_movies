@@ -27,7 +27,7 @@ def send_notify(name, payload, user_id, notify_type="immediately", channels=None
 
 
 def send_payment_notify(user_id, amount, description):
-    """Отправка уведомления об оплате"""
+    """Отправка уведомления об оплате."""
     name = 'success_payment'
     payload = {
         "subject": "Списание средств",
@@ -38,7 +38,7 @@ def send_payment_notify(user_id, amount, description):
 
 
 def send_refund_notify(user_id, amount, description):
-    """Отправка уведомления об возврате"""
+    """Отправка уведомления об возврате."""
     name = 'refund_payment'
     payload = {
         "subject": "Возврат средств",
@@ -49,7 +49,7 @@ def send_refund_notify(user_id, amount, description):
 
 
 def send_subscription_active_notify(user_id, description):
-    """Отправка уведомления об активации подписки"""
+    """Отправка уведомления об активации подписки."""
     name = 'subscription_active'
     payload = {
         "subject": "Активация подписки",
@@ -59,7 +59,7 @@ def send_subscription_active_notify(user_id, description):
 
 
 def send_subscription_cancelled_notify(user_id, description):
-    """Отправка уведомления об активации подписки"""
+    """Отправка уведомления об активации подписки."""
     name = 'subscription_cancelled'
     payload = {
         "subject": "Отмена подписки",

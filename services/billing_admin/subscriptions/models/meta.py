@@ -10,19 +10,19 @@ class AccessType(models.TextChoices):
 
 
 class PaymentSystem(models.TextChoices):
-    """ Платежные системы, например YooKassa, robokassa, и т.д. """
+    """Платежные системы, например YooKassa, robokassa, и т.д."""
     YOOMONEY = settings.YOOMONEY, _("Платежная система Юмани")
     STRIPE = settings.STRIPE, _("Платежная система Stripe")
 
 
 class SubscriptionPeriods(models.TextChoices):
-    """ Периоды списания средств """
+    """Периоды списания средств."""
     MONTHLY = "per month", _("каждый месяц")
     YEARLY = "per year", _("каждый год")
 
 
 class SubscriptionStatus(models.TextChoices):
-    """ Статусы подписок """
+    """Статусы подписок."""
     DRAFT = "draft", _("На оформлении")
     INACTIVE = "inactive", _("Не активная")
     ACTIVE = "active", _("Активная")
@@ -32,7 +32,7 @@ class SubscriptionStatus(models.TextChoices):
 
 
 class PaymentStatus(models.TextChoices):
-    """ Статусы платежей """
+    """Статусы платежей."""
     NOT_PAYED = "not_payed", _("Не оплачен")
     PAYED = "payed", _("Оплачен")
     PENDING = "pending", _("Ждем подтверждения оплаты")

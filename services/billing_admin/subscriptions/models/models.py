@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 
 class Client(TimeStampedModel):
-    """ Пользователи кинотеатра """
+    """Пользователи кинотеатра."""
     id = models.UUIDField(primary_key=True)
     user_id = models.UUIDField(_('uuid пользователя'), unique=True)
 
@@ -41,7 +41,7 @@ class Client(TimeStampedModel):
 
 
 class Product(TimeStampedModel):
-    """ Продукты (подписки) """
+    """Продукты (подписки)."""
     id = models.UUIDField(primary_key=True)
     name = models.CharField(_('название'), unique=True, max_length=50)
     description = models.TextField(_('описание'), blank=True, null=True)
@@ -61,7 +61,7 @@ class Product(TimeStampedModel):
 
 
 class Discount(TimeStampedModel):
-    """ Скидки """
+    """Скидки."""
     id = models.UUIDField(primary_key=True)
     name = models.CharField(_('название'), unique=True, max_length=50)
     code = models.CharField(_('промокод'), max_length=50, blank=True, null=True)
@@ -78,7 +78,7 @@ class Discount(TimeStampedModel):
 
 
 class Tariff(TimeStampedModel):
-    """ Тарифные планы подписок """
+    """Тарифные планы подписок."""
     id = models.UUIDField(primary_key=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='продукт', related_name='tariffs')
     discount = models.ForeignKey(Discount, on_delete=models.DO_NOTHING, verbose_name="скидка", blank=True, null=True)
@@ -127,7 +127,7 @@ class AuditMixin(models.Model):
 
 
 class Subscription(TimeStampedModel, SoftDeletableModel, AuditMixin):
-    """ Подписка """
+    """Подписка."""
     id = models.UUIDField(primary_key=True)
     client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name="клиент")
     expiration_date = models.DateField(_("дата окончания"), blank=True, null=True)
@@ -190,7 +190,7 @@ class Subscription(TimeStampedModel, SoftDeletableModel, AuditMixin):
         return PaymentSystemFactory.get_payment_system(**data)
 
     def set_active(self):
-        """ делаем подписку активной """
+        """Делаем подписку активной."""
         roles = settings.ACCESS_ROLES_MAPPING[self.tariff.product.access_type]
         add_auth_user_role(self.client.user_id, roles)
         send_subscription_active_notify(
@@ -203,7 +203,7 @@ class Subscription(TimeStampedModel, SoftDeletableModel, AuditMixin):
         self.save()
 
     def set_cancelled(self):
-        """ отмена подписки """
+        """Отмена подписки."""
         roles = settings.ACCESS_ROLES_MAPPING[self.tariff.product.access_type]
         delete_auth_user_role(self.client.user_id, roles)
         send_subscription_cancelled_notify(
@@ -215,7 +215,7 @@ class Subscription(TimeStampedModel, SoftDeletableModel, AuditMixin):
         self.save()
 
     def set_cancel_at_period_end_status(self):
-        """ делаем подписку отмененной """
+        """Делаем подписку отмененной."""
         self.status = SubscriptionStatus.CANCEL_AT_PERIOD_END
         send_subscription_cancelled_notify(
             user_id=self.client.user_id,
@@ -224,13 +224,13 @@ class Subscription(TimeStampedModel, SoftDeletableModel, AuditMixin):
         self.save()
 
     def prolong_expiration_date(self):
-        """продлить дату окончания подписки"""
+        """Продлить дату окончания подписки."""
         next_date = self.tariff.next_payment_date(self.expiration_date)
         self.expiration_date = next_date
         self.save(action='prolong')
 
     def create_payment(self, info=None):
-        """создать платеж для подписки"""
+        """Создать платеж для подписки."""
         payment = PaymentInvoice(
             id=uuid4(),
             subscription=self,
@@ -312,7 +312,7 @@ class Subscription(TimeStampedModel, SoftDeletableModel, AuditMixin):
             logger.error(e)
 
     def process_renew(self):
-        """ процесс продления подписки """
+        """процесс продления подписки."""
 
         data = self.payment_system_instance.subscription_renew()
         if data:
@@ -321,7 +321,7 @@ class Subscription(TimeStampedModel, SoftDeletableModel, AuditMixin):
 
 
 class PaymentInvoice(TimeStampedModel, AuditMixin):
-    """ История оплат """
+    """История оплат."""
     id = models.UUIDField(primary_key=True)
     subscription = models.ForeignKey(
         Subscription,
@@ -370,12 +370,12 @@ class PaymentInvoice(TimeStampedModel, AuditMixin):
         return PaymentSystemFactory.get_payment_system(**data)
 
     def check_payment_status(self):
-        """проверка статуса платежа в платежной системе"""
+        """проверка статуса платежа в платежной системе."""
         status = self.payment_system_instance.check_payment_status()
         return status
 
     def set_payed_status(self):
-        """ тут логика при получении подтверждения об оплате """
+        """Тт логика при получении подтверждения об оплате."""
         self.status = PaymentStatus.PAYED
         send_payment_notify(
             user_id=self.subscription.client.user_id,
@@ -385,12 +385,12 @@ class PaymentInvoice(TimeStampedModel, AuditMixin):
         self.save()
 
     def set_cancelled_status(self):
-        """ тут логика при отмене платежа """
+        """Тут логика при отмене платежа."""
         self.status = PaymentStatus.CANCELLED
         self.save()
 
     def set_refunded_status(self):
-        """ тут логика при отмене платежа """
+        """Тут логика при отмене платежа."""
         self.status = PaymentStatus.REFUNDED
         send_refund_notify(
             user_id=self.subscription.client.user_id,
@@ -400,14 +400,14 @@ class PaymentInvoice(TimeStampedModel, AuditMixin):
         self.save()
 
     def refund_payment(self):
-        """ тут логика для возврата платежа """
+        """Тут логика для возврата платежа."""
         if self.status == PaymentStatus.PAYED:
             self.payment_system_instance.refund_payment()
             self.set_refunded_status()
 
 
 class AuditEvents(TimeStampedModel):
-    """ История событий """
+    """История событий."""
     who = models.CharField(_("Инициатор события"), max_length=50)
     what = models.CharField(_("Событие"), max_length=50)
     related_name = models.CharField(_("Объект"), max_length=50)

@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 class AuthenticationMiddleware(MiddlewareMixin):
-    """Проверка аутентификации пользователя"""
+    """Проверка аутентификации пользователя."""
 
     def process_request(self, request):
         is_superuser = False

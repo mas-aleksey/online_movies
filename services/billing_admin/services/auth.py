@@ -3,7 +3,7 @@ from django.conf import settings
 
 
 def get_auth_access_token() -> str:
-    """Получить админский токен в auth"""
+    """Получить админский токен в auth."""
     url = f'{settings.AUTH_SERVER}/api/v1/auth/login'
     headers = {
         'content-type': 'application/json'

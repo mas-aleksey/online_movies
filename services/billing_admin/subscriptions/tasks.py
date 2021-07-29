@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 @app.task(queue="high", timeout=60 * 5, default_retry_delay=10, max_retries=30)
 def wait_payment_task(payment_id):
-    """ожидание списания оплаты"""
+    """Ожидание списания оплаты."""
     from subscriptions.payment_system.models import PaymentStatus
     payment_model = apps.get_model('subscriptions', 'PaymentInvoice')
     payment = payment_model.objects.filter(id=payment_id).first()
@@ -41,7 +41,7 @@ def unsubscribe_task(subscription_id):
 
 @app.task(queue="default", timeout=60 * 5)
 def renew_subscriptions_task():
-    """таска для продления подписок"""
+    """Таска для продления подписок."""
     from subscriptions.models.models import Subscription
     subscriptions = Subscription.objects.need_renew()
 
@@ -51,7 +51,7 @@ def renew_subscriptions_task():
 
 @app.task(queue="default", timeout=60 * 5)
 def cancel_expired_subscriptions_task():
-    """таска для отмены истекших подписок"""
+    """Таска для отмены истекших подписок."""
     from subscriptions.models.models import Subscription
     subscriptions = Subscription.objects.need_cancel()
 

@@ -54,13 +54,13 @@ class StripePaymentSystem(AbstractPaymentSystem):
         return data
 
     def refund_payment(self):
-        """возврат платежа"""
+        """Возврат платежа."""
         subscription_id = str(self.subscription_id)
         data = subscription_refund(subscription_id)
         return data
 
     def subscription_create(self):
-        """ Создание подписки """
+        """Создание подписки."""
 
         amount = int(self.amount * 100)
         period = PERIODS[self.tariff_period]
@@ -82,7 +82,7 @@ class StripePaymentSystem(AbstractPaymentSystem):
         return data
 
     def subscription_renew(self):
-        """ Продлить подписку"""
+        """Продлить подписку."""
         data = get_latest_invoice(self.subscription_id)
 
         payment_id = self.last_payment['id']
@@ -92,6 +92,6 @@ class StripePaymentSystem(AbstractPaymentSystem):
         return data
 
     def subscription_cancel(self, cancel_at_period_end=True):
-        """ Отмена подписки """
+        """Отмена подписки."""
         data = subscription_cancel(self.subscription_id, cancel_at_period_end)
         return data

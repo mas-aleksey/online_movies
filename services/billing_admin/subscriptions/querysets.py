@@ -21,7 +21,7 @@ class SubscriptionQuerySet(QuerySet):
         return self.filter(status=status)
 
     def need_renew(self):
-        """подписки, которые необходимо продлить"""
+        """Подписки, которые необходимо продлить."""
         from subscriptions.models.meta import SubscriptionStatus
         statuses = [
             SubscriptionStatus.ACTIVE,
@@ -31,7 +31,7 @@ class SubscriptionQuerySet(QuerySet):
         return self.filter(expiration_date__lte=today, status__in=statuses)
 
     def need_cancel(self):
-        """подписки, которые необходимо отменить"""
+        """Подписки, которые необходимо отменить."""
         from subscriptions.models.meta import SubscriptionStatus
         statuses = [
             SubscriptionStatus.CANCEL_AT_PERIOD_END,

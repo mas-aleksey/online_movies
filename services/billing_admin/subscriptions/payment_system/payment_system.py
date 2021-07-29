@@ -23,29 +23,29 @@ class AbstractPaymentSystem:
         self.cancel_url = cancel_url
 
     def process_payment(self):
-        """ Запускаем обработку платежа """
+        """Запускаем обработку платежа."""
         raise NotImplementedError
 
     def check_payment_status(self) -> Optional[PaymentStatus]:
-        """ Проверяем статус платежа """
+        """Проверяем статус платежа."""
         raise NotImplementedError
 
     def check_subscription_status(self) -> Optional[SubscribePaymentStatus]:
-        """ Проверяем статус подписки """
+        """Проверяем статус подписки."""
         return None
 
     def refund_payment(self):
-        """ Возврат платежа """
+        """Возврат платежа."""
         raise NotImplementedError
 
     def subscription_create(self):
-        """ Создание подписки """
+        """Создание подписки."""
         raise NotImplementedError
 
     def subscription_cancel(self, cancel_at_period_end=True):
-        """ Отмена подписки """
+        """Отмена подписки."""
         raise NotImplementedError
 
     def subscription_renew(self):
-        """ Продлить подписку"""
+        """Продлить подписку"""
         raise NotImplementedError

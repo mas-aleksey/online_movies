@@ -7,7 +7,7 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 def get_or_create_product_stripe(product_id: str, name: str) -> str:
-    """создает продукт в stripe."""
+    """Создает продукт в stripe."""
 
     try:
         product = stripe.Product.retrieve(product_id)
@@ -21,7 +21,7 @@ def get_or_create_product_stripe(product_id: str, name: str) -> str:
 
 
 def create_price_stripe(amount: int, interval: str, product_id: str) -> str:
-    """создать цену в stripe"""
+    """Создать цену в stripe."""
 
     price = stripe.Price.create(
         unit_amount=amount,
@@ -34,7 +34,7 @@ def create_price_stripe(amount: int, interval: str, product_id: str) -> str:
 
 
 def create_subscription_checkout_stripe(success_url: str, cancel_url: str, price_id: str) -> dict:
-    """Создать чек на оплату подписки"""
+    """Создать чек на оплату подписки."""
 
     response = stripe.checkout.Session.create(
         success_url=success_url,
@@ -47,7 +47,7 @@ def create_subscription_checkout_stripe(success_url: str, cancel_url: str, price
 
 
 def checkout_retrieve_stripe(checkout_id: str) -> dict:
-    """Информация об оплате"""
+    """Информация об оплате."""
 
     response = stripe.checkout.Session.retrieve(checkout_id)
     return response
@@ -67,20 +67,20 @@ def subscription_cancel_stripe(subscription_id: str) -> dict:
 
 
 def subscription_delete_stripe(subscription_id: str) -> dict:
-    """удаление подписки."""
+    """Удаление подписки."""
     response = stripe.Subscription.delete(subscription_id)
     return response
 
 
 def invoice_retrieve_stripe(invoice_id: str) -> dict:
-    """получить информацию о счете."""
+    """Получить информацию о счете."""
 
     response = stripe.Invoice.retrieve(invoice_id)
     return response
 
 
 def payment_refund_stripe(payment_intent_id: str):
-    """вернуть платеж."""
+    """Вернуть платеж."""
 
     response = stripe.Refund.create(payment_intent=payment_intent_id)
     return response

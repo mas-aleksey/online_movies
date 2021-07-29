@@ -228,7 +228,7 @@ class ProductListApi(BaseListView):
 
 
 class UserUnsubscribeApi(View):
-    """Отписка"""
+    """Отписка."""
 
     http_method_names = ['get']
 

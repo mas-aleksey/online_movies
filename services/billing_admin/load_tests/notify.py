@@ -26,7 +26,7 @@ def send_notify(client, name, payload, user_id, notify_type="immediately", chann
 
 
 def send_payment_notify(client, user_id, amount, description):
-    """Отправка уведомления об оплате"""
+    """Отправка уведомления об оплате."""
     name = 'success_payment'
     payload = {
         "subject": "Списание средств",

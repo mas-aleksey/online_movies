@@ -4,7 +4,7 @@ from stripe_payment.services.stripe_api import create_price_stripe
 
 
 def get_price_id(subscription: SubscriptionInfoDataclass) -> str:
-    """возвращает id цены в stripe."""
+    """Возвращает id цены в stripe."""
     billing_price_id = subscription.tariff_id
     price = StripeId.objects.prices().filter(billing_id=billing_price_id).first()
     if price:
