@@ -18,10 +18,13 @@ INSTALLED_APPS = [
     "django.contrib.postgres",
     "psqlextra",
 
+    'rest_framework',
     'django_celery_results',
     'django_celery_beat',
+
     'billing.apps.subscriptions',
     'billing.apps.stripe_payment',
+
     'demo'
 ]
 
@@ -156,6 +159,11 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 50
+}
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
