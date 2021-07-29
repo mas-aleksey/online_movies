@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
 {% block title %} Подписки {% endblock %}
 {% block body %}
-    <h1>{{ data.product__name }}</h1>
-    <p class="fs-5 col-md-8">{{ data.product__description }}</p>
+    <h1>{{ data.product.name }}</h1>
+    <p class="fs-5 col-md-8">{{ data.product.description }}</p>
     <p class="fs-5 col-md-8"><strong>ID: </strong>{{ data.id }}</p>
     <p class="fs-5 col-md-8"><strong>Цена: </strong>{{ data.price }}</p>
     <p class="fs-5 col-md-8"><strong>Период: </strong>{% if data.period == "per year" %}Год{% else %}Месяц{% endif %}
     </p>
-    {% if data.discount__name %}
-        <p class="fs-5 col-md-8"><strong>Скидка: </strong>{{ data.discount__name }} {{ data.discount__value }}%</p>
+    {% if data.discount.name %}
+        <p class="fs-5 col-md-8"><strong>Скидка: </strong>{{ data.discount.name }} {{ data.discount.value }}%</p>
     {% endif %}
 
     {% if errors %}
