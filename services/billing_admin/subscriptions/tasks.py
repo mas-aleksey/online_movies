@@ -1,6 +1,8 @@
-from config.celery import app
-from django.apps import apps
 import logging
+
+from config.celery import app
+from subscriptions.models import models as subscription_models
+from subscriptions.payment_system import models as payment_models
 
 logger = logging.getLogger(__name__)
 
@@ -8,16 +10,14 @@ logger = logging.getLogger(__name__)
 @app.task(queue="high", timeout=60 * 5, default_retry_delay=10, max_retries=30)
 def wait_payment_task(payment_id):
     """Ожидание списания оплаты."""
-    from subscriptions.payment_system.models import PaymentStatus
-    payment_model = apps.get_model('subscriptions', 'PaymentInvoice')
-    payment = payment_model.objects.filter(id=payment_id).first()
+    payment = subscription_models.PaymentInvoice.objects.filter(id=payment_id).first()
     data = payment.check_payment_status()
     payment.info = data['payment_info']
     status = data['status']
 
-    if status == PaymentStatus.UNPAID:
+    if status == payment_models.PaymentStatus.UNPAID:
         is_finish = False
-    elif status == PaymentStatus.PAID:
+    elif status == payment_models.PaymentStatus.PAID:
         payment.set_payed_status()
         is_finish = True
     else:  # failed
@@ -33,17 +33,15 @@ def wait_payment_task(payment_id):
 
 @app.task(queue="high", timeout=60 * 5, default_retry_delay=10, max_retries=3)
 def unsubscribe_task(subscription_id):
-    from subscriptions.models.models import Subscription
-
-    subscription = Subscription.objects.filter(id=subscription_id).first()
+    """Задача отмены подписки."""
+    subscription = subscription_models.Subscription.objects.filter(id=subscription_id).first()
     subscription.process_cancel()
 
 
 @app.task(queue="default", timeout=60 * 5)
 def renew_subscriptions_task():
     """Таска для продления подписок."""
-    from subscriptions.models.models import Subscription
-    subscriptions = Subscription.objects.need_renew()
+    subscriptions = subscription_models.Subscription.objects.need_renew()
 
     for subscription in subscriptions:
         subscription.process_renew()
@@ -52,8 +50,7 @@ def renew_subscriptions_task():
 @app.task(queue="default", timeout=60 * 5)
 def cancel_expired_subscriptions_task():
     """Таска для отмены истекших подписок."""
-    from subscriptions.models.models import Subscription
-    subscriptions = Subscription.objects.need_cancel()
+    subscriptions = subscription_models.Subscription.objects.need_cancel()
 
     for subscription in subscriptions:
         subscription.set_cancelled()

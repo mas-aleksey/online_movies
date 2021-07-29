@@ -2,11 +2,11 @@ import datetime
 
 import pytz
 from django.db.models import QuerySet
+from subscriptions.models.meta import SubscriptionStatus
 
 
 class SubscriptionQuerySet(QuerySet):
     def exclude_cancelled(self):
-        from subscriptions.models.meta import SubscriptionStatus
         statuses = [
             SubscriptionStatus.INACTIVE,
             SubscriptionStatus.CANCELLED,
@@ -22,7 +22,7 @@ class SubscriptionQuerySet(QuerySet):
 
     def need_renew(self):
         """Подписки, которые необходимо продлить."""
-        from subscriptions.models.meta import SubscriptionStatus
+
         statuses = [
             SubscriptionStatus.ACTIVE,
             SubscriptionStatus.EXPIRED,
@@ -32,7 +32,6 @@ class SubscriptionQuerySet(QuerySet):
 
     def need_cancel(self):
         """Подписки, которые необходимо отменить."""
-        from subscriptions.models.meta import SubscriptionStatus
         statuses = [
             SubscriptionStatus.CANCEL_AT_PERIOD_END,
         ]
