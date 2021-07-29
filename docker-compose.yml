@@ -184,7 +184,7 @@ services:
     container_name: billing_admin
     restart: on-failure
     volumes:
-      - billing-admin-static:/var/app/static/billing-admin
+      - billing-admin-static:/var/app/billing/static/billing-admin
     env_file: docker-compose-env/billing_admin.env
 
   billing_admin_celery_worker:
