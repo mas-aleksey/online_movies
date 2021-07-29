@@ -7,9 +7,11 @@ from model_utils.models import TimeStampedModel
 
 from billing.apps.subscriptions import models as m
 from billing.apps.subscriptions.payment_system.payment_factory import PaymentSystemFactory
-from billing.services.notify import (
-    send_payment_notify, send_refund_notify
+from billing.apps.subscriptions.services.payment import (
+    invoice_set_payed_status, invoice_set_cancelled_status,
+    invoice_set_refunded_status, invoice_refund_payment
 )
+
 
 logger = logging.getLogger(__name__)
 
@@ -70,32 +72,16 @@ class PaymentInvoice(TimeStampedModel, m.AuditMixin):
 
     def set_payed_status(self):
         """Тт логика при получении подтверждения об оплате."""
-        self.status = m.PaymentStatus.PAYED
-        send_payment_notify(
-            user_id=self.subscription.client.user_id,
-            amount=self.amount,
-            description=f'Продление подписки "{self.subscription.tariff.product.name}"'
-        )
-        self.save()
+        invoice_set_payed_status(self)
 
     def set_cancelled_status(self):
         """Тут логика при отмене платежа."""
-        self.status = m.PaymentStatus.CANCELLED
-        self.save()
+        invoice_set_cancelled_status(self)
 
     def set_refunded_status(self):
         """Тут логика при отмене платежа."""
-        self.status = m.PaymentStatus.REFUNDED
-        send_refund_notify(
-            user_id=self.subscription.client.user_id,
-            amount=self.amount,
-            description=f'Возврат средств по подписке "{self.subscription.tariff.product.name}"'
-        )
-        self.save()
+        invoice_set_refunded_status(self)
 
     def refund_payment(self):
         """Тут логика для возврата платежа."""
-        if self.status == m.PaymentStatus.PAYED:
-            self.payment_system_instance.refund_payment()
-            self.set_refunded_status()
-
+        invoice_refund_payment(self)

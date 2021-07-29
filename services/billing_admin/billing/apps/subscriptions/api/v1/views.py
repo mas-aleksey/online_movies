@@ -8,8 +8,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.detail import BaseDetailView
 from django.views.generic.list import BaseListView
 
-import billing.apps.subscriptions.utils as utils
 from billing.apps.subscriptions.models import Tariff, Subscription, Product, AuditEvents
+from billing.apps.subscriptions.services.subscription import subscription_create
 from billing.apps.subscriptions.tasks import unsubscribe_task
 
 logger = logging.getLogger(__file__)
@@ -24,7 +24,7 @@ def create_new_subscription(data, scope):
     payment_system = data['payment_system']
     tariff_id = data['tariff_id']
 
-    subscription = utils.create_subscription(user_id, tariff_id, payment_system)
+    subscription = subscription_create(user_id, tariff_id, payment_system)
     url = subscription.process_confirm()
     return url
 
