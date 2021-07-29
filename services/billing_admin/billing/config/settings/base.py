@@ -18,6 +18,7 @@ INSTALLED_APPS = [
     "django.contrib.postgres",
     "psqlextra",
 
+    'drf_yasg',
     'rest_framework',
     'django_celery_results',
     'django_celery_beat',

@@ -1,5 +1,8 @@
 import logging
 
+from drf_yasg import openapi
+from drf_yasg.openapi import Schema
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -13,6 +16,21 @@ class PaymentAPIView(APIView):
     """Представление для запуска оплаты подписки."""
     http_method_names = ['post', ]
 
+    @swagger_auto_schema(
+        request_body=PaymentSerializer,
+        responses={
+            200: openapi.Response(
+                'Success', Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'confirmation_url':
+                            Schema(type=openapi.TYPE_STRING)
+                    }
+                )
+            ),
+            400: openapi.Response('Bad request')
+        }
+    )
     def post(self, request):
         serializer = PaymentSerializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
