@@ -1,43 +1,25 @@
-import json
 import logging
 
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
+from billing.apps.subscriptions.api.v1.serializers import PaymentSerializer
 from billing.apps.subscriptions.services.subscription import subscription_create
 
 logger = logging.getLogger(__file__)
 
 
-def create_new_subscription(data, scope):
-    user_id = scope['user_id']
-    payment_system = data['payment_system']
-    tariff_id = data['tariff_id']
+class PaymentAPIView(APIView):
+    """Представление для запуска оплаты подписки."""
+    http_method_names = ['post', ]
 
-    subscription = subscription_create(user_id, tariff_id, payment_system)
-    url = subscription.process_confirm()
-    return url
-
-
-@csrf_exempt
-def make_order(request):
-    """
-    {
-        'tariff_id',
-        'payment_system'
-    }
-    :param request:
-    :return:
-    """
-    if request.method == 'POST':
-        data = (json.loads(request.body))
-        url = create_new_subscription(data, request.scope)
-        try:
-            pass
-        except Exception as e:
-            logger.error(e)
-            return JsonResponse({'status': 'failed', 'msg': str(e)}, status=500)
-        return JsonResponse({'confirmation_url': url})
-
-    # redirect to payment_system
-    return JsonResponse({'status': 'ok'})
+    def post(self, request):
+        serializer = PaymentSerializer(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+        user_id = request.scope['user_id']
+        payment_system = data['payment_system']
+        tariff_id = data['tariff_id']
+        subscription = subscription_create(user_id, tariff_id, payment_system)
+        url = subscription.process_confirm()
+        return Response({'confirmation_url': url})

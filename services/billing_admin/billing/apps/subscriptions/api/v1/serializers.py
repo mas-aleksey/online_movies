@@ -1,3 +1,4 @@
+from django.conf import settings
 from rest_framework import serializers
 
 from billing.apps.subscriptions.models import Tariff, Product, Discount, Subscription
@@ -51,3 +52,11 @@ class SubscriptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subscription
         fields = ['id', 'expiration_date', 'status', 'status_display', 'tariff', 'discount']
+
+
+class PaymentSerializer(serializers.Serializer):
+    tariff_id = serializers.UUIDField(label='id тарифа')
+    payment_system = serializers.ChoiceField(
+        label='название платежной системы',
+        choices=[settings.YOOMONEY, settings.STRIPE]
+    )

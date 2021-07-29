@@ -1,9 +1,9 @@
-from .payment import make_order
+from .payment import PaymentAPIView
 from .product import ProductListApi
 from .subscriptions import UserSubscriptionsApi, UserSubscriptionDetailApi, UserUnsubscribeApi
 from .tariffs import TariffDetailApi
 
 __all__ = [
-    'make_order', 'ProductListApi', 'UserSubscriptionsApi', 'UserSubscriptionDetailApi', 'UserUnsubscribeApi',
+    'PaymentAPIView', 'ProductListApi', 'UserSubscriptionsApi', 'UserSubscriptionDetailApi', 'UserUnsubscribeApi',
     'TariffDetailApi',
 ]
