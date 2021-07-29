@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from billing.apps.subscriptions.models import Tariff, Product, Discount
+from billing.apps.subscriptions.models import Tariff, Product, Discount, Subscription
 
 
 class DiscountDetailSerializer(serializers.ModelSerializer):
@@ -38,3 +38,16 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ['id', 'name', 'description', 'access_type', 'tariffs']
+
+
+class SubscriptionSerializer(serializers.ModelSerializer):
+    tariff = TariffDetailSerializer()
+    discount = DiscountDetailSerializer()
+    status_display = serializers.SerializerMethodField()
+
+    def get_status_display(self, obj):
+        return obj.get_status_display()
+
+    class Meta:
+        model = Subscription
+        fields = ['id', 'expiration_date', 'status', 'status_display', 'tariff', 'discount']

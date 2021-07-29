@@ -7,15 +7,15 @@
     {% endif %}
 {% endblock %}
 {% block body %}
-    <h1>{{ data.tariff_product_name }}</h1>
-    <p class="fs-5 col-md-8">{{ data.tariff_product_description }}</p>
-    <p class="fs-5 col-md-8"><strong>Цена: </strong>{{ data.price }}</p>
+    <h1>{{ data.tariff.product.name }}</h1>
+    <p class="fs-5 col-md-8">{{ data.tariff.product.description }}</p>
+    <p class="fs-5 col-md-8"><strong>Цена: </strong>{{ data.tariff.price }}</p>
     <p class="fs-5 col-md-8"><strong>Период: </strong>{% if data.period == "per year" %}Год{% else %}Месяц{% endif %}
     </p>
     <p class="fs-5 col-md-8"><strong>Дата окончания: </strong>{{ data.expiration_date }}</p>
 
     {% if data.discount_name %}
-        <p class="fs-5 col-md-8"><strong>Скидка: </strong>{{ data.discount_name }} {{ data.discount_value }}%</p>
+        <p class="fs-5 col-md-8"><strong>Скидка: </strong>{{ data.discount.name }} {{ data.discount.value }}%</p>
     {% endif %}
     </p>
     <p class="fs-5 col-md-8 {% if data.status == 'active' %} text-success {% else %} text-danger {% endif %}">
