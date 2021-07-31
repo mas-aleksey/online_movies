@@ -227,6 +227,22 @@ services:
     depends_on:
       - billing_admin
 
+  selenium_test:
+    build: services/selenium_test
+    container_name: selenium_test
+    env_file: docker-compose-env/billing_admin.env
+    restart: "no"
+
+  allure:
+    container_name: allure
+    image: "frankescobar/allure-docker-service:2.13.4"
+    environment:
+      CHECK_RESULTS_EVERY_SECONDS: 3
+      KEEP_HISTORY: "TRUE"
+      KEEP_HISTORY_LATEST: 5
+    ports:
+    - "5050:5050"
+
 volumes:
   movies-admin-static:
     driver: local

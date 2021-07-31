@@ -30,7 +30,6 @@ class QuickstartUser(HttpUser):
 
     @task(5)
     def search_movies(self):
-        self.client = services.auth_refresh(self.client)
         query = random.choice(settings.QUERIES)
         movies = services.async_movies_search(self.client, query)
         if len(movies) == 0:
@@ -41,12 +40,10 @@ class QuickstartUser(HttpUser):
 
     @task
     def profile(self):
-        self.client = services.auth_refresh(self.client)
         services.auth_profile(self.client)
 
     @task
     def subscriptions(self):
-        self.client = services.auth_refresh(self.client)
         prods = services.billing_products(self.client)
         results = prods['results']
         product = random.choice(results)
@@ -57,24 +54,18 @@ class QuickstartUser(HttpUser):
 
     @task
     def add_role(self):
-        self.client = services.auth_refresh(self.client)
         profile = services.auth_profile(self.client)
-
         auth_roles.add_auth_user_role(self.client_auth_admin, profile['user_id'], ['extra'])
-
         self.client = services.auth_refresh(self.client)
 
     @task
     def delete_role(self):
-        self.client = services.auth_refresh(self.client)
         profile = services.auth_profile(self.client)
-
         auth_roles.delete_auth_user_role(self.client_auth_admin, profile['user_id'], ['extra'])
         self.client = services.auth_refresh(self.client)
 
     @task(2)
     def send_notify(self):
-        self.client = services.auth_refresh(self.client)
         profile = services.auth_profile(self.client)
         notify.send_payment_notify(self.client, profile['user_id'], 1000.0, 'Списание')
 
