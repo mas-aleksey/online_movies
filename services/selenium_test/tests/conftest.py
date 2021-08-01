@@ -23,13 +23,13 @@ def web_driver():
         yield driver
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture
 def user_driver(web_driver: RemoteWebDriver):
 
-    user_pass = hash(uuid4())
+    user_pass = str(hash(uuid4()))
     user_email = f'allure_{user_pass}@allure.ru'
 
-    signup_url = make_url('api/v1/auth/signup')
+    signup_url = make_url('auth2/api/v1/auth/signup')
     headers = {'content-type': 'application/json', 'user-agent': 'allure_test'}
     payload = {
         "email": user_email,
@@ -41,21 +41,21 @@ def user_driver(web_driver: RemoteWebDriver):
         headers=headers,
     )
     if resp.status_code != 200:
-        raise Exception("Sign up error")
+        raise Exception(f"Sign up error {resp.status_code} {resp.content}")
 
     login_url = make_url('billing/demo/login/')
 
-    prepare_driver.get(login_url)
-    allure.attach(prepare_driver.get_screenshot_as_png(), login_url, allure.attachment_type.PNG)
+    web_driver.get(login_url)
+    allure.attach(web_driver.get_screenshot_as_png(), login_url, allure.attachment_type.PNG)
 
-    input_login = prepare_driver.find_element_by_id('id_login')
-    input_pass = prepare_driver.find_element_by_id('id_password')
+    input_login = web_driver.find_element_by_id('id_login')
+    input_pass = web_driver.find_element_by_id('id_password')
     input_login.send_keys(user_email)
     input_pass.send_keys(user_pass)
-    allure.attach(prepare_driver.get_screenshot_as_png(), login_url, allure.attachment_type.PNG)
-    login_btn = prepare_driver.find_element_by_tag_name('button')
+    allure.attach(web_driver.get_screenshot_as_png(), login_url, allure.attachment_type.PNG)
+    login_btn = web_driver.find_element_by_tag_name('button')
     login_btn.click()
-    yield prepare_driver
+    yield web_driver
 
 
 def pytest_sessionfinish(session, exitstatus):
