@@ -7,6 +7,8 @@ from django.forms.models import model_to_dict
 from django.utils.translation import gettext_lazy as _
 from model_utils.models import TimeStampedModel
 
+from billing.apps.subscriptions.tasks import audit_create_task
+
 logger = logging.getLogger(__name__)
 
 
@@ -41,4 +43,6 @@ class AuditEvents(TimeStampedModel):
     @classmethod
     def create(cls, who, what, instance, details=None) -> None:
         logger.info('%s %s %s %s %s', who, what, instance, instance.id, details)
-        cls(who=who, what=what, content_object=instance, details=details).save()
+        audit_create_task.apply_async(
+            args=(who, what, instance._meta.app_label, instance._meta.object_name, instance.id, details)
+        )

@@ -1,5 +1,7 @@
 import logging
 
+from django.apps import apps
+
 from billing.config.celery import app
 from . import models as m
 from .payment_system import models as payment_models
@@ -54,3 +56,11 @@ def cancel_expired_subscriptions_task():
 
     for subscription in subscriptions:
         subscription.set_cancelled()
+
+
+@app.task(queue="low", timeout=60 * 5)
+def audit_create_task(who, what, instance_app_label, instance_class, instance_id, details=None) -> None:
+    model = apps.get_model(instance_app_label, instance_class)
+    instance = model.objects.get(pk=instance_id)
+    logger.info('%s %s %s %s %s', who, what, instance_class, instance_id, details)
+    m.AuditEvents(who=who, what=what, content_object=instance, details=details).save()
