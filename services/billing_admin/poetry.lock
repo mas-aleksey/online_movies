@@ -261,6 +261,20 @@ argon2 = ["argon2-cffi (>=16.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
+name = "django-cacheops"
+version = "6.0"
+description = "A slick ORM cache with automatic granular event-driven invalidation for Django."
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[package.dependencies]
+django = ">=2.1"
+funcy = ">=1.8,<2.0"
+redis = ">=3.0.0"
+six = ">=1.4.0"
+
+[[package]]
 name = "django-celery-beat"
 version = "2.2.0"
 description = "Database-backed Periodic Tasks."
@@ -393,6 +407,14 @@ python-versions = "*"
 
 [package.dependencies]
 wrapt = "*"
+
+[[package]]
+name = "funcy"
+version = "1.16"
+description = "A fancy and practical functional tools"
+category = "main"
+optional = false
+python-versions = "*"
 
 [[package]]
 name = "gunicorn"
@@ -571,6 +593,17 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "redis"
+version = "3.5.3"
+description = "Python client for Redis key-value store"
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+
+[package.extras]
+hiredis = ["hiredis (>=0.1.3)"]
+
+[[package]]
 name = "requests"
 version = "2.26.0"
 description = "Python HTTP for Humans."
@@ -731,7 +764,7 @@ urllib3 = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "d9ea84fdf206cfb42e9b5b9d1f1aac491e361b30ee139ee18f2482370d1d14cd"
+content-hash = "fd359d18a2417de05cbf97f9900c2085b0381740c1d8b68ae66890bd6217f157"
 
 [metadata.files]
 amqp = [
@@ -809,6 +842,10 @@ django = [
     {file = "Django-3.1-py3-none-any.whl", hash = "sha256:1a63f5bb6ff4d7c42f62a519edc2adbb37f9b78068a5a862beff858b68e3dc8b"},
     {file = "Django-3.1.tar.gz", hash = "sha256:2d390268a13c655c97e0e2ede9d117007996db692c1bb93eabebd4fb7ea7012b"},
 ]
+django-cacheops = [
+    {file = "django-cacheops-6.0.tar.gz", hash = "sha256:78e161ebd96a32e28e19ec7da31f2afed9e62a79726b8b5f0ed12dd16c2e5841"},
+    {file = "django_cacheops-6.0-py2.py3-none-any.whl", hash = "sha256:ee38b969c9fc68f7c88e769b6c811e19563cca1ae08210d9f553ff758b6c3e17"},
+]
 django-celery-beat = [
     {file = "django-celery-beat-2.2.0.tar.gz", hash = "sha256:b8a13afb15e7c53fc04f4f847ac71a6d32088959aba701eb7c4a59f0c28ba543"},
     {file = "django_celery_beat-2.2.0-py2.py3-none-any.whl", hash = "sha256:c4c72a9579f20eff4c4ccf1b58ebdca5ef940f4210065057db1754ea5f8dffdc"},
@@ -846,6 +883,10 @@ drf-yasg = [
 ]
 enforce = [
     {file = "enforce-0.3.4-py3-none-any.whl", hash = "sha256:cdb7720e25d0bd7ad2aaf2311197d5a28d4d2afe73ecc2f74b5d28faee3f68f2"},
+]
+funcy = [
+    {file = "funcy-1.16-py2.py3-none-any.whl", hash = "sha256:1d3fc5d42cf7564a6b2be04042d0df7a50c77903cf760a34786d0c9ebd659b25"},
+    {file = "funcy-1.16.tar.gz", hash = "sha256:2775409b7dc9106283f1224d97e6df5f2c02e7291c8caed72764f5a115dffb50"},
 ]
 gunicorn = [
     {file = "gunicorn-20.0.4-py2.py3-none-any.whl", hash = "sha256:cd4a810dd51bf497552cf3f863b575dabd73d6ad6a91075b65936b151cbf4f9c"},
@@ -973,6 +1014,10 @@ python-dateutil = [
 pytz = [
     {file = "pytz-2021.1-py2.py3-none-any.whl", hash = "sha256:eb10ce3e7736052ed3623d49975ce333bcd712c7bb19a58b9e2089d4057d0798"},
     {file = "pytz-2021.1.tar.gz", hash = "sha256:83a4a90894bf38e243cf052c8b58f381bfe9a7a483f6a9cab140bc7f702ac4da"},
+]
+redis = [
+    {file = "redis-3.5.3-py2.py3-none-any.whl", hash = "sha256:432b788c4530cfe16d8d943a09d40ca6c16149727e4afe8c2c9d5580c59d9f24"},
+    {file = "redis-3.5.3.tar.gz", hash = "sha256:0e7e0cfca8660dea8b7d5cd8c4f6c5e29e11f31158c0b0ae91a397f00e5a05a2"},
 ]
 requests = [
     {file = "requests-2.26.0-py2.py3-none-any.whl", hash = "sha256:6c1246513ecd5ecd4528a0906f910e8f0f9c6b8ec72030dc9fd154dc1a6efd24"},

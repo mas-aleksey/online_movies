@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_celery_results',
     'django_celery_beat',
+    'cacheops',
 
     'billing.apps.subscriptions',
     'billing.apps.stripe_payment',
@@ -188,5 +189,15 @@ AUTH_PASSWORD = os.getenv('AUTH_PASSWORD') or f'pwd'
 NOTIFY_SERVER = os.getenv('NOTIFY_SERVER') or 'http://notify_api:8000/notify'
 NOTIFY_ENDPOINT = os.getenv('NOTIFY_ENDPOINT') or f'{NOTIFY_SERVER}/api/v1/event'
 
+REDIS_HOST = os.getenv('REDIS_HOST') or 'localhost'
+REDIS_PORT = os.getenv('REDIS_PORT') or '6379'
+CACHEOPS_REDIS = f"redis://{REDIS_HOST}:{REDIS_PORT}/5"
+
+CACHEOPS = {
+    'auth.user': {'ops': 'get', 'timeout': 60 * 15},
+    'auth.*': {'ops': {'fetch', 'get'}, 'timeout': 60 * 60},
+    'auth.permission': {'ops': 'all', 'timeout': 60 * 60},
+    '*.*': {'ops': (), 'timeout': 60 * 60},
+}
 from .celery import *  # noqa
 from .config import *  # noqa
