@@ -148,3 +148,23 @@ def billing_subscriptions(client):
         return data
 
     raise HTTPError(resp.text)
+
+
+def billing_subscription(client, subscription_id):
+    url = f'{settings.BILLING_BASE_URL}/subscription/v1/subscriptions/{subscription_id}'
+    resp = client.get(url)
+    if resp.status_code == 200:
+        data = resp.json()
+        return data
+
+    raise HTTPError(resp.text)
+
+
+def billing_tariff(client, tariff_id):
+    url = f'{settings.BILLING_BASE_URL}/subscription/v1/tariff/{tariff_id}'
+    resp = client.get(url)
+    if resp.status_code == 200:
+        data = resp.json()
+        return data
+
+    raise HTTPError(resp.text)
