@@ -25,7 +25,7 @@ CELERY_QUEUES = (
 CELERY_BEAT_SCHEDULE = {
     'renew_subscriptions_task': {
         "task": 'billing.apps.subscriptions.tasks.renew_subscriptions_task',  # продление подписок
-        "schedule": 60.0  # каждые 60 сек
+        "schedule": 10.0  # каждые 60 сек
     },
     'cancel_expired_subscriptions_task': {
         "task": 'billing.apps.subscriptions.tasks.cancel_expired_subscriptions_task', # отмена истекших подписок
