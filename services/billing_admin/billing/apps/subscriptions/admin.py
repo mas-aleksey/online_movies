@@ -56,7 +56,6 @@ class SubscriptionAdmin(BaseAdmin):
 @admin.register(PaymentInvoice)
 class PaymentInvoiceAdmin(BaseAdmin):
     list_display = ('subscription', 'amount', 'status', 'payment_system', 'created')
-    readonly_fields = ('subscription', 'amount', 'payment_system')
 
 
 @admin.register(AuditEvents)
