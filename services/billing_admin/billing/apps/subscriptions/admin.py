@@ -10,6 +10,8 @@ class PaymentsInline(admin.TabularInline):
     extra = 0
     verbose_name = 'платеж'
     verbose_name_plural = 'платежи'
+    show_change_link = True
+    readonly_fields = ('subscription', 'amount', 'info', 'status', 'payment_system')
 
 
 class BaseAdmin(admin.ModelAdmin):
@@ -54,9 +56,6 @@ class SubscriptionAdmin(BaseAdmin):
 class PaymentInvoiceAdmin(BaseAdmin):
     list_display = ('subscription', 'amount', 'status', 'payment_system', 'created')
     readonly_fields = ('subscription', 'amount', 'payment_system')
-    fields = (
-        'subscription', 'amount', 'info', 'status', 'payment_system', 'created'
-    )
 
 
 @admin.register(AuditEvents)
