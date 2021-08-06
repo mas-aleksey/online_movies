@@ -5,8 +5,15 @@ from billing.apps.subscriptions.models import (
 )
 
 
+class PaymentsInline(admin.TabularInline):
+    model = PaymentInvoice
+    extra = 0
+    verbose_name = 'платеж'
+    verbose_name_plural = 'платежи'
+
+
 class BaseAdmin(admin.ModelAdmin):
-    exclude = ('id',)
+    readonly_fields = ['id', ]
 
     def save_model(self, request, obj, form, change):
         if not obj.id:
@@ -40,10 +47,16 @@ class DiscountAdmin(BaseAdmin):
 class SubscriptionAdmin(BaseAdmin):
     list_display = ('client', 'tariff', 'status')
 
+    inlines = [PaymentsInline, ]
+
 
 @admin.register(PaymentInvoice)
-class PaymentHistoryAdmin(BaseAdmin):
-    list_display = ('subscription', 'amount', 'status', 'payment_system', 'created', 'modified')
+class PaymentInvoiceAdmin(BaseAdmin):
+    list_display = ('subscription', 'amount', 'status', 'payment_system', 'created')
+    readonly_fields = ('subscription', 'amount', 'payment_system')
+    fields = (
+        'subscription', 'amount', 'info', 'status', 'payment_system', 'created'
+    )
 
 
 @admin.register(AuditEvents)

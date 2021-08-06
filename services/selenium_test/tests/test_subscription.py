@@ -6,12 +6,14 @@ from helpers.help_utils import make_url
 from selenium.webdriver.support.select import Select
 
 
+@allure.step
 def go_to_page(user_driver: RemoteWebDriver, page_url: str, element_class: str):
     user_driver.get(make_url(page_url))
     assert user_driver.find_element_by_class_name(element_class)
     allure.attach(user_driver.get_screenshot_as_png(), f'Load page: {page_url}', allure.attachment_type.PNG)
 
 
+@allure.step
 def wait_subscription_status(user_driver: RemoteWebDriver, status: str):
     i = 0
     while True:
@@ -79,6 +81,8 @@ class TestCatalog:
 
     @allure.title('Stripe - создание, отмена подписки')
     def test_stripe_subscription(self, user_driver: RemoteWebDriver):
+
+        allure.attach(user_driver.get_screenshot_as_png(), 'Stripe video', allure.attachment_type.MP4)
         go_to_page(user_driver, '/billing/demo/profile/', 'flex-shrink-0')
         go_to_page(user_driver, '/billing/demo/tariff/fb167b09-7d56-4330-814a-0ba799e985de', 'flex-shrink-0')
 
