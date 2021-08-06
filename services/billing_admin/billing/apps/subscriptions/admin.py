@@ -11,7 +11,8 @@ class PaymentsInline(admin.TabularInline):
     verbose_name = 'платеж'
     verbose_name_plural = 'платежи'
     show_change_link = True
-    readonly_fields = ('id', 'subscription', 'amount', 'status', 'payment_system')
+    readonly_fields = ('id', 'amount', 'status', 'payment_system')
+    fields = ('create', 'id', 'amount', 'status', 'payment_system')
 
 
 class BaseAdmin(admin.ModelAdmin):
