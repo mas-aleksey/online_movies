@@ -11,12 +11,11 @@ class PaymentsInline(admin.TabularInline):
     verbose_name = 'платеж'
     verbose_name_plural = 'платежи'
     show_change_link = True
-    readonly_fields = ('created', 'id', 'amount', 'status', 'payment_system')
     fields = ('created', 'id', 'amount', 'status', 'payment_system')
 
 
 class BaseAdmin(admin.ModelAdmin):
-    readonly_fields = ['id', ]
+    readonly_fields = ('id', )
 
     def save_model(self, request, obj, form, change):
         if not obj.id:
@@ -56,6 +55,7 @@ class SubscriptionAdmin(BaseAdmin):
 @admin.register(PaymentInvoice)
 class PaymentInvoiceAdmin(BaseAdmin):
     list_display = ('subscription', 'amount', 'status', 'payment_system', 'created')
+    readonly_fields = ('id', 'created', 'amount', 'status', 'payment_system')
 
 
 @admin.register(AuditEvents)
