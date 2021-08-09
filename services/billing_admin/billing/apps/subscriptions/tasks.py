@@ -9,7 +9,7 @@ from .payment_system import models as payment_models
 logger = logging.getLogger(__name__)
 
 
-@app.task(queue="high", timeout=60 * 5, default_retry_delay=10, max_retries=30)
+@app.task(bing=True, queue="high", timeout=60 * 5, default_retry_delay=10, max_retries=30)
 def wait_payment_task(payment_id):
     """Ожидание списания оплаты."""
     payment = m.PaymentInvoice.objects.filter(id=payment_id).first()
@@ -26,11 +26,11 @@ def wait_payment_task(payment_id):
         payment.set_cancelled_status()
         is_finish = True
 
-    logger.info(f'wait_payment_task payed: {is_finish}')
+    logger.debug(f'wait_payment_task payed: {is_finish}')
     if is_finish:
         payment.subscription.auto_update_status()
     else:
-        wait_payment_task.apply_async((payment_id,), countdown=5)
+        wait_payment_task.retry((payment_id,), countdown=5)
 
 
 @app.task(queue="high", timeout=60 * 5, default_retry_delay=10, max_retries=3)

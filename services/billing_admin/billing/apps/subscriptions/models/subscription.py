@@ -7,6 +7,8 @@ from django.db import models
 from django.db.models import QuerySet, Manager
 from django.utils.translation import gettext_lazy as _
 from model_utils.models import TimeStampedModel, SoftDeletableModel
+from celery.result import AsyncResult
+from billing.config.celery import app
 
 from billing.apps.subscriptions import models as m
 from billing.apps.subscriptions.payment_system.payment_factory import PaymentSystemFactory
@@ -63,6 +65,7 @@ class Subscription(TimeStampedModel, SoftDeletableModel, m.AuditMixin):
     expiration_date = models.DateField(_("дата окончания"), blank=True, null=True)
     tariff = models.ForeignKey(m.Tariff, on_delete=models.DO_NOTHING, verbose_name="тариф")
     discount = models.ForeignKey(m.Discount, on_delete=models.DO_NOTHING, verbose_name="скидка", blank=True, null=True)
+    wait_payment_task = models.UUIDField(_("id задачи на оплату"), blank=True, null=True, default=None)
     status = models.CharField(
         _("Статус подписки"),
         max_length=64,
@@ -118,6 +121,13 @@ class Subscription(TimeStampedModel, SoftDeletableModel, m.AuditMixin):
             'cancel_url': self.return_url
         }
         return PaymentSystemFactory.get_payment_system(**data)
+
+    @property
+    def payment_task_status(self):
+        if not self.wait_payment_task:
+            return None
+        res = AsyncResult(str(self.wait_payment_task), app=app)
+        return res.state
 
     def set_active(self):
         """Делаем подписку активной."""
