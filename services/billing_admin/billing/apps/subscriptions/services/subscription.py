@@ -3,7 +3,7 @@ from __future__ import annotations
 import datetime
 import logging
 from typing import TYPE_CHECKING
-from uuid import uuid4
+from uuid import uuid4, UUID
 
 import pytz
 from django.conf import settings
@@ -100,7 +100,9 @@ def subscription_process_confirm(subscription: Subscription):
     """
     data = subscription.payment_system_instance.subscription_create()
     payment = subscription.create_payment(info=data['payment_info'])
-    wait_payment_task.apply_async((payment.id,), countdown=5)
+    task_id = wait_payment_task.apply_async((payment.id,), countdown=5)
+    subscription.wait_payment_task = UUID(str(task_id))
+    subscription.save(update_fields=['wait_payment_task'])
     m.AuditEvents.create('system', 'create', payment, payment.details)
     return data['url']
 

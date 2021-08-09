@@ -47,6 +47,16 @@ class SubscriptionSerializer(serializers.ModelSerializer):
     status_display = serializers.SerializerMethodField()
 
     def get_status_display(self, obj):
+        task_status = obj.payment_task_status
+
+        if not task_status:
+            return obj.get_status_display()
+
+        if task_status == 'FAILURE':
+            return "При оплате произошла ошибка"
+        elif task_status in ['PENDING', 'STARTED', 'RETRY']:
+            return "Ожидание оплаты"
+
         return obj.get_status_display()
 
     class Meta:
