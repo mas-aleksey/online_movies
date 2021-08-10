@@ -30,6 +30,11 @@ class SubscriptionStatus(models.TextChoices):
     CANCELLED = "cancelled", _("Подписка отменена")
     CANCEL_AT_PERIOD_END = "cancel_at_period_end", _("Отмена после окончания периода")
 
+    @classmethod
+    @property
+    def active_statuses(cls):
+        return [cls.ACTIVE, cls.CANCEL_AT_PERIOD_END]
+
 
 class PaymentStatus(models.TextChoices):
     """Статусы платежей."""

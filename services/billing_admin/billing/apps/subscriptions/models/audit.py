@@ -42,7 +42,6 @@ class AuditEvents(TimeStampedModel):
 
     @classmethod
     def create(cls, who, what, instance, details=None) -> None:
-        logger.info('%s %s %s %s %s', who, what, instance, instance.id, details)
         audit_create_task.apply_async(
             args=(who, what, instance._meta.app_label, instance._meta.object_name, instance.id, details)
         )

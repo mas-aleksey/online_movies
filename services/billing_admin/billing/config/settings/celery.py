@@ -28,7 +28,11 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": 60.0  # каждые 60 сек
     },
     'cancel_expired_subscriptions_task': {
-        "task": 'billing.apps.subscriptions.tasks.cancel_expired_subscriptions_task', # отмена истекших подписок
+        "task": 'billing.apps.subscriptions.tasks.cancel_expired_subscriptions_task',  # отмена истекших подписок
         "schedule": 60.0  # каждые 60 сек
+    },
+    'update_clients_roles_task': {
+        "task": 'billing.apps.subscriptions.tasks.update_clients_roles_task',  # обновление ролей пользователей
+        "schedule": 3600.0  # каждый час
     }
 }

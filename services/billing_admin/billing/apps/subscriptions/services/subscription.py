@@ -6,13 +6,11 @@ from typing import TYPE_CHECKING
 from uuid import uuid4
 
 import pytz
-from django.conf import settings
 
 from billing.apps.subscriptions import models as m
 from billing.apps.subscriptions.payment_system.models import SubscribePaymentStatus
 from billing.apps.subscriptions.services.client import get_or_create_client
-from billing.apps.subscriptions.tasks import wait_payment_task
-from billing.services.auth import add_auth_user_role, delete_auth_user_role
+from billing.apps.subscriptions.tasks import wait_payment_task, update_client_roles_task
 from billing.services.notify import (
     send_subscription_active_notify,
     send_subscription_cancelled_notify
@@ -51,29 +49,34 @@ def subscription_create(user_id, tariff_id, payment_system: str) -> Subscription
 
 def subscription_set_active(subscription: Subscription):
     """Делаем подписку активной."""
-    roles = settings.ACCESS_ROLES_MAPPING[subscription.tariff.product.access_type]
-    add_auth_user_role(subscription.client.user_id, roles)
-    send_subscription_active_notify(
-        user_id=subscription.client.user_id,
-        description=f'Подписка "{subscription.tariff.product.name}" активирована'
-    )
-    m.AuditEvents.create('system', f'granted: {roles}', subscription.client, subscription.details)
+
     subscription.status = m.SubscriptionStatus.ACTIVE
     subscription.expiration_date = subscription.tariff.next_payment_date()
     subscription.save()
 
+    subscription.client.roles_updated = False
+    subscription.client.save(update_fields=['roles_updated'])
+    update_client_roles_task.apply_async((subscription.client.id,))
+
+    send_subscription_active_notify(
+        user_id=subscription.client.user_id,
+        description=f'Подписка "{subscription.tariff.product.name}" активирована'
+    )
+
 
 def subscription_set_cancelled(subscription: Subscription):
     """Отмена подписки."""
-    roles = settings.ACCESS_ROLES_MAPPING[subscription.tariff.product.access_type]
-    delete_auth_user_role(subscription.client.user_id, roles)
+    subscription.status = m.SubscriptionStatus.CANCELLED
+    subscription.save()
+
+    subscription.client.roles_updated = False
+    subscription.client.save(update_fields=['roles_updated'])
+    update_client_roles_task.apply_async((subscription.client.id,))
+
     send_subscription_cancelled_notify(
         user_id=subscription.client.user_id,
         description=f'Подписка "{subscription.tariff.product.name}" отменена'
     )
-    m.AuditEvents.create('system', f'deleted: {roles}', subscription.client, subscription.details)
-    subscription.status = m.SubscriptionStatus.CANCELLED
-    subscription.save()
 
 
 def subscription_set_cancel_at_period_end_status(subscription: Subscription):
