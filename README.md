@@ -1,5 +1,6 @@
-# Billing project
+# Online cinema project
 
+![architecture](architecture.png)
 
 Cloud DB for services
 ```
