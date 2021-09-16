@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import List, Dict, Any, Optional
 from enum import Enum
 from pydantic import BaseModel
-import core.settings as settings
+from core import settings
 
 
 class Channel(str, Enum):

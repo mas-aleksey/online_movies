@@ -13,6 +13,18 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='paymentinvoice',
             name='status',
-            field=models.CharField(choices=[('not_payed', 'Не оплачен'), ('payed', 'Оплачен'), ('pending', 'Ждем подтверждения оплаты'), ('failed', 'Оплата не успешна'), ('cancelled', 'Оплата отменена'), ('refunded', 'Выполнен возврат')], default='not_payed', max_length=64, verbose_name='Статус платежа'),
+            field=models.CharField(
+                choices=[
+                    ('not_payed', 'Не оплачен'),
+                    ('payed', 'Оплачен'),
+                    ('pending', 'Ждем подтверждения оплаты'),
+                    ('failed', 'Оплата не успешна'),
+                    ('cancelled', 'Оплата отменена'),
+                    ('refunded', 'Выполнен возврат')
+                ],
+                default='not_payed',
+                max_length=64,
+                verbose_name='Статус платежа'
+            ),
         ),
     ]

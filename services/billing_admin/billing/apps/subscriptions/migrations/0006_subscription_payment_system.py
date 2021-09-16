@@ -13,6 +13,14 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='subscription',
             name='payment_system',
-            field=models.CharField(choices=[('yoomoney', 'Платежная система Юмани'), ('stripe', 'Платежная система Stripe')], default='yoomoney', max_length=64, verbose_name='Тип платежной системы'),
+            field=models.CharField(
+                choices=[
+                    ('yoomoney', 'Платежная система Юмани'),
+                    ('stripe', 'Платежная система Stripe')
+                ],
+                default='yoomoney',
+                max_length=64,
+                verbose_name='Тип платежной системы'
+            ),
         ),
     ]

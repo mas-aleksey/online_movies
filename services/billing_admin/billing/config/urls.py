@@ -11,7 +11,7 @@ urlpatterns = [
 
 if settings.DEBUG:
     import debug_toolbar  # type: ignore # noqa
-    from django.contrib.staticfiles.urls import staticfiles_urlpatterns  # noqa
+    from django.contrib.staticfiles.urls import staticfiles_urlpatterns  # type: ignore # noqa
 
     urlpatterns += [
         url(r'^__debug__/', include(debug_toolbar.urls)),

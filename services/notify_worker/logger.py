@@ -1,3 +1,8 @@
+import logging
+from logging import config as logging_config
+import settings
+
+
 LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 LOG_DEFAULT_HANDLERS = ('console',)
 
@@ -33,12 +38,8 @@ def get_logger_config(log_level):
 
 
 def get_logger(name):
-    import logging
-    from logging import config as logging_config
-    import settings
-
     log_level = 'DEBUG' if settings.DEBUG else 'INFO'
-    LOGGING = get_logger_config(log_level)
-    logging_config.dictConfig(LOGGING)
+    log_config = get_logger_config(log_level)
+    logging_config.dictConfig(log_config)
 
     return logging.getLogger(name)

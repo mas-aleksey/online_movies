@@ -31,7 +31,9 @@ class Filmwork(TimeStampedModel):
     end_date = models.DateField(_('дата окончания'), blank=True, null=True)
     age_limit = models.CharField(_('возрастной ценз'), max_length=50, blank=True)
     file_path = models.FileField(_('файл'), upload_to='film_works/', blank=True)
-    access_type = models.CharField(_('тип доступа'), max_length=50, choices=AccessType.choices, default=AccessType.STANDARD)
+    access_type = models.CharField(
+        _('тип доступа'), max_length=50, choices=AccessType.choices, default=AccessType.STANDARD
+    )
 
     genres = models.ManyToManyField(
         'Genre',
@@ -53,7 +55,7 @@ class Filmwork(TimeStampedModel):
         verbose_name_plural = _('кинопроизведения')
 
     def __str__(self):
-        return self.title
+        return str(self.title)
 
 
 class FilmworkGenres(models.Model):
@@ -86,7 +88,7 @@ class Genre(TimeStampedModel):
         verbose_name_plural = _('жанры')
 
     def __str__(self):
-        return self.name
+        return str(self.name)
 
 
 class Person(TimeStampedModel):
@@ -99,7 +101,7 @@ class Person(TimeStampedModel):
         verbose_name_plural = _('сотрудники')
 
     def __str__(self):
-        return self.name
+        return str(self.name)
 
 
 class FilmworkActorManager(models.Manager):

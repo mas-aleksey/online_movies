@@ -8,7 +8,7 @@ load_dotenv(dotenv_path=Path('') / '.envrc')
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY', '')
-DEBUG = os.getenv('DEBUG', False)
+DEBUG = bool(int(os.getenv('DEBUG', '0')))
 ALLOWED_HOSTS = [os.getenv('ALLOWED_HOSTS', '*')]
 LOG_LEVEL = os.getenv('LOG_LEVEL', 'DEBUG')
 
@@ -60,7 +60,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': os.getenv('DB_NAME', 'postgres'),
         'USER': os.getenv('DB_USERNAME', 'postgres'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'postgres'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
         'HOST': os.getenv('DB_HOST', 'localhost'),
         'PORT': os.getenv('DB_PORT', '5432'),
         'CHARSET': 'utf-8',
@@ -75,7 +75,7 @@ LOGGING = {
             'format': '%(levelname)s %(asctime)s %(process)d %(thread)d %(name)s:%(lineno)s %(funcName)s() %(message)s'
         },
         'verbose_sql': {
-            'format': '%(levelname)s %(asctime)s %(process)d %(thread)d %(name)s:%(lineno)s %(funcName)s() %(sql)s\n%(params)s\n%(duration)ss'
+            'format': '%(levelname)s %(asctime)s %(process)d %(thread)d %(name)s:%(lineno)s %(funcName)s() %(sql)s\n%(params)s\n%(duration)ss'  # noqa
         },
     },
     'handlers': {

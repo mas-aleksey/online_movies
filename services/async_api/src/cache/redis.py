@@ -23,16 +23,16 @@ class RedisBackend(BaseRedisBackend):
 
 
 @backoff.on_exception(backoff.expo, OSError, max_tries=10)
-async def create_radis_connection():
+async def create_redis_connection():
     pool = await aioredis.create_redis_pool((REDIS_HOST, REDIS_PORT), minsize=10, maxsize=20)
     FastAPICache.init(RedisBackend(pool))
 
 
-async def close_radis_connection():
+async def close_redis_connection():
     redis_backend: RedisBackend = FastAPICache().get_backend()
     redis_backend.redis.close()
     await redis_backend.redis.wait_closed()
 
 
-on_startup = create_radis_connection
-on_shutdown = close_radis_connection
+on_startup = create_redis_connection
+on_shutdown = close_redis_connection

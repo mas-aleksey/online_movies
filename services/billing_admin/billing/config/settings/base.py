@@ -66,7 +66,7 @@ DATABASES = {
         "ENGINE": "psqlextra.backend",
         'NAME': os.getenv('DB_NAME') or 'billing',
         'USER': os.getenv('DB_USERNAME') or 'postgres',
-        'PASSWORD': os.getenv('DB_PASSWORD') or 'QWEasd123',
+        'PASSWORD': os.getenv('DB_PASSWORD'),
         'HOST': os.getenv('DB_HOST') or 'localhost',
         'PORT': os.getenv('DB_PORT') or 5432,
         'CHARSET': 'utf-8',
@@ -81,7 +81,7 @@ LOGGING = {
             'format': '%(levelname)s %(asctime)s %(process)d %(thread)d %(name)s:%(lineno)s %(funcName)s() %(message)s'
         },
         'verbose_sql': {
-            'format': '%(levelname)s %(asctime)s %(process)d %(thread)d %(name)s:%(lineno)s %(funcName)s() %(sql)s\n%(params)s\n%(duration)ss'
+            'format': '%(levelname)s %(asctime)s %(process)d %(thread)d %(name)s:%(lineno)s %(funcName)s() %(sql)s\n%(params)s\n%(duration)ss'  # noqa
         },
     },
     'handlers': {
@@ -182,8 +182,8 @@ STATIC_URL = '/static/billing-admin/'
 ASYNC_SERVER = os.getenv('ASYNC_SERVER') or 'https://yandexmovies.online/async'
 AUTH_SERVER = os.getenv('AUTH_SERVER') or 'http://movies_auth:5000/auth2'
 AUTH_ENDPOINT = os.getenv('AUTH_ENDPOINT') or f'{AUTH_SERVER}/api/v1/auth/access_check'
-AUTH_ADMIN = os.getenv('AUTH_ADMIN') or f'admin'
-AUTH_PASSWORD = os.getenv('AUTH_PASSWORD') or f'pwd'
+AUTH_ADMIN = os.getenv('AUTH_ADMIN') or 'admin'
+AUTH_PASSWORD = os.getenv('AUTH_PASSWORD') or 'pwd'
 
 # Нотификации
 NOTIFY_SERVER = os.getenv('NOTIFY_SERVER') or 'http://notify_api:8000/notify'
@@ -199,5 +199,6 @@ CACHEOPS = {
     'auth.permission': {'ops': 'all', 'timeout': 60 * 60},
     '*.*': {'ops': (), 'timeout': 60 * 60},
 }
+
 from .celery import *  # noqa
 from .config import *  # noqa

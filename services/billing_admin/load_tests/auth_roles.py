@@ -30,7 +30,7 @@ def revoke_auth_user_access_token(client, admin_token: str, user_id: str):
         'user-agent': user_agent
     }
 
-    r = client.get(url, headers=headers)
+    client.get(url, headers=headers)
 
 
 def change_auth_user_role(client, method, user_id: str, roles: list):
@@ -44,9 +44,9 @@ def change_auth_user_role(client, method, user_id: str, roles: list):
     }
     for role in roles:
         if method == 'post':
-            r = client.post(url, json={"role": role}, headers=headers)
+            client.post(url, json={"role": role}, headers=headers)
         else:
-            r = client.delete(url, json={"role": role}, headers=headers)
+            client.delete(url, json={"role": role}, headers=headers)
 
     revoke_auth_user_access_token(client, token, user_id)
 

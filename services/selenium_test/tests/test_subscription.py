@@ -1,9 +1,9 @@
 from time import sleep
 import allure
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.select import Select
 from selenium.webdriver.remote.webdriver import WebDriver as RemoteWebDriver
 from helpers.help_utils import make_url
-from selenium.webdriver.support.select import Select
 
 
 @allure.step

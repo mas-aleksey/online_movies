@@ -14,6 +14,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='notifytemplate',
             name='notify',
-            field=models.OneToOneField(default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='notification.notify', verbose_name='нотификация'),
+            field=models.OneToOneField(
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='notification.notify',
+                verbose_name='нотификация'
+            ),
         ),
     ]

@@ -16,8 +16,12 @@ class Migration(migrations.Migration):
             name='AuditEvents',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', model_utils.fields.AutoCreatedField(default=django.utils.timezone.now, editable=False, verbose_name='created')),
-                ('modified', model_utils.fields.AutoLastModifiedField(default=django.utils.timezone.now, editable=False, verbose_name='modified')),
+                ('created', model_utils.fields.AutoCreatedField(
+                    default=django.utils.timezone.now, editable=False, verbose_name='created'
+                )),
+                ('modified', model_utils.fields.AutoLastModifiedField(
+                    default=django.utils.timezone.now, editable=False, verbose_name='modified'
+                )),
                 ('who', models.CharField(max_length=50, verbose_name='Инициатор события')),
                 ('what', models.CharField(max_length=50, verbose_name='Событие')),
                 ('related_name', models.CharField(max_length=50, verbose_name='Объект')),

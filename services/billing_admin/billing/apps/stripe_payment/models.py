@@ -1,8 +1,8 @@
 import dataclasses
 
 from django.db import models
-from model_utils.models import TimeStampedModel
 from django.utils.translation import gettext_lazy as _
+from model_utils.models import TimeStampedModel
 from psqlextra.models import PostgresPartitionedModel
 from psqlextra.types import PostgresPartitioningMethod
 

@@ -1,6 +1,6 @@
 from django.db import models
-from model_utils.models import TimeStampedModel
 from django.utils.translation import gettext_lazy as _
+from model_utils.models import TimeStampedModel
 
 
 class Notify(TimeStampedModel):
@@ -12,7 +12,7 @@ class Notify(TimeStampedModel):
         verbose_name_plural = _('нотификация')
 
     def __str__(self):
-        return self.name
+        return str(self.name)
 
 
 class NotifyTemplate(TimeStampedModel):
@@ -45,7 +45,7 @@ class Channel(TimeStampedModel):
         verbose_name_plural = _('каналы нотификаций')
 
     def __str__(self):
-        return self.name
+        return str(self.name)
 
 
 class Client(TimeStampedModel):

@@ -10,7 +10,7 @@ def init_fill_db(app):
     db.app = app
     db.create_all()
 
-    from src.models.db_models import Role, User
+    from src.models.db_models import Role, User  # noqa
     for role in ROLES:
         if not Role.get_by_name(role):
             db.session.add(Role(role))

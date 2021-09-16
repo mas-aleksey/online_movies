@@ -1,5 +1,5 @@
-from flask import Flask
 from typing import Tuple
+from flask import Flask
 from flask_jwt_extended import JWTManager, get_jti, create_access_token, create_refresh_token
 
 from src.models.db_models import User

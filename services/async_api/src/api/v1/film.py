@@ -18,7 +18,9 @@ async def get_films_by_filter(
         response: Response,
         limit: int = Query(description='Количество фильмов на страницу', default=50, ge=1, le=100),
         page: int = Query(description='Номер страницы', default=1, ge=1),
-        sort: Sort = Query(description='Свойство, по которому нужно отсортировать результат', default=Sort.IMDB_RATING),
+        sort: Sort = Query(
+            description='Свойство, по которому нужно отсортировать результат', default=Sort.IMDB_RATING
+        ),
         sort_order: SortOrder = Query(description='Порядок сортировки', default=SortOrder.ASC),
         filter_field: FilterField = Query(description='Поле, по которому необходимо фильтровать', default=None),
         filter_query: UUID = Query(description='uid объекта в поле filter', default=None),

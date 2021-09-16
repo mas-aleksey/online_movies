@@ -47,8 +47,7 @@ def patch_role():
         role.name = data['new_role']
         db.session.commit()
         return jsonify(msg='sucess patched')
-    else:
-        return jsonify(msg='roles does not exist'), 409
+    return jsonify(msg='roles does not exist'), 409
 
 
 @roles_api.route('/', methods=['DELETE'])
@@ -61,6 +60,5 @@ def delete_role():
     is_delete = Role.query.filter_by(name=data['role']).delete()
     db.session.commit()
     if is_delete:
-        return jsonify(msg='sucess deleted')
-    else:
-        return jsonify(msg='roles does not exist'), 409
+        return jsonify(msg='success deleted')
+    return jsonify(msg='roles does not exist'), 409

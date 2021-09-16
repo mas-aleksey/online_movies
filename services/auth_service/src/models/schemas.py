@@ -20,7 +20,7 @@ class LoginSchema(BaseSchema):
 class SignInSchema(LoginSchema):
     email = fields.String(required=True, validate=[
         Regexp(
-            '^(\w|\.|\_|\-|\+)+[@](\w|\_|\-|\.)+[.]\w{2,3}$',
+            r'^(\w|\.|\_|\-|\+)+[@](\w|\_|\-|\.)+[.]\w{2,3}$',
             error='Email is invalid'
         ),
         Length(min=4)

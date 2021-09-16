@@ -16,11 +16,21 @@ class Migration(migrations.Migration):
             name='StripeId',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', model_utils.fields.AutoCreatedField(default=django.utils.timezone.now, editable=False, verbose_name='created')),
-                ('modified', model_utils.fields.AutoLastModifiedField(default=django.utils.timezone.now, editable=False, verbose_name='modified')),
+                ('created', model_utils.fields.AutoCreatedField(
+                    default=django.utils.timezone.now, editable=False, verbose_name='created'
+                )),
+                ('modified', model_utils.fields.AutoLastModifiedField(
+                    default=django.utils.timezone.now, editable=False, verbose_name='modified'
+                )),
                 ('stripe_id', models.CharField(max_length=250, verbose_name='id в stripe')),
                 ('billing_id', models.CharField(max_length=250, verbose_name='id в billing')),
-                ('object_type', models.CharField(choices=[('price', 'Price'), ('product', 'Product'), ('subscription', 'Subscription')], max_length=64, verbose_name='Тип объекта')),
+                ('object_type', models.CharField(
+                    choices=[
+                        ('price', 'Price'),
+                        ('product', 'Product'),
+                        ('subscription', 'Subscription')
+                    ], max_length=64, verbose_name='Тип объекта'
+                )),
             ],
             options={
                 'verbose_name': 'цены',

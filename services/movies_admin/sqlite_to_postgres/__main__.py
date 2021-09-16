@@ -2,6 +2,7 @@ import sqlite3
 from os import path
 from pathlib import Path
 from typing import List, Optional
+import logging
 import uuid
 import psycopg2
 
@@ -9,6 +10,7 @@ from psycopg2.extras import DictCursor
 from .utils import sqlite_context, Profession, DSN, MovieInfo
 
 
+LOGGER = logging.getLogger(__name__)
 CURR_DIR = Path(__file__).resolve(strict=True).parent
 SELECT_MOVIES_AND_ACTORS_QUERY = '''
 WITH x as (
@@ -150,8 +152,7 @@ if __name__ == "__main__":
         with sqlite_context(sqlite_path) as conn:
             etl = ETL(conn, loader)
             etl.load()
-    except Exception as e:
+    except Exception as e:  # noqa
         print(f'ETL Failed: {e}')
     else:
         print('ETL finished')
-

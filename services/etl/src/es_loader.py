@@ -20,7 +20,7 @@ class ESLoader:
         files = index_dir.glob('**/*.json')
         for file in files:
             index = file.stem
-            with open(file) as index_file:
+            with open(file, 'r') as index_file:
                 data = json.load(index_file)
             try:
                 self.client.indices.create(index=index, body=data)
@@ -32,12 +32,12 @@ class ESLoader:
             str_query = '\n'.join(prepared_query) + '\n'
             self._post_to_es(str_query, index_name)
             module_logger.info('post \'%s\' items to elastic search', len(prepared_query))
-    
+
     @backoff(Exception, logger=module_logger)
     def _post_to_es(self, query: str, index: str) -> None:
         self.client.bulk(body=query, index=index)
         self.client.indices.refresh(index=index)
-    
+
     def _get_chunk_query(self, rows: List[dict], index_name: str) -> Generator[List[str], None, None]:
         prepared_query = []
         chanked_rows = [rows[i:i+self.chunk_size] for i in range(0, len(rows), self.chunk_size)]

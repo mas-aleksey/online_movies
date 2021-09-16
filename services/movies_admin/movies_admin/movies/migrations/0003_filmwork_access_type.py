@@ -13,6 +13,15 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='filmwork',
             name='access_type',
-            field=models.CharField(choices=[('free', 'бесплатный доступ'), ('standard', 'обычная подписка'), ('extra', 'расширенная подписка')], default='standard', max_length=50, verbose_name='тип доступа'),
+            field=models.CharField(
+                choices=[
+                    ('free', 'бесплатный доступ'),
+                    ('standard', 'обычная подписка'),
+                    ('extra', 'расширенная подписка')
+                ],
+                default='standard',
+                max_length=50,
+                verbose_name='тип доступа'
+            ),
         ),
     ]

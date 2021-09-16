@@ -44,7 +44,7 @@ class Product(TimeStampedModel):
         verbose_name_plural = _('продукты')
 
     def __str__(self):
-        return self.name
+        return str(self.name)
 
 
 class Discount(TimeStampedModel):
@@ -96,9 +96,3 @@ class Tariff(TimeStampedModel):
             raise ValueError(f"unknown period: {self.period}")
 
         return today + delta
-
-
-
-
-
-

@@ -17,7 +17,6 @@ def key_builder(
     path = request.url.components.path
     query_params = str(request.query_params)
     roles = '::'.join(request.scope["roles"])
-    print(f'{path}::{query_params}::{roles}')
     return f'{path}::{query_params}::{roles}'
 
 

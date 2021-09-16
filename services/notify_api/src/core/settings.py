@@ -20,7 +20,7 @@ DNS = {
         'host': os.getenv('RABBIT_HOST') or 'localhost',
         'port': int(os.getenv('RABBIT_PORT', '5672')),
         'login': os.getenv('RABBIT_LOGIN') or 'guest',
-        'password': os.getenv('RABBIT_PASSWORD') or 'test12',
+        'password': os.getenv('RABBIT_PASSWORD'),
     }
 }
 

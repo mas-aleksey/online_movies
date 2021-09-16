@@ -1,5 +1,5 @@
-import redis
 import json
+import redis
 from src.settings import ACCESS_EXPIRES, REFRESH_EXPIRES, REDIS_DNS
 
 redis_db = redis.Redis(**REDIS_DNS)

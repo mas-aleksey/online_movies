@@ -1,9 +1,9 @@
 from uuid import uuid4
 from selenium import webdriver
+from selenium.webdriver.remote.webdriver import WebDriver as RemoteWebDriver
+import requests
 import pytest
 import allure
-import requests
-from selenium.webdriver.remote.webdriver import WebDriver as RemoteWebDriver
 from helpers.help_utils import make_url
 from helpers.settings import IMPLICITLY_WAIT
 

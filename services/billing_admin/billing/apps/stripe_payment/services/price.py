@@ -19,4 +19,3 @@ def get_price_id(subscription: SubscriptionInfoDataclass) -> str:
     StripeId.objects.create(stripe_id=stripe_price_id, billing_id=billing_price_id, object_type=ObjectType.PRICE)
 
     return stripe_price_id
-

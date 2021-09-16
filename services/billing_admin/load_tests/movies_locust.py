@@ -115,7 +115,6 @@ class QuickstartUser(HttpUser):
 
     def on_start(self):
         self.login = generate_login()
-        print(self.login)
         self.client = services.auth_signup(
             self.client,
             self.login,

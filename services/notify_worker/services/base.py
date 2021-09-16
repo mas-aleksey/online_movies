@@ -21,7 +21,7 @@ class BaseWorker:
 
     @abc.abstractmethod
     def process(self):
-        raise NotImplemented
+        raise NotImplementedError
 
 
 def get_worker_class(path: str = None) -> Optional[Type[BaseWorker]]:

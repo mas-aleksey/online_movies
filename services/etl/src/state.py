@@ -19,7 +19,7 @@ class BaseStorage:
 class JsonFileStorage(BaseStorage):
     def __init__(self, file_path: Optional[str] = None):
         self.file_path = file_path
-        
+
     def save_state(self, state: dict) -> None:
         if self.file_path is None:
             return
@@ -36,9 +36,10 @@ class JsonFileStorage(BaseStorage):
             with open(self.file_path, 'r') as f:
                 data = json.load(f)
             return data
-        except FileNotFoundError as e:
+        except FileNotFoundError:
             self.save_state({})
-            
+        return
+
 
 class State:
     def __init__(self, storage: BaseStorage):

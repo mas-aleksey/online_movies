@@ -14,11 +14,28 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='paymentinvoice',
             name='subscription',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='payments', to='subscriptions.subscription', verbose_name='подписка'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='payments',
+                to='subscriptions.subscription',
+                verbose_name='подписка'
+            ),
         ),
         migrations.AlterField(
             model_name='subscription',
             name='status',
-            field=models.CharField(choices=[('draft', 'На оформлении'), ('inactive', 'Не активная'), ('active', 'Активная'), ('expired', 'Истек срок действия'), ('cancelled', 'Подписка отменена'), ('cancel_at_period_end', 'Отмена после окончания периода')], default='inactive', max_length=64, verbose_name='Статус подписки'),
+            field=models.CharField(
+                choices=[
+                    ('draft', 'На оформлении'),
+                    ('inactive', 'Не активная'),
+                    ('active', 'Активная'),
+                    ('expired', 'Истек срок действия'),
+                    ('cancelled', 'Подписка отменена'),
+                    ('cancel_at_period_end', 'Отмена после окончания периода')
+                ],
+                default='inactive',
+                max_length=64,
+                verbose_name='Статус подписки'
+            ),
         ),
     ]

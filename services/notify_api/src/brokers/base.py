@@ -7,7 +7,7 @@ class BaseProducer:
         return await self._produce(messages, routing_key)
 
     async def _produce(self, messages: List[str], routing_key: str):
-        raise NotImplemented
+        raise NotImplementedError
 
 
 mq = None

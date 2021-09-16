@@ -14,4 +14,4 @@ class UsersManagersTests(TestCase):
         self.assertIsNotNone(prod)
         t = Tariff(id=tariff_id, product=prod, price=10, discount=None)
         t.save()
-        s = create_subscription('fb167b09-7d56-4330-814a-0ba799e985de', tariff_id)
+        create_subscription('fb167b09-7d56-4330-814a-0ba799e985de', tariff_id)

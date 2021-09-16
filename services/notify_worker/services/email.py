@@ -1,8 +1,8 @@
 from logger import get_logger
 from models import Channel, EventMessage
-from services.base import BaseWorker
 from utils.smtp import sendmail
 from utils.templates import render_template
+from services.base import BaseWorker
 
 LOGGER = get_logger(__name__)
 

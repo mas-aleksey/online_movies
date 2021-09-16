@@ -33,7 +33,7 @@ def auth_signup(client, login, password):
         "email": login,
         "password": password
     }
-    resp = client.post(
+    client.post(
         url=url,
         json=payload,
         headers=headers,

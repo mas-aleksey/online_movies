@@ -85,7 +85,9 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='filmwork',
             name='created',
-            field=model_utils.fields.AutoCreatedField(default=django.utils.timezone.now, editable=False, verbose_name='created'),
+            field=model_utils.fields.AutoCreatedField(
+                default=django.utils.timezone.now, editable=False, verbose_name='created'
+            ),
         ),
         migrations.AddField(
             model_name='filmwork',
@@ -105,22 +107,30 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='filmwork',
             name='genres',
-            field=models.ManyToManyField(blank=True, related_name='films', through='movies.FilmworkGenres', to='movies.Genre'),
+            field=models.ManyToManyField(
+                blank=True, related_name='films', through='movies.FilmworkGenres', to='movies.Genre'
+            ),
         ),
         migrations.AddField(
             model_name='filmwork',
             name='modified',
-            field=model_utils.fields.AutoLastModifiedField(default=django.utils.timezone.now, editable=False, verbose_name='modified'),
+            field=model_utils.fields.AutoLastModifiedField(
+                default=django.utils.timezone.now, editable=False, verbose_name='modified'
+            ),
         ),
         migrations.AddField(
             model_name='filmwork',
             name='persons',
-            field=models.ManyToManyField(blank=True, related_name='films', through='movies.FilmworkPersons', to='movies.Person'),
+            field=models.ManyToManyField(
+                blank=True, related_name='films', through='movies.FilmworkPersons', to='movies.Person'
+            ),
         ),
         migrations.AddField(
             model_name='filmwork',
             name='type',
-            field=models.CharField(choices=[('movie', 'фильм'), ('tv_show', 'шоу')], default='movie', max_length=20, verbose_name='тип'),
+            field=models.CharField(
+                choices=[('movie', 'фильм'), ('tv_show', 'шоу')], default='movie', max_length=20, verbose_name='тип'
+            ),
         ),
         migrations.RunSQL(
             "CREATE TYPE filmwork_type AS ENUM ('movie', 'tv_show'); "
@@ -130,7 +140,9 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='genre',
             name='created',
-            field=model_utils.fields.AutoCreatedField(default=django.utils.timezone.now, editable=False, verbose_name='created'),
+            field=model_utils.fields.AutoCreatedField(
+                default=django.utils.timezone.now, editable=False, verbose_name='created'
+            ),
         ),
         migrations.AddField(
             model_name='genre',
@@ -140,16 +152,22 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='genre',
             name='modified',
-            field=model_utils.fields.AutoLastModifiedField(default=django.utils.timezone.now, editable=False, verbose_name='modified'),
+            field=model_utils.fields.AutoLastModifiedField(
+                default=django.utils.timezone.now, editable=False, verbose_name='modified'
+            ),
         ),
         migrations.AddField(
             model_name='person',
             name='created',
-            field=model_utils.fields.AutoCreatedField(default=django.utils.timezone.now, editable=False, verbose_name='created'),
+            field=model_utils.fields.AutoCreatedField(
+                default=django.utils.timezone.now, editable=False, verbose_name='created'
+            ),
         ),
         migrations.AddField(
             model_name='person',
             name='modified',
-            field=model_utils.fields.AutoLastModifiedField(default=django.utils.timezone.now, editable=False, verbose_name='modified'),
+            field=model_utils.fields.AutoLastModifiedField(
+                default=django.utils.timezone.now, editable=False, verbose_name='modified'
+            ),
         ),
     ]

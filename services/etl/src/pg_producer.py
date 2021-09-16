@@ -16,7 +16,7 @@ class PgProducer:
         self._connection = None
         self._cursor = None
         self.init()
-    
+
     def cursor(self) -> None:
         if not self._cursor or self._cursor.closed:
             if not self._connection:
@@ -33,24 +33,24 @@ class PgProducer:
     def execute(self, query: str, query_args: Union[List, str]) -> Generator[List[DictRow], None, None]:
         try:
             if isinstance(query_args, str):
-                query = self._cursor.mogrify(query, (query_args,)) 
+                query = self._cursor.mogrify(query, (query_args,))
             elif isinstance(query_args, list):
                 query = self._cursor.mogrify(query, (tuple(query_args),))
             else:
-                raise TypeError(f'Type of query args must be string or list. not {type(query_args)}') 
-            self._cursor.execute(query)  
+                raise TypeError(f'Type of query args must be string or list. not {type(query_args)}')
+            self._cursor.execute(query)
         except psycopg2.OperationalError:
             self.reset()
             raise
         else:
             while rows := self._cursor.fetchmany(self.chunk_size):
                 yield rows
-    
+
     def reset(self) -> None:
         self.close()
         self.connect()
         self.cursor()
-    
+
     def close(self) -> None:
         if self._connection:
             if self._cursor:
@@ -59,7 +59,7 @@ class PgProducer:
             module_logger.info("PostgreSQL connection is closed")
         self._connection = None
         self._cursor = None
-    
+
     def init(self) -> None:
         self.connect()
         self.cursor()

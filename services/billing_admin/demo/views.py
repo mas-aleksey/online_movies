@@ -3,11 +3,13 @@ from functools import wraps
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-
+from requests import RequestException
 from demo.forms import LoginForm
-from demo.services import (auth_profile, auth_logout, async_movies_search, async_movies_detail,
-                           billing_tariff, billing_order, billing_subscribe, auth_access_check,
-                           billing_subscriptions, billing_products, billing_unsubscribe, auth_refresh)
+from demo.services import (
+    auth_profile, auth_logout, async_movies_search, async_movies_detail,
+    billing_tariff, billing_order, billing_subscribe, auth_access_check,
+    billing_subscriptions, billing_products, billing_unsubscribe, auth_refresh
+)
 
 
 def index(request):
@@ -68,7 +70,7 @@ def profile(request):
     ctx = {}
     try:
         ctx = auth_profile(access_token)
-    except Exception as e:
+    except RequestException as e:
         ctx['errors'] = str(e)
 
     ctx['access_token'] = access_token
@@ -102,7 +104,7 @@ def movies(request):
 
         try:
             ctx['data'] = async_movies_search(access_token, query)
-        except Exception as e:
+        except RequestException as e:
             ctx['errors'] = str(e)
 
     return render(request, 'movies.html', ctx)
@@ -116,7 +118,7 @@ def movies_detail(request, movies_id):
 
     try:
         ctx['data'] = async_movies_detail(access_token, movies_id)
-    except Exception as e:
+    except RequestException as e:
         ctx['errors'] = str(e)
 
     return render(request, 'movies_detail.html', ctx)
@@ -130,7 +132,7 @@ def products(request):
 
     try:
         ctx['data'] = billing_products(access_token)
-    except Exception as e:
+    except RequestException as e:
         ctx['errors'] = str(e)
 
     return render(request, 'products.html', ctx)
@@ -144,7 +146,7 @@ def tariff(request, tariff_id):
 
     try:
         ctx['data'] = billing_tariff(access_token, tariff_id)
-    except Exception as e:
+    except RequestException as e:
         ctx['errors'] = str(e)
 
     return render(request, 'tariff.html', ctx)
@@ -163,11 +165,11 @@ def order(request):
 
     try:
         ctx['data'] = billing_order(access_token, tariff_id, payment_system)
-    except Exception as e:
+    except RequestException as e:
         ctx['errors'] = str(e)
         return render(request, '500.html', ctx)
 
-    return HttpResponseRedirect(ctx['data']['confirmation_url'])
+    return HttpResponseRedirect(ctx['data']['confirmation_url'])  # noqa
 
 
 @check_token
@@ -179,7 +181,7 @@ def subscriptions(request):
 
     try:
         ctx['data'] = billing_subscriptions(access_token)
-    except Exception as e:
+    except RequestException as e:
         ctx['errors'] = str(e)
         return render(request, '500.html', ctx)
 
@@ -199,7 +201,7 @@ def subscribe(request, subscribe_id):
 
     try:
         ctx['data'] = billing_subscribe(access_token, subscribe_id)
-    except Exception as e:
+    except RequestException as e:
         ctx['errors'] = str(e)
         return render(request, '500.html', ctx)
 
@@ -214,7 +216,7 @@ def unsubscribe(request, subscribe_id):
 
     try:
         billing_unsubscribe(access_token, subscribe_id)
-    except Exception as e:
+    except RequestException as e:
         ctx = {'errors': str(e)}
         return render(request, '500.html', ctx)
 

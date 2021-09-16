@@ -1,7 +1,7 @@
 import uuid
 from flask import Blueprint, request, jsonify, url_for, render_template
 from flasgger import swag_from
-from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt, set_refresh_cookies, set_access_cookies
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 
 from src.models.db_models import User, UserSignIn, SocialAccount
 from src.models.schemas import LoginSchema, SignInSchema
@@ -9,7 +9,7 @@ from src.app_extensions.jwt_tokens import genetare_tokens
 from src.app_extensions.oauth import oauth
 from src.storage.postgres import db
 from src.storage.redis import delete_user_tokens, revoke_token
-from src.settings import ACCESS_EXPIRES, REFRESH_EXPIRES, DOCS_DIR, DEFAULT_ROLE, TEMPLATE_DIR
+from src.settings import DOCS_DIR, DEFAULT_ROLE, TEMPLATE_DIR
 from src.api.v1.auth.forms import RecaptchaForm
 
 
@@ -51,12 +51,11 @@ def oauth_login(social_name: str, social_id, user_email: str, user_agent) -> dic
 
 @auth_api.route('/captcha', methods=['GET', 'POST'])
 def captcha():
-    form = RecaptchaForm()
-    if not form.validate_on_submit():
-        return render_template('captcha.html', form=form)
-
     if request.method == 'POST':
         return 'Submitted!'
+
+    form = RecaptchaForm()
+    return render_template('captcha.html', form=form)
 
 
 @auth_api.route('/login', methods=['POST'])

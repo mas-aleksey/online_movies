@@ -23,7 +23,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='auditevents',
             name='content_type',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='contenttypes.contenttype'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='contenttypes.contenttype'
+            ),
         ),
         migrations.AddField(
             model_name='auditevents',

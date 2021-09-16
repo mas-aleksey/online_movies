@@ -19,7 +19,12 @@ class Migration(migrations.Migration):
                 ('id', models.UUIDField(primary_key=True, serialize=False)),
                 ('title', models.CharField(max_length=255, verbose_name='название')),
                 ('description', models.TextField(blank=True, null=True, verbose_name='описание')),
-                ('rating', models.FloatField(blank=True, null=True, validators=[django.core.validators.MinValueValidator(0)], verbose_name='рейтинг')),
+                ('rating', models.FloatField(
+                    blank=True,
+                    null=True,
+                    validators=[django.core.validators.MinValueValidator(0)],
+                    verbose_name='рейтинг'
+                )),
             ],
             options={
                 'verbose_name': 'кинопроизведение',
@@ -55,7 +60,10 @@ class Migration(migrations.Migration):
             name='FilmworkPersons',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('role', models.TextField(choices=[('actor', 'актер'), ('director', 'режиссер'), ('writer', 'сценарист')], verbose_name='роль')),
+                ('role', models.TextField(
+                    choices=[('actor', 'актер'), ('director', 'режиссер'), ('writer', 'сценарист')],
+                    verbose_name='роль'
+                )),
                 ('filmwork', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='movies.filmwork')),
                 ('person', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='movies.person')),
             ],

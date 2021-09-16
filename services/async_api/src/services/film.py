@@ -54,7 +54,9 @@ class FilmService:
             sort: поле, по которому необходимо сортировать
         Returns: список фильмов
         """
-        entities = await self.storage.get_films_by_filter(limit, page, roles, sort, sort_order, filter_field, filter_query)
+        entities = await self.storage.get_films_by_filter(
+            limit, page, roles, sort, sort_order, filter_field, filter_query
+        )
         return [ShortFilm.parse_obj(entity) for entity in entities] if entities else None
 
 

@@ -11,7 +11,7 @@ from .base import TIME_ZONE
 RABBIT_HOST = os.getenv('RABBIT_HOST') or 'localhost'
 RABBIT_PORT = int(os.getenv('RABBIT_PORT', '5672'))
 RABBIT_LOGIN = os.getenv('RABBIT_LOGIN') or 'guest'
-RABBIT_PASSWORD = os.getenv('RABBIT_PASSWORD') or 'test12'
+RABBIT_PASSWORD = os.getenv('RABBIT_PASSWORD')
 
 CELERY_BROKER_URL = f'amqp://{RABBIT_LOGIN}:{RABBIT_PASSWORD}@{RABBIT_HOST}:{RABBIT_PORT}/'
 

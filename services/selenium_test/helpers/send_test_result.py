@@ -1,13 +1,17 @@
-import os, requests, json, base64
+import os
+import json
+import base64
+import requests
 from helpers.settings import ALLURE_URL, PROJECT_ID
 
 # This directory is where you have all your results locally, generally named as `allure-results`
 allure_results_directory = '/allure-results'
 # This url is where the Allure container is deployed. We are using localhost as example
 allure_server = ALLURE_URL
-# Project ID according to existent projects in your Allure container - Check endpoint for project creation >> `[POST]/projects`
+# Project ID according to existent projects in your Allure container
+# Check endpoint for project creation >> `[POST]/projects`
 project_id = PROJECT_ID
-#project_id = 'my-project-id'
+# project_id = 'my-project-id'
 
 
 current_directory = os.path.dirname(os.path.realpath(__file__))
@@ -48,11 +52,11 @@ def send_results():
                         result['content_base64'] = b64_content.decode('UTF-8')
                         results.append(result)
                     else:
-                        print('Empty File skipped: '+ file_path)
-            finally :
+                        print('Empty File skipped: ' + file_path)
+            finally:
                 f.close()
         else:
-            print('Directory skipped: '+ file_path)
+            print('Directory skipped: ' + file_path)
 
     headers = {'Content-type': 'application/json'}
     request_body = {
@@ -65,7 +69,12 @@ def send_results():
     print("----------------START-SEND-RESULTS----------------")
     res = requests.get(allure_server)
     print(res.text)
-    response = requests.post(allure_server + '/allure-docker-service/send-results?project_id=' + project_id, headers=headers, data=json_request_body, verify=ssl_verification)
+    response = requests.post(
+        allure_server + '/allure-docker-service/send-results?project_id=' + project_id,
+        headers=headers,
+        data=json_request_body,
+        verify=ssl_verification
+    )
     print("STATUS CODE:")
     print(response.status_code)
     print("RESPONSE:")
@@ -74,15 +83,16 @@ def send_results():
     print(json_prettier_response_body)
     print("---------------FINISH-SEND-RESULTS---------------")
 
-
-
-    # If you want to generate reports on demand use the endpoint `GET /generate-report` and disable the Automatic Execution >> `CHECK_RESULTS_EVERY_SECONDS: NONE`
+    # If you want to generate reports on demand use the endpoint `GET /generate-report`
+    # and disable the Automatic Execution >> `CHECK_RESULTS_EVERY_SECONDS: NONE`
     """
     print("------------------GENERATE-REPORT------------------")
     execution_name = 'execution from my script'
     execution_from = 'http://google.com'
     execution_type = 'teamcity'
-    response = requests.get(allure_server + '/allure-docker-service/generate-report?project_id=' + project_id + '&execution_name=' + execution_name + '&execution_from=' + execution_from, '&execution_type=' + execution_type, headers=headers, data=json_request_body, verify=ssl_verification)
+    response = requests.get(allure_server + '/allure-docker-service/generate-report?project_id=' + project_id + \
+    '&execution_name=' + execution_name + '&execution_from=' + execution_from, '&execution_type=' + execution_type, \
+    headers=headers, data=json_request_body, verify=ssl_verification)
     print("STATUS CODE:")
     print(response.status_code)
     print("RESPONSE:")

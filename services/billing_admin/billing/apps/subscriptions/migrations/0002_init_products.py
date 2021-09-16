@@ -10,10 +10,14 @@ def init_products(apps, schema_editor):
     discount = Discount(id=uuid4(), name='Скидка новым подписчикам', code='NEW', value=10)
     discount.save()
 
-    standard = Product(id=uuid4(), name='Стандартная подписка', description='Смотрите фильмы по подписке!', access_type='standard')
+    standard = Product(
+        id=uuid4(), name='Стандартная подписка', description='Смотрите фильмы по подписке!', access_type='standard'
+    )
     standard.save()
 
-    extra = Product(id=uuid4(), name='Расширенная подписка', description='Смотрите фильмы по подписке!', access_type='extra')
+    extra = Product(
+        id=uuid4(), name='Расширенная подписка', description='Смотрите фильмы по подписке!', access_type='extra'
+    )
     extra.save()
 
     Tariff(id=uuid4(), product=standard, price=100, period='per month').save()

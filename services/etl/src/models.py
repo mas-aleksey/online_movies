@@ -25,11 +25,11 @@ class Person(ShortPerson):
     def add_role(self, role: str):
         if role not in self.roles:
             self.roles.append(role)
-    
+
     def add_film(self, film: ShortFilm):
         if film not in self.films:
             self.films.append(film)
-    
+
     @property
     def as_dict(self):
         return asdict(self)
@@ -66,7 +66,7 @@ class Film(ShortFilm):
     def add_genre(self, gen: ShortGenre):
         if gen not in self.genre:
             self.genre.append(gen)
-    
+
     def add_person(self, person: ShortPerson, role: str):
         if role == 'actor':
             if person not in self.actors:
@@ -77,7 +77,7 @@ class Film(ShortFilm):
         elif role == 'director':
             if person not in self.directors:
                 self.directors.append(person)
-    
+
     @property
     def as_dict(self):
         return asdict(self)
