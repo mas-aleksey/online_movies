@@ -4,6 +4,7 @@ from django.apps import apps
 
 from billing.config.celery import app
 from . import models as m
+from . import services
 from .payment_system import models as payment_models
 
 logger = logging.getLogger(__name__)
@@ -12,7 +13,7 @@ logger = logging.getLogger(__name__)
 @app.task(queue="high", timeout=60 * 5, default_retry_delay=10, max_retries=30)
 def wait_payment_task(payment_id):
     """Ожидание списания оплаты."""
-    payment = m.PaymentInvoice.objects.filter(id=payment_id).first()
+    payment = m.PaymentInvoice.objects.get(id=payment_id)
     data = payment.check_payment_status()
     payment.info = data['payment_info']
     status = data['status']
@@ -64,3 +65,17 @@ def audit_create_task(who, what, instance_app_label, instance_class, instance_id
     instance = model.objects.get(pk=instance_id)
     logger.info('%s %s %s %s %s', who, what, instance_class, instance_id, details)
     m.AuditEvents(who=who, what=what, content_object=instance, details=details).save()
+
+
+@app.task(queue="high", timeout=60 * 5)
+def update_client_roles_task(client_id) -> None:
+    """Обновить роли пользователя в auth."""
+    services.client.set_auth_client_roles(client_id)
+
+
+@app.task(queue="low", timeout=60 * 60)
+def update_clients_roles_task() -> None:
+    """Обновить роли всех не обновленных пользователей в auth."""
+    clients = m.Client.objects.filter(roles_updated=False)
+    for client in clients:
+        update_client_roles_task.apply_async((client.id,))

@@ -59,9 +59,14 @@ class SubscriptionQuerySet(QuerySet):
 class Subscription(TimeStampedModel, SoftDeletableModel, m.AuditMixin):
     """Подписка."""
     id = models.UUIDField(primary_key=True)
-    client = models.ForeignKey(m.Client, on_delete=models.CASCADE, verbose_name="клиент")
+    client = models.ForeignKey(m.Client, on_delete=models.CASCADE, verbose_name="клиент", related_name='subscriptions')
     expiration_date = models.DateField(_("дата окончания"), blank=True, null=True)
-    tariff = models.ForeignKey(m.Tariff, on_delete=models.DO_NOTHING, verbose_name="тариф")
+    tariff = models.ForeignKey(
+        m.Tariff,
+        on_delete=models.DO_NOTHING,
+        verbose_name="тариф",
+        related_name='subscriptions'
+    )
     discount = models.ForeignKey(m.Discount, on_delete=models.DO_NOTHING, verbose_name="скидка", blank=True, null=True)
     status = models.CharField(
         _("Статус подписки"),

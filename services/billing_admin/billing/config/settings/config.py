@@ -22,6 +22,7 @@ PAYMENT_SYSTEMS: Dict[str, Dict[str, Union[str, bool, None]]] = {
 }
 
 ACCESS_ROLES_MAPPING = {
-    'standard': ['standard'],
-    'extra': ['standard', 'extra']
+    'free': ['free'],
+    'standard': ['free', 'standard'],
+    'extra': ['free', 'standard', 'extra']
 }

@@ -8,7 +8,7 @@ from django.utils.translation import gettext_lazy as _
 from model_utils.models import TimeStampedModel
 
 from . import (
-    AccessType, SubscriptionPeriods
+    AccessType, SubscriptionPeriods, SubscriptionStatus
 )
 
 logger = logging.getLogger(__name__)
@@ -18,6 +18,16 @@ class Client(TimeStampedModel):
     """Пользователи кинотеатра."""
     id = models.UUIDField(primary_key=True)
     user_id = models.UUIDField(_('uuid пользователя'), unique=True)
+    roles_updated = models.BooleanField(_('роли обновлены'), default=False)
+
+    def get_current_access_types(self):
+        """Получить действующий уровень доступа к фильмам"""
+        products = Product.objects.filter(
+            tariffs__subscriptions__status__in=SubscriptionStatus.active_statuses,
+            tariffs__subscriptions__client=self,
+        )
+        types = products.values_list('access_type', flat=True)
+        return list(set(types))
 
     class Meta:
         verbose_name = _('клиент')
